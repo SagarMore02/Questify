@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: white;/*linear-gradient(to right, #755712, #d5f6e8), url(e-commerce-1920-x-1080-wallpaper-tb4uqckgoo0883zw.jpg) no-repeat center center/cover;*/
+    overflow: hidden;
+}
+
+.wrapper {
+    width: 420px;
+    background: #f77c17;
+    color: white;
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.57);
+}
+
+.wrapper h1 {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.wrapper .input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 30px 0;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    transition: background 0.3s ease;
+}
+
+.input-box:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.input-box input {
+    width: 80%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: white;
+    padding: 0 10px;
+    outline: none;
+}
+
+.input-box input::placeholder {
+    color: black;
+}
+
+.input-box svg {
+    font-size: 20px;
+    color: black;
+    transition: color 0.3s ease;
+}
+
+.input-box input:focus + svg {
+    color: #34e89e;
+}
+
+.wrapper .remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    margin: -15px 0 15px;
+}
+
+.remember-forgot label input {
+    accent-color: #34e89e;
+    margin-right: 3px;
+}
+
+.remember-forgot a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.remember-forgot a:hover {
+    color: #34e89e;
+    text-decoration: underline;
+}
+
+.wrapper .btn {
+    width: 100%;
+    height: 45px;
+    background: #f0eeed;
+    border: none;
+    outline: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wrapper .btn:hover {
+    background: linear-gradient(to right, #24b3c1, #34e89e);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.wrapper .register-link {
+    font-size: 14.5px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.register-link p a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.register-link p a:hover {
+    color: #34e89e;
+    text-decoration: underline;
+}
+
+.logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+}
+
+.popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.popup {
+    background-color: #fff;
+    width: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: popupFadeIn 0.3s ease-out;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    color: #333;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #24b3c1;
+}
