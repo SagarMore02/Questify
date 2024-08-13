@@ -110,21 +110,21 @@ body {
 .wrapper .btn {
     width: 100%;
     height: 45px;
-    background: #f0eeed;
+    background: #ffffff;
     border: none;
     outline: none;
     border-radius: 50px;
     cursor: pointer;
     font-size: 16px;
-    color: #fff;
+    color: #18181b;
     font-weight: 600;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .wrapper .btn:hover {
-    background: linear-gradient(to right, #24b3c1, #34e89e);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: none;
+    /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); */
 }
 
 .wrapper .register-link {
@@ -134,7 +134,7 @@ body {
 }
 
 .register-link p a {
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
@@ -165,7 +165,7 @@ body {
 }
 
 .popup {
-    background-color: #fff;
+    background-color: #ffffff;
     width: 300px;
     padding: 20px;
     border-radius: 10px;
@@ -197,5 +197,50 @@ body {
 }
 
 .close:hover {
-    color: #24b3c1;
+    color: #2128f5;
+}
+.popuplink {
+    color:#ffffff!important; cursor:pointer; font-size:13px!important; font-weight:500;
+}
+    .popuplink:hover {
+        text-decoration:underline;
+    }
+/* Flip container */
+.flip-container {
+    perspective: 1000px;
+}
+
+/* Flip effect */
+.flip-container, .flipper {
+    width: 100%;
+    height: 100%;
+}
+
+.flipper {
+    transition: 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+.front, .back {
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.front {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.back {
+    transform: rotateY(180deg);
+}
+
+/* Flip the card */
+.flip-container.hover .flipper {
+    transform: rotateY(180deg);
 }
