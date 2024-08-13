@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display User Info</title>
+    <style>
+        /* Add your CSS styling here */
+    </style>
+</head>
+<body>
+    <h1>User Information</h1>
+    <p>First Name: <span id="firstName"></span></p>
+    <p>Last Name: <span id="lastName"></span></p>
+    <p>Email: <span id="email"></span></p>
+    <p>Mobile Number: <span id="mobileNo"></span></p>
+    <p>Username: <span id="username"></span></p>
+    <p>User Type: <span id="userType"></span></p>
+
+    <script>
+        // Displaying the stored data
+        document.getElementById("firstName").textContent = localStorage.getItem("fname");
+        document.getElementById("lastName").textContent = localStorage.getItem("lname");
+        document.getElementById("email").textContent = localStorage.getItem("email");
+        document.getElementById("mobileNo").textContent = localStorage.getItem("mobileno");
+        document.getElementById("username").textContent = localStorage.getItem("username");
+        document.getElementById("userType").textContent = localStorage.getItem("usertype");
+    </script>
+</body>
+</html>
