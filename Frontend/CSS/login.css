@@ -16,7 +16,7 @@ body {
 
 .wrapper {
     width: 420px;
-    background: #f77c17;
+    background: #472001;
     color: white;
     border-radius: 20px;
     padding: 30px 40px;
@@ -56,7 +56,7 @@ body {
 }
 
 .input-box:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: #fff(255, 254, 254, 0.3);
 }
 
 .input-box input {
@@ -65,13 +65,13 @@ body {
     background: transparent;
     border: none;
     font-size: 16px;
-    color: white;
+    color: rgb(0, 0, 0);
     padding: 0 10px;
     outline: none;
 }
 
 .input-box input::placeholder {
-    color: black;
+    color: rgb(254, 254, 254);
 }
 
 .input-box svg {
@@ -81,7 +81,7 @@ body {
 }
 
 .input-box input:focus + svg {
-    color: #34e89e;
+    color: #9f500b;
 }
 
 .wrapper .remember-forgot {
@@ -92,7 +92,7 @@ body {
 }
 
 .remember-forgot label input {
-    accent-color: #34e89e;
+    accent-color: #9f500b;
     margin-right: 3px;
 }
 
@@ -103,7 +103,7 @@ body {
 }
 
 .remember-forgot a:hover {
-    color: #34e89e;
+    color: #9f500b;
     text-decoration: underline;
 }
 
@@ -141,7 +141,7 @@ body {
 }
 
 .register-link p a:hover {
-    color: #34e89e;
+    color: #9f500b;
     text-decoration: underline;
 }
 
