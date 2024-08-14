@@ -15,7 +15,7 @@
      
        
     <div class="wrapper">
-        <form action="" id="loginForm">
+        <form onclick="sendreq(); return false;" id="loginForm">
             <h1>Login</h1>
             <div class="input-box">
                 <input type="text" id="Username" placeholder="Username"
@@ -43,7 +43,41 @@
                     <p>If you are visiting for the first time</p><a type="button" data-toggle="modal" data-target="#myModalInst" class="text-link popuplink">Click Here</a>
                 </div> -->
         </form>
-        <script src="login.js"></script>
+        <script>
+            function sendreq() {
+  const username = document.getElementById("Username").value;
+  const password = document.getElementById("Password").value;
+
+  const packet = { username, password };
+  const jsonString = JSON.stringify(packet);
+
+  console.log(jsonString);
+  fetch('http://localhost:3000/login-packet', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: jsonString
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(responseData => {
+    console.log('Server response:', responseData);
+    if (responseData.redirectURL) {
+      window.top.location.href = responseData.redirectURL;
+    }
+  })
+  .catch(error => {
+    console.error('Error sending data:', error);
+  });
+}
+
+
+        </script>
     </div>
 </body>
 

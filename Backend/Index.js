@@ -54,6 +54,56 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/display', (req, res) => {
+  console.log("In /display");
+  const filePath = path.join(__dirname, '../Frontend/HTML/display.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+app.post('/login-packet', async (req, res) => {
+  const { username, password } = req.body;
+  console.log("Username: " + username);
+  console.log("Password: " + password);
+
+  if (!username || !password) {
+    console.log("Empty packet");
+    return res.status(400).json({ message: 'Username and password are required.' });
+  }
+
+  const connection = await pool.getConnection();
+
+  try {
+    const sql = 'SELECT username, password FROM user_master WHERE username = ?';
+    const [result] = await connection.execute(sql, [username]);
+    connection.release();
+
+    if (result.length === 0) {
+      console.log("No UserName");
+      return res.status(404).json({ message: 'No such username found.' });
+    }
+
+    const user = result[0];
+
+    if (user.password !== password) {
+      console.log("Wrong Pass");
+      return res.status(401).json({ message: 'Incorrect password.' });
+    }
+
+    console.log('Login successful, redirecting...');
+    res.status(200).json({ redirectURL: '/display' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Error checking username and password' });
+  }
+});
+
 app.post('/your-endpoint', async (req, res) => {
   const { fname, lname, email, mobileno, username, pass, usertype } = req.body;
 
@@ -69,9 +119,8 @@ app.post('/your-endpoint', async (req, res) => {
     const maxUserID = rows[0].maxUserID || 100;
     const newUserID = maxUserID + 1;
 
-
-    const sql = 'INSERT INTO user_master(userID,username,password,firstname,lastname,usertype,mobile,email,timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [newUserID,username, pass, fname, lname, usertype, mobileno, email, new Date()]);
+    const sql = 'INSERT INTO user_master(userID, username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await connection.execute(sql, [newUserID, username, pass, fname, lname, usertype, mobileno, email, new Date()]);
 
     console.log('Data inserted:', result);
     res.status(200).json({ message: 'Data received successfully', receivedData: req.body });
