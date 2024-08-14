@@ -36,7 +36,7 @@
                     <a type="button" href="" class="text-link popuplink">Get Username and Password</a></p>
                 </div><br>
                 <div>
-                    <p style="text-align: center; color: #ffffff;">If you are visiting for the first time, <a type="button" href="Signup.html" data-toggle="modal" data-target="#myModalInst" class="text-link popuplink">Click Here</a></p>
+                    <p style="text-align: center; color: #ffffff;">If you are visiting for the first time, <a onclick="signup()" data-toggle="modal" data-target="#myModalInst" class="text-link popuplink">Click Here</a></p>
                     <br>
                 </div>
                 <!-- <div>
@@ -44,6 +44,31 @@
                 </div> -->
         </form>
         <script>
+            
+            function signup() {
+    fetch('http://localhost:3000/Signup', {
+        method: 'GET',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text(); // You could process the HTML if needed
+    })
+    .then(data => {
+        // Optional: Do something with the data if needed
+        console.log('HTML content received');
+        
+        // Redirect to the /Signup URL
+        window.location.href = 'http://localhost:3000/Signup';
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+}
+
+
+
             function sendreq() {
   const username = document.getElementById("Username").value;
   const password = document.getElementById("Password").value;

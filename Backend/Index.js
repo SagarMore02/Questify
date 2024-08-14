@@ -67,6 +67,20 @@ app.get('/display', (req, res) => {
   });
 });
 
+
+app.get('/Signup', (req, res) => {
+  console.log("In /Signup");
+  const filePath = path.join(__dirname, '../Frontend/HTML/Signup.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
 app.post('/login-packet', async (req, res) => {
   const { username, password } = req.body;
   console.log("Username: " + username);
