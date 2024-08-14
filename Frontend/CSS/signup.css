@@ -11,7 +11,7 @@ body {
     align-items: center;
     min-height: 100vh;
     background: white;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .wrapper {
@@ -238,3 +238,11 @@ body {
 .flip-container.hover .flipper {
     transform: rotateY(180deg);
 }
+.phone-icon {
+    margin-right: 8px;
+  }
+
+  input[type="tel"] {
+    flex: 1;
+    padding: 8px;
+  }
