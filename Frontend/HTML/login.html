@@ -44,6 +44,37 @@
                 </div> -->
         </form>
         <script>
+            function sendreq() {
+  const username = document.getElementById("Username").value;
+  const password = document.getElementById("Password").value;
+
+  const packet = { username, password };
+  const jsonString = JSON.stringify(packet);
+
+  console.log(jsonString);
+  fetch('http://localhost:3000/login-packet', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: jsonString
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(responseData => {
+    console.log('Server response:', responseData);
+    if (responseData.redirectURL) {
+      window.top.location.href = responseData.redirectURL;
+    }
+  })
+  .catch(error => {
+    console.error('Error sending data:', error);
+  });
+}
 
 
         </script>
