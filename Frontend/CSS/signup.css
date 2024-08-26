@@ -1,248 +1,168 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap'); */
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Poppins',sans-serif;
 }
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: white;
-    overflow: auto;
+body{
+/* align-self: center; */
+height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 10px;
+/* background: linear-gradient(135deg, #98480b, #80391a); */
+background-color: rgb(255, 255, 255);
 }
-
-.wrapper {
-    width: 420px;
-    background: #472001;
-    color: white;
-    border-radius: 15px;
-    padding: 30px 40px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+.container{
+max-width: 700px;
+width: 100%;
+background-color: #fff;
+padding: 25px 30px;
+border-radius: 5px;
+box-shadow: 0 5px 10px rgba(0,0,0,0.15);
 }
-
-/* .wrapper:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.57);
-} */
-
-.wrapper h1 {
-    font-size: 36px;
-    text-align: center;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+.container .title{
+font-size: 25px;
+font-weight: 500;
+position: relative;
 }
-
-.wrapper .input-box {
-    position: relative;
-    width: 100%;
-    height: 50px;
-    background: #f2f0ee;
-    margin: 30px 0;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    transition: background 0.3s ease;
+.container .title::before{
+content: "";
+position: absolute;
+left: 0;
+bottom: 0;
+height: 3px;
+width: 30px;
+border-radius: 5px;
+/* background: linear-gradient(135deg, #71b7e6, #9b59b6); */
+background-color: rgba(83, 30, 3, 0.993);
 }
-
-.input-box:hover {
-    background: rgba(255, 255, 255, 0.2);
+.content form .user-details{
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+margin: 20px 0 12px 0;
 }
-
-.input-box input {
-    width: 80%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    color: white;
-    padding: 0 10px;
-    outline: none;
+form .user-details .input-box{
+margin-bottom: 15px;
+width: calc(100% / 2 - 20px);
 }
-
-.input-box input::placeholder {
-    color: solid black;
+form .input-box span.details{
+display: block;
+font-weight: 500;
+margin-bottom: 5px;
 }
-
-.input-box svg {
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.8);
-    transition: color 0.3s ease;
+.user-details .input-box input{
+height: 45px;
+width: 100%;
+outline: none;
+font-size: 16px;
+border-radius: 5px;
+padding-left: 15px;
+border: 1px solid #ccc;
+border-bottom-width: 2px;
+transition: all 0.3s ease;
 }
-
-.input-box input:focus + svg {
-    color: #bb6708;
+.user-details .input-box input:focus,
+.user-details .input-box input:valid{
+border-color: #5b1a03;
 }
-
-.wrapper .remember-forgot {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14.5px;
-    margin: -15px 0 15px;
+form .gender-details .gender-title{
+font-size: 20px;
+font-weight: 500;
 }
-
-.remember-forgot label input {
-    accent-color: #24b3c1;
-    margin-right: 3px;
+form .category{
+display: flex;
+width: 80%;
+margin: 14px 0 ;
+justify-content: space-between;
 }
-
-.remember-forgot a {
-    color: #fff;
-    text-decoration: none;
-    transition: color 0.3s ease;
+form .category label{
+display: flex;
+align-items: center;
+cursor: pointer;
 }
-
-.remember-forgot a:hover {
-    color: #9be3e2;
-    text-decoration: underline;
+form .category label .dot{
+height: 18px;
+width: 18px;
+border-radius: 50%;
+margin-right: 10px;
+background: #d9d9d9;
+border: 5px solid transparent;
+transition: all 0.3s ease;
 }
-
-.wrapper .btn {
-    width: 100%;
-    height: 45px;
-    background: linear-gradient(to right, #975806, #c0590b);
-    border: none;
-    outline: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+#dot-1:checked ~ .category label .one,
+#dot-2:checked ~ .category label .two,
+#dot-3:checked ~ .category label .three{
+background: #9b59b6;
+border-color: #d9d9d9;
 }
-
-.wrapper .btn:hover {
-    background: rgb(84, 49, 49) ;
-    /* background-color: soild black; */
-    /* box-shadow: 0 6px 20px gray; */
+form input[type="radio"]{
+display: none;
 }
-
-.wrapper .register-link {
+form .button{
+height: 45px;
+margin: 35px 0
+}
+form .button input{
+height: 100%;
+width: 100%;
+border-radius: 5px;
+border: none;
+color: #fff;
+font-size: 18px;
+font-weight: 500;
+letter-spacing: 1px;
+cursor: pointer;
+transition: all 0.3s ease;
+/* background: linear-gradient(135deg, #71b7e6, #9b59b6); */
+background-color: #5b1a03;
+}
+form .button input:hover{
+/* transform: scale(0.99); */
+/* background: linear-gradient(-135deg, #71b7e6, #9b59b6); */
+}
+.register-link {
     font-size: 14.5px;
     text-align: center;
     margin-top: 20px;
 }
 
 .register-link p a {
-    color: #fff;
+    color: #000000;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
 }
 
 .register-link p a:hover {
-    color: gray;
+    color: rgb(72, 22, 222);
     text-decoration: underline;
 }
-
-.logo {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 50px;
-    height: 50px;
+@media(max-width: 584px){
+.container{
+max-width: 100%;
 }
-
-.popup-container {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+form .user-details .input-box{
+margin-bottom: 15px;
+width: 100%;
 }
-
-.popup {
-    background-color: #fff;
-    width: 300px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    position: absolute;
-    top: 50%;
-    left: 50%; 
-    /* transform: translate(-50%, -50%);*/
-    /* animation: popupFadeIn 0.3s ease-out; */
- } 
-
-/* @keyframes popupFadeIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -60%);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-} */
-
-/* .close {
-    float: right;
-    cursor: pointer;
-    color: #333;
-    font-size: 18px;
-    transition: color 0.3s ease;
-} */
-
-/* .close:hover {
-    color: #e7eded;
-} */
-
-/* Flip container */
-.flip-container {
-    perspective: 1000px;
+form .category{
+width: 100%;
 }
-
-/* Flip effect */
-.flip-container, .flipper {
-    width: 100%;
-    height: 100%;
+.content form .user-details{
+max-height: 300px;
+overflow-y: scroll;
 }
-
-.flipper {
-    transition: 0.6s;
-    transform-style: preserve-3d;
-    position: relative;
+.user-details::-webkit-scrollbar{
+width: 5px;
 }
-
-.front, .back {
-    backface-visibility: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
 }
-
-.front {
-    z-index: 2;
-    transform: rotateY(0deg);
+@media(max-width: 459px){
+.container .content .category{
+flex-direction: column;
 }
-
-.back {
-    transform: rotateY(180deg);
 }
-
-/* Flip the card */
-.flip-container.hover .flipper {
-    transform: rotateY(180deg);
-}
-.phone-icon {
-    margin-right: 8px;
-  }
-
-  input[type="tel"] {
-    flex: 1;
-    padding: 8px;
-  }
+/* changes are done */
