@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const mysql = require('mysql2/promise');
+const helmet = require('helmet');
 const path = require('path');
 const app = express();
 const PORT = 3000;
@@ -21,11 +22,19 @@ app.use('/css', express.static(path.join(__dirname, '../Frontend/CSS')));
 app.use('/img', express.static(path.join(__dirname, '../Frontend/IMAGES')));
 
 // Serve static files from the 'Frontend/HTML' directory
-app.use('/', express.static(path.join(__dirname, '../Frontend/HTML')));
+
 //JavaScript
 app.use('/js', express.static(path.join(__dirname, '../Frontend/SCRIPT')));
 
-
+// CSP settings
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+      defaultSrc: ["'self'"],
+      fontSrc: ["'self'", "data:"],
+      scriptSrc: ["'self'", "https://code.jquery.com", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
+      styleSrc: ["'self'", "https://stackpath.bootstrapcdn.com", "'unsafe-inline'"]
+  }
+}));
 
 // Middleware
 app.use(express.json());
@@ -50,6 +59,7 @@ const pool = mysql.createPool({
 
 // Serve 'home.html' on root path
 app.get('/', (req, res) => {
+  console.log("serving home");
   const filePath = path.join(__dirname, '../Frontend/HTML/home.html');
   res.sendFile(filePath, (err) => {
     if (err) {
@@ -60,35 +70,7 @@ app.get('/', (req, res) => {
     }
   });
 });
-
-
-
-app.get('/display', (req, res) => {
-  console.log("In /display");
-  const filePath = path.join(__dirname, '../Frontend/HTML/display.html');
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error sending file:', err);
-      res.status(err.status || 500).send('Error sending file');
-    } else {
-      console.log('File sent:', filePath);
-    }
-  });
-});
-
-
-app.get('/Signup', (req, res) => {
-  console.log("In /Signup");
-  const filePath = path.join(__dirname, '../Frontend/HTML/Signup.html');
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error sending file:', err);
-      res.status(err.status || 500).send('Error sending file');
-    } else {
-      console.log('File sent:', filePath);
-    }
-  });
-});
+app.use('/', express.static(path.join(__dirname, '../Frontend/HTML')));
 
 app.post('/login-packet', async (req, res) => {
   const { username, password } = req.body;
@@ -166,6 +148,105 @@ app.post('/register', async (req, res) => {
   }
 });
 
+
+
+//Admin Apis
+app.get('/admin', (req, res) => {
+  const filePath = path.join(__dirname, '../Frontend/HTML/Index.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+
+
+// Serve data endpoints
+app.get('/applicant', async (req, res) => {
+  console.log("Okayyy");
+  try {
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Applicant"');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching users data:', err);
+      res.status(500).json({ error: 'Failed to fetch users data' });
+  }
+});
+
+app.get('/organizer', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organizer"');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching organizations data:', err);
+      res.status(500).json({ error: 'Failed to fetch organizations data' });
+  }
+});
+
+app.get('/organization', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organization"');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching organizations data:', err);
+      res.status(500).json({ error: 'Failed to fetch organizations data' });
+  }
+});
+
+app.get('/exams', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT examID AS id, name, app_start_date, app_end_date FROM Exam_Master');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching exams data:', err);
+      res.status(500).json({ error: 'Failed to fetch exams data' });
+  }
+});
+
+app.get('/applications', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT applicationID AS id, examID, adhaarcard, feesstatus FROM Application_Master');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching applications data:', err);
+      res.status(500).json({ error: 'Failed to fetch applications data' });
+  }
+});
+
+app.get('/questions', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT questionID AS id, examID, question, optionA, optionB, optionC, optionD FROM Question_Master');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching questions data:', err);
+      res.status(500).json({ error: 'Failed to fetch questions data' });
+  }
+});
+
+app.get('/attempts', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT attemptID AS id, examID, questionID, applicationID, selected_option, correct_option, marks_obt FROM Attempt_Master');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching attempts data:', err);
+      res.status(500).json({ error: 'Failed to fetch attempts data' });
+  }
+});
+
+app.get('/transactions', async (req, res) => {
+  try {
+      const [results] = await pool.query('SELECT trans_id AS id, exam_id, paidfees, upi_token FROM Transaction_Master');
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching transactions data:', err);
+      res.status(500).json({ error: 'Failed to fetch transactions data' });
+  }
+});
+//Admin Apis END
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

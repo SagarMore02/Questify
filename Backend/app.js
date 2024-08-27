@@ -9,7 +9,7 @@ const PORT = 3000;
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: '101201',
+    password: 'sagar@123',
     database: 'questify',
     waitForConnections: true,
     connectionLimit: 10,
@@ -39,10 +39,23 @@ app.use(helmet.contentSecurityPolicy({
 // Serve static files from the 'Frontend/HTML' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/admin', (req, res) => {
+    const filePath = path.join(__dirname, '../Frontend/HTML/Index.html');
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(err.status || 500).send('Error sending file');
+      } else {
+        console.log('File sent:', filePath);
+      }
+    });
+  });
+
 // Serve data endpoints
-app.get('/pranav', async (req, res) => {
+app.get('/applicant', async (req, res) => {
+    console.log("Okayyy");
     try {
-        const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype AS role FROM User_Master');
+        const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Applicant"');
         res.json(results);
     } catch (err) {
         console.error('Error fetching users data:', err);
@@ -50,9 +63,19 @@ app.get('/pranav', async (req, res) => {
     }
 });
 
-app.get('/organizations', async (req, res) => {
+app.get('/organizer', async (req, res) => {
     try {
-        const [results] = await pool.query('SELECT organizationID AS id, name, location FROM Organization');
+        const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organizer"');
+        res.json(results);
+    } catch (err) {
+        console.error('Error fetching organizations data:', err);
+        res.status(500).json({ error: 'Failed to fetch organizations data' });
+    }
+});
+
+app.get('/organization', async (req, res) => {
+    try {
+        const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organization"');
         res.json(results);
     } catch (err) {
         console.error('Error fetching organizations data:', err);
