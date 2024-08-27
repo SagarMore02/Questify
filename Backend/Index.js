@@ -17,8 +17,15 @@ class CustomError extends Error {
 // Serve static files from the 'Frontend/CSS' directory
 app.use('/css', express.static(path.join(__dirname, '../Frontend/CSS')));
 
+//For Images
+app.use('/img', express.static(path.join(__dirname, '../Frontend/IMAGES')));
+
 // Serve static files from the 'Frontend/HTML' directory
 app.use('/', express.static(path.join(__dirname, '../Frontend/HTML')));
+//JavaScript
+app.use('/js', express.static(path.join(__dirname, '../Frontend/SCRIPT')));
+
+
 
 // Middleware
 app.use(express.json());
@@ -39,7 +46,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
-});
+}); 
 
 // Serve 'home.html' on root path
 app.get('/', (req, res) => {
@@ -53,6 +60,8 @@ app.get('/', (req, res) => {
     }
   });
 });
+
+
 
 app.get('/display', (req, res) => {
   console.log("In /display");
@@ -118,33 +127,45 @@ app.post('/login-packet', async (req, res) => {
   }
 });
 
-app.post('/your-endpoint', async (req, res) => {
-  const { fname, lname, email, mobileno, username, pass, usertype } = req.body;
-
+app.post('/register', async (req, res) => {
+  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId } = req.body;
+  // Validate required fields
   if (!fname || !lname || !pass || !email || !usertype) {
     return res.status(400).send('All fields are required.');
   }
-
   let connection;
   try {
     connection = await pool.getConnection();
 
-    const [rows] = await connection.query('SELECT MAX(userID) as maxUserID FROM user_master');
-    const maxUserID = rows[0].maxUserID || 100;
-    const newUserID = maxUserID + 1;
+    // Check if the organization exists only if organId is provided and userType is 'Organizer'
+    if (organId !== "-1" && usertype === 'Organizer') {
+      const [orgRows] = await connection.query('SELECT * FROM Organization WHERE OrganizationID = ?', [organId]);
 
-    const sql = 'INSERT INTO user_master(userID, username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [newUserID, username, pass, fname, lname, usertype, mobileno, email, new Date()]);
+      if (orgRows.length === 0) {
+        return res.status(400).send('Organization not found.');
+      }
+    }
+    // Insert into user_master
+    const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await connection.execute(sql, [username, pass, fname, lname, usertype, mobileno, email, new Date()]);
+    const newUserID = result.insertId; // Get the ID of the newly inserted user
 
-    console.log('Data inserted:', result);
-    res.status(200).json({ message: 'Data received successfully', receivedData: req.body });
+    // Insert into organizer_organization only if organId is valid and userType is 'Organizer'
+    if (organId !== "-1" && usertype === 'Organizer') {
+      const insertOrgSql = 'INSERT INTO organizer_organization (organizerID, organizationID) VALUES (?, ?)';
+      await connection.execute(insertOrgSql, [newUserID, organId]);
+    }
+    // Respond with success
+    res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('Error storing data');
+    res.status(500).send('Error processing request.');
   } finally {
     if (connection) connection.release();
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
