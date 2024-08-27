@@ -4,14 +4,15 @@
 <head>
 <meta charset="UTF-8">
 <title> Sign up Page </title>
-<link rel="stylesheet" href="..//CSS/signup.css">
+<link rel="stylesheet" href="/css/signup.css">
+<script src="/js/Applicantsignup.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
     <body>
     <div class="container">
     <div class="title"> Organizer Registration</div>
     <div class="content">
-    <form action="#">
+    <form id="registrationForm" action="#">
     <div class="user-details">
 <div class="input-box">
     <span class="details">Organizer First Name</span>
@@ -19,12 +20,9 @@
 </div>
 <div class="input-box">
     <span class="details">Organizer Last Name</span>
-    <input type="text" placeholder="Enter Last Name" required>
+    <input id="lastname" type="text" placeholder="Enter Last Name" required>
 </div>
-<div class="input-box">
-    <span class="details"> Organization Name</span>
-    <input type="text" placeholder="Enter Last Name" required>
-</div>
+
 <div class="input-box">
     <span class="details">Email</span>
     <input type="email" placeholder="Enter your email" required>
@@ -45,12 +43,17 @@
 <span class="details">Confirm Password</span>
 <input type="password" placeholder="Confirm your password" required>
 </div>
+
+<div class="input-box">
+    <span class="details"> Organization Code</span>
+    <input type="text" placeholder="Enter Code" required>
+</div>
 </div>
 
 <div class="button">
-<input type="submit" value="Register">
+<input id="submit" type="submit" value="Organizer">
 <div class="register-link">
-    <p>Already have an account? <a href="..//HTML/login.html">Login</a></p>
+    <p>Already have an account? <a href="/login.html">Login</a></p>
 </div>
 </div>
 </form>
