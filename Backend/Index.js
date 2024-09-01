@@ -41,9 +41,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
-  secret: 'secret-key',
-  resave: false,
-  saveUninitialized: true
+  secret: 'yourSecretKey',       // Secret key for signing the session ID cookie
+  resave: false,                 // Prevent resaving session if not modified
+  saveUninitialized: true,       // Save uninitialized sessions
+  cookie: { 
+    secure: false,               // Use true if using HTTPS
+    maxAge: 60000                // Cookie expiration time
+  }
 }));
 
 // MySQL connection pool

@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS Question_Master(
     optionB VARCHAR(40) NOT NULL,
     optionC VARCHAR(40) NOT NULL,
     optionD VARCHAR(40) NOT NULL,
-    answer_key ENUM('optionA','optionB','optionC','optionD') NOT NULL,
+    answer_key ENUM('optionA','optionB','optionC','optionD','UnSelected') NOT NULL,
     question_marks INT NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (questionID, examID),
