@@ -214,16 +214,38 @@ app.get('/admin', (req, res) => {
 });
 
 
-
-// Serve data endpoints
 app.get('/applicant', async (req, res) => {
   console.log("Okayyy");
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status FROM User_Master where usertype="Applicant"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype ,status FROM User_Master where usertype="Applicant"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching users data:', err);
       res.status(500).json({ error: 'Failed to fetch users data' });
+  }
+});
+
+app.post('/status', async (req, res) => {
+  const { id, status } = req.body;
+  console.log("id : ",id ,"status :",status)
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    // Execute the update query
+    const [result] = await connection.query('UPDATE user_master SET status = ? WHERE userId = ?', [status, id]);
+    // Check if any row was affected
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found or no change in status' });
+    }
+    // Send success response
+    res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+  } catch (err) {
+    console.error('Error updating data:', err);
+    res.status(500).json({ error: 'Failed to update user status' });
+  } finally {
+    if (connection) {
+      connection.release(); // Ensure connection is released
+    }
   }
 });
 
@@ -247,19 +269,19 @@ app.get('/organization', async (req, res) => {
   }
 });
 
-app.get('/exams', async (req, res) => {
+app.get('/exam', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT examID AS id, name, app_start_date, app_end_date FROM Exam_Master');
+    console.log("Inside Exam...");
+      const [results] = await pool.query('SELECT examID , name, app_start_date, exam_start_time, exam_end_time, status FROM Exam_Master');
       res.json(results);
   } catch (err) {
       console.error('Error fetching exams data:', err);
       res.status(500).json({ error: 'Failed to fetch exams data' });
   }
 });
-
 app.get('/applications', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT applicationID AS id, examID, adhaarcard, feesstatus FROM Application_Master');
+      const [results] = await pool.query('SELECT applicationID , examID, adhaarcard, feesstatus FROM Application_Master');
       res.json(results);
   } catch (err) {
       console.error('Error fetching applications data:', err);
@@ -267,15 +289,8 @@ app.get('/applications', async (req, res) => {
   }
 });
 
-app.get('/questions', async (req, res) => {
-  try {
-      const [results] = await pool.query('SELECT questionID AS id, examID, question, optionA, optionB, optionC, optionD FROM Question_Master');
-      res.json(results);
-  } catch (err) {
-      console.error('Error fetching questions data:', err);
-      res.status(500).json({ error: 'Failed to fetch questions data' });
-  }
-});
+//Admin Apis END
+
 
 app.get('/profile', (req, res) => {
   if (req.session.username) {
@@ -300,26 +315,6 @@ app.get('/logout', (req, res) => {
 });
 
 
-app.get('/attempts', async (req, res) => {
-  try {
-      const [results] = await pool.query('SELECT attemptID AS id, examID, questionID, applicationID, selected_option, correct_option, marks_obt FROM Attempt_Master');
-      res.json(results);
-  } catch (err) {
-      console.error('Error fetching attempts data:', err);
-      res.status(500).json({ error: 'Failed to fetch attempts data' });
-  }
-});
-
-app.get('/transactions', async (req, res) => {
-  try {
-      const [results] = await pool.query('SELECT trans_id AS id, exam_id, paidfees, upi_token FROM Transaction_Master');
-      res.json(results);
-  } catch (err) {
-      console.error('Error fetching transactions data:', err);
-      res.status(500).json({ error: 'Failed to fetch transactions data' });
-  }
-});
-//Admin Apis END
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

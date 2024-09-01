@@ -51,10 +51,7 @@
         <a href="#exams" data-target="exams-section">Exams</a>
         <a href="#applications" data-target="applications-section">Applications</a>
         <a href="#questions" data-target="questions-section">Questions</a>
-        <a href="#attempts" data-target="attempts-section">Attempts</a>
         <a href="#transactions" data-target="transactions-section">Transactions</a>
-        <a href="#settings">Settings</a>
-        <a href="#reports">Reports</a>
         <a href="#logout">Logout</a>
     </div>
 
@@ -75,6 +72,7 @@
                             <th>Email</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,8 +126,10 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -148,6 +148,7 @@
                             <th>Exam ID</th>
                             <th>Aadhaar Card</th>
                             <th>Fees Status</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -169,6 +170,7 @@
                             <th>Option B</th>
                             <th>Option C</th>
                             <th>Option D</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -177,26 +179,6 @@
                 </table>
             </div>
             
-            <!-- Attempts Table -->
-            <div id="attempts-section" class="section">
-                <h2>Attempts</h2>
-                <table class="table table-striped" id="attempts-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Exam ID</th>
-                            <th>Question ID</th>
-                            <th>Application ID</th>
-                            <th>Selected Option</th>
-                            <th>Correct Option</th>
-                            <th>Marks Obtained</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data will be populated here -->
-                    </tbody>
-                </table>
-            </div>
             
             <!-- Transactions Table -->
             <div id="transactions-section" class="section">
@@ -208,6 +190,7 @@
                             <th>Exam ID</th>
                             <th>Paid Fees</th>
                             <th>UPI Token</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -253,28 +236,147 @@
             // Function to fetch and populate data
             function fetchData(endpoint, tableId) {
                 fetch(endpoint)
-                    .then(response => response.json())
-                    .then(data => {
-                        const tableBody = document.querySelector(`#${tableId} tbody`);
-                        if (tableBody) {
-                            tableBody.innerHTML = ''; // Clear any existing rows
-                            data.forEach(item => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = Object.values(item).map(value => `<td>${value}</td>`).join('');
-                                tableBody.appendChild(row);
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the entire data to check the API response
+
+                    const tableBody = document.querySelector(`#${tableId} tbody`);
+                    if (tableBody) {
+                        tableBody.innerHTML = ''; // Clear any existing rows
+
+                        data.forEach(item => {
+                            console.log(`Processing item ID: ${item.id}, Status: ${item.status}`); // Log each item's status
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.id || ''}</td>
+                                <td>${item.name || ''}</td>
+                                <td>${item.email || ''}</td>
+                                <td>${item.usertype || ''}</td>
+                                <td>
+                                    <select class="form-control status-select" data-id="${item.id}">
+                                    <!-- Hidden default option -->
+                                    <option value="" ${!item.status ? 'selected' : ''} hidden>${item.status}</option>
+                                    <option value="Active" ${item.status === 'Active' ? 'selected' : ''}>Active</option>
+                                    <option value="Inactive" ${item.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                </select>
+
+                                </td>
+                                <td><button class="btn btn-primary update-status-btn" data-id="${item.id}">Update Status</button></td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Attach click event listeners to buttons
+                        document.querySelectorAll('.update-status-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const id = this.getAttribute('data-id');
+                                const select = document.querySelector(`.status-select[data-id="${id}"]`);
+                                const status = select ? select.value : '';
+                        
+                                console.log('Selected ID:', id);
+                                console.log('Selected Status:', status);
+                        
+                                if (status) {
+                                    updateStatus(id, status);
+                                } else {
+                                    console.error('Status is undefined or empty');
+                                }
                             });
-                        } else {
-                            console.error(`Table with id ${tableId} not found.`);
-                        }
-                    })
-                    .catch(error => console.error('Error fetching data:', error));
+                        });
+                    } else {
+                        console.error(`Table body with id ${tableId} not found.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
             }
 
-            // Fetch and populate data for each table
+            // Function to fetch and populate data specifically for the exams table
+            function fetchData1(endpoint, tableId) {
+                fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the entire data to check the API response
+
+                    const tableBody = document.querySelector(`#${tableId} tbody`);
+                    if (tableBody) {
+                        tableBody.innerHTML = ''; // Clear any existing rows
+
+                        data.forEach(item => {
+                            console.log(`Processing item ID: ${item.examID}, Status: ${item.status}`); // Log each item's status
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.examID || ''}</td>
+                                <td>${item.name || ''}</td>
+                                <td>${item.app_start_date || ''}</td>
+                                <td>${item.exam_start_time || ''}</td>
+                                <td>${item.exam_end_time || ''}</td>
+                                <td>${item.status || ''}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Attach click event listeners to buttons
+                        document.querySelectorAll('.update-status-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const id = this.getAttribute('data-id');
+                                const select = document.querySelector(`.status-select[data-id="${id}"]`);
+                                const status = select ? select.value : '';
+
+                                console.log('Selected ID:', id);
+                                console.log('Selected Status:', status);
+
+                                if (status) {
+                                    updateStatus(id, status);
+                                } else {
+                                    console.error('Status is undefined or empty');
+                                }
+                            });
+                        });
+                    } else {
+                        console.error(`Table body with id ${tableId} not found.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+            }
+
+            // Function to post data to the /status API
+            function updateStatus(id, status) {
+                fetch('/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, status })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response from server:', data); // Debug: log server response
+
+                    // Reload the data after updating the status to reflect the most recent status
+                    fetchData('/applicant', 'applicant-table');
+                    fetchData('/organizer', 'organizer-table');
+                    fetchData('/organization', 'organizations-table');
+                    fetchData1('/exam', 'exams-table');
+                    fetchData('/application', 'applications-table');
+                    fetchData('/question', 'questions-table');
+                    fetchData('/attempt', 'attempts-table');
+                    fetchData('/transaction', 'transactions-table');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating status.');
+                });
+            }
+
+            // Initial fetch of data for all tables
             fetchData('/applicant', 'applicant-table');
             fetchData('/organizer', 'organizer-table');
             fetchData('/organization', 'organizations-table');
-            fetchData('/exam', 'exams-table');
+            fetchData1('/exam', 'exams-table');
             fetchData('/application', 'applications-table');
             fetchData('/question', 'questions-table');
             fetchData('/attempt', 'attempts-table');
@@ -282,5 +384,4 @@
         });
     </script>
 </body>
-
 </html>
