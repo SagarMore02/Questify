@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+   //yoy
+   
+   //yoy
     const form = document.getElementById('loginForm');
     if (!form) {
         console.error('Form element not found.');
@@ -30,8 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Login successful!');
+                //alert('Login successful!');
                 // Redirect or clear the form as needed
+                window.top.location.href = data.redirectURL;
             } else {
                 alert('Login failed: ' + data.message);
             }

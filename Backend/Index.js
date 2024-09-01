@@ -15,6 +15,15 @@ class CustomError extends Error {
   }
 }
 
+//To not allow use of cache
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  res.setHeader('Cache-Control', 'post-check=0, pre-check=0');
+  res.setHeader('Pragma', 'no-cache');
+  next();
+});
+
+
 // Serve static files from the 'Frontend/CSS' directory
 app.use('/css', express.static(path.join(__dirname, '../Frontend/CSS')));
 
@@ -41,16 +50,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
-  secret: 'secret-key',
-  resave: false,
-  saveUninitialized: true
+  secret: 'yourSecretKey',       // Secret key for signing the session ID cookie
+  resave: false,                 // Prevent resaving session if not modified
+  saveUninitialized: true,       // Save uninitialized sessions
+  cookie: { 
+    secure: false,               // Use true if using HTTPS
+    maxAge: 60000                // Cookie expiration time
+  }
 }));
 
 // MySQL connection pool
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '101201',
+  password: 'sagar@123',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -89,6 +102,8 @@ app.post('/login-packet', async (req, res) => {
   console.log("Username: " + username);
   console.log("Password: " + password);
 
+
+
   if (!username || !password) {
     console.log("Empty packet");
     return res.status(400).json({ message: 'Username and password are required.' });
@@ -97,7 +112,7 @@ app.post('/login-packet', async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const sql = 'SELECT username, password FROM user_master WHERE username = ?';
+    const sql = 'SELECT username, password,usertype FROM user_master WHERE username = ?';
     const [result] = await connection.execute(sql, [username]);
     connection.release();
 
@@ -112,14 +127,37 @@ app.post('/login-packet', async (req, res) => {
       console.log("Wrong Pass");
       return res.status(401).json({ message: 'Incorrect password.' });
     }
+    req.session.username=username;
 
-    console.log('Login successful, redirecting...');
-    res.status(200).json({ redirectURL: '/display' });
+    switch(user.usertype){
+      case 'Applicant':
+        console.log('Login successful, redirecting...');
+        res.status(200).json({ redirectURL: '/organ' });
+                        break;
+      case 'Organizer':
+                        break;
+      case 'Organization':
+                        break;
+    }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Error checking username and password' });
   }
 });
+//get organizer dashboard
+app.get('/organ', (req, res) => {
+  console.log("serving home");
+  const filePath = path.join(__dirname, '../Frontend/HTML/OrganizerDash.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
 
 app.post('/register', async (req, res) => {
   const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId } = req.body;
@@ -150,7 +188,7 @@ app.post('/register', async (req, res) => {
       await connection.execute(insertOrgSql, [newUserID, organId]);
     }
     // Respond with success
-    res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+    res.status(200).json({ message: 'Registration successful!', redirectURL:"/",receivedData: req.body });
 
   } catch (error) {
     console.error('Error:', error);
@@ -176,12 +214,10 @@ app.get('/admin', (req, res) => {
 });
 
 
-
-// Serve data endpoints
 app.get('/applicant', async (req, res) => {
   console.log("Okayyy");
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Applicant"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype ,status FROM User_Master where usertype="Applicant"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching users data:', err);
@@ -189,9 +225,33 @@ app.get('/applicant', async (req, res) => {
   }
 });
 
+app.post('/status', async (req, res) => {
+  const { id, status } = req.body;
+  console.log("id : ",id ,"status :",status)
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    // Execute the update query
+    const [result] = await connection.query('UPDATE user_master SET status = ? WHERE userId = ?', [status, id]);
+    // Check if any row was affected
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found or no change in status' });
+    }
+    // Send success response
+    res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+  } catch (err) {
+    console.error('Error updating data:', err);
+    res.status(500).json({ error: 'Failed to update user status' });
+  } finally {
+    if (connection) {
+      connection.release(); // Ensure connection is released
+    }
+  }
+});
+
 app.get('/organizer', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organizer"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status FROM User_Master where usertype="Organizer"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching organizations data:', err);
@@ -201,7 +261,7 @@ app.get('/organizer', async (req, res) => {
 
 app.get('/organization', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organization"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status FROM User_Master where usertype="Organization"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching organizations data:', err);
@@ -209,19 +269,19 @@ app.get('/organization', async (req, res) => {
   }
 });
 
-app.get('/exams', async (req, res) => {
+app.get('/exam', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT examID AS id, name, app_start_date, app_end_date FROM Exam_Master');
+    console.log("Inside Exam...");
+      const [results] = await pool.query('SELECT examID , name, app_start_date, exam_start_time, exam_end_time, status FROM Exam_Master');
       res.json(results);
   } catch (err) {
       console.error('Error fetching exams data:', err);
       res.status(500).json({ error: 'Failed to fetch exams data' });
   }
 });
-
 app.get('/applications', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT applicationID AS id, examID, adhaarcard, feesstatus FROM Application_Master');
+      const [results] = await pool.query('SELECT applicationID , examID, adhaarcard, feesstatus FROM Application_Master');
       res.json(results);
   } catch (err) {
       console.error('Error fetching applications data:', err);
@@ -229,36 +289,32 @@ app.get('/applications', async (req, res) => {
   }
 });
 
-app.get('/questions', async (req, res) => {
-  try {
-      const [results] = await pool.query('SELECT questionID AS id, examID, question, optionA, optionB, optionC, optionD FROM Question_Master');
-      res.json(results);
-  } catch (err) {
-      console.error('Error fetching questions data:', err);
-      res.status(500).json({ error: 'Failed to fetch questions data' });
-  }
-});
-
-app.get('/attempts', async (req, res) => {
-  try {
-      const [results] = await pool.query('SELECT attemptID AS id, examID, questionID, applicationID, selected_option, correct_option, marks_obt FROM Attempt_Master');
-      res.json(results);
-  } catch (err) {
-      console.error('Error fetching attempts data:', err);
-      res.status(500).json({ error: 'Failed to fetch attempts data' });
-  }
-});
-
-app.get('/transactions', async (req, res) => {
-  try {
-      const [results] = await pool.query('SELECT trans_id AS id, exam_id, paidfees, upi_token FROM Transaction_Master');
-      res.json(results);
-  } catch (err) {
-      console.error('Error fetching transactions data:', err);
-      res.status(500).json({ error: 'Failed to fetch transactions data' });
-  }
-});
 //Admin Apis END
+
+
+app.get('/profile', (req, res) => {
+  if (req.session.username) {
+    // Assuming username is stored in session
+    res.json({ username: req.session.username });
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+});
+
+app.get('/logout', (req, res) => {
+  console.log("Logging Out");
+  // Destroy the session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Error logging out');
+    }
+    // Redirect to login page or home page
+    res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
+  });
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

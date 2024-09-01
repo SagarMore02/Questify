@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 alert('Registration successful!');
                 // Redirect or clear the form as needed
+                window.location.href = data.redirectURL;
             } else {
                 alert('Registration failed: ' + data.message);
             }
