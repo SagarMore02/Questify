@@ -15,6 +15,15 @@ class CustomError extends Error {
   }
 }
 
+//To not allow use of cache
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  res.setHeader('Cache-Control', 'post-check=0, pre-check=0');
+  res.setHeader('Pragma', 'no-cache');
+  next();
+});
+
+
 // Serve static files from the 'Frontend/CSS' directory
 app.use('/css', express.static(path.join(__dirname, '../Frontend/CSS')));
 
@@ -54,7 +63,7 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '101201',
+  password: 'sagar@123',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -93,6 +102,8 @@ app.post('/login-packet', async (req, res) => {
   console.log("Username: " + username);
   console.log("Password: " + password);
 
+
+
   if (!username || !password) {
     console.log("Empty packet");
     return res.status(400).json({ message: 'Username and password are required.' });
@@ -101,7 +112,7 @@ app.post('/login-packet', async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const sql = 'SELECT username, password FROM user_master WHERE username = ?';
+    const sql = 'SELECT username, password,usertype FROM user_master WHERE username = ?';
     const [result] = await connection.execute(sql, [username]);
     connection.release();
 
@@ -116,14 +127,37 @@ app.post('/login-packet', async (req, res) => {
       console.log("Wrong Pass");
       return res.status(401).json({ message: 'Incorrect password.' });
     }
+    req.session.username=username;
 
-    console.log('Login successful, redirecting...');
-    res.status(200).json({ redirectURL: '/display' });
+    switch(user.usertype){
+      case 'Applicant':
+        console.log('Login successful, redirecting...');
+        res.status(200).json({ redirectURL: '/organ' });
+                        break;
+      case 'Organizer':
+                        break;
+      case 'Organization':
+                        break;
+    }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Error checking username and password' });
   }
 });
+//get organizer dashboard
+app.get('/organ', (req, res) => {
+  console.log("serving home");
+  const filePath = path.join(__dirname, '../Frontend/HTML/OrganizerDash.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
 
 app.post('/register', async (req, res) => {
   const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId } = req.body;
@@ -154,7 +188,7 @@ app.post('/register', async (req, res) => {
       await connection.execute(insertOrgSql, [newUserID, organId]);
     }
     // Respond with success
-    res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+    res.status(200).json({ message: 'Registration successful!', redirectURL:"/",receivedData: req.body });
 
   } catch (error) {
     console.error('Error:', error);
@@ -185,7 +219,7 @@ app.get('/admin', (req, res) => {
 app.get('/applicant', async (req, res) => {
   console.log("Okayyy");
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Applicant"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status FROM User_Master where usertype="Applicant"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching users data:', err);
@@ -195,7 +229,7 @@ app.get('/applicant', async (req, res) => {
 
 app.get('/organizer', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organizer"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status FROM User_Master where usertype="Organizer"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching organizations data:', err);
@@ -205,7 +239,7 @@ app.get('/organizer', async (req, res) => {
 
 app.get('/organization', async (req, res) => {
   try {
-      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status AS role FROM User_Master where usertype="Organization"');
+      const [results] = await pool.query('SELECT userID AS id, username AS name, email, usertype,status FROM User_Master where usertype="Organization"');
       res.json(results);
   } catch (err) {
       console.error('Error fetching organizations data:', err);
@@ -242,6 +276,29 @@ app.get('/questions', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch questions data' });
   }
 });
+
+app.get('/profile', (req, res) => {
+  if (req.session.username) {
+    // Assuming username is stored in session
+    res.json({ username: req.session.username });
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+});
+
+app.get('/logout', (req, res) => {
+  console.log("Logging Out");
+  // Destroy the session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Error logging out');
+    }
+    // Redirect to login page or home page
+    res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
+  });
+});
+
 
 app.get('/attempts', async (req, res) => {
   try {
