@@ -70,6 +70,18 @@ app.get('/', (req, res) => {
     }
   });
 });
+app.get('/t', (req, res) => {
+  console.log("serving home");
+  const filePath = path.join(__dirname, '../Frontend/HTML/home2.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
 app.use('/', express.static(path.join(__dirname, '../Frontend/HTML')));
 
 app.post('/login-packet', async (req, res) => {
