@@ -9,7 +9,7 @@ const PORT = 3000;
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: 'sagar@123',
+    password: '101201',
     database: 'questify',
     waitForConnections: true,
     connectionLimit: 10,
