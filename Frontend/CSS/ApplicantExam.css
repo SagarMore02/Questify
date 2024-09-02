@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    text-align: center;
+    color: #333;
+}
+
+.note {
+    font-weight: bold;
+    color: red;
+}
+
+.info {
+    list-style: none; /* Remove bullet points */
+    padding: 0;
+    color: #555;
+}
+
+.warning {
+    color: #d9534f;
+    font-weight: bold;
+}
+
+.exam-session-wrapper {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.exam-session-dropdown {
+    margin-left: 10px; /* Space between text and dropdown */
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.session {
+    font-weight: bold;
+    color: #333;
+    margin: 0; /* Reset margin for alignment */
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.exam-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.exam-table th, .exam-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.exam-table th {
+    background-color: #007BFF;
+    color: white;
+}
+
+.exam-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.exam-table tbody tr:hover {
+    background-color: #e0e0e0; /* Change background on hover */
+}

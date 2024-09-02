@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/css/ApplicantDash.css">
+    <script>
+        function screenChange(content) {
+            parent.frames['right'].location.href = content;
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="/img/Logo-Des.png" alt="College Logo" class="logo">
+            <h4>Hello, Name</h4>
+            <p>Name:</p>
+            <p>Roll No:</p>
+            <p>Section:</p>
+        </div>
+        <hr style="border: 1px solid grey;">
+        <nav>
+            <ul>
+                <li><a href="#" onclick="screenChange('/ApplicantDash.html')">Dashboard</a></li>
+                <li><a href="#" onclick="screenChange('/ApplicantInfo.html')">Profile</a></li>
+                <li><a href="#" onclick="screenChange('/ApplicantExam.html')">Apply For Exam</a></li>
+                <li><a href="#" onclick="screenChange()">Pay Fees</a></li>
+                <li><a href="#" onclick="screenChange()">Result</a></li>
+                <li><a href="#" onclick="screenChange()">Upcoming Exam</a></li>
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>
