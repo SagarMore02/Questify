@@ -22,27 +22,48 @@
             <tbody>
                 <tr>
                     <td>First Name</td>
-                    <td><input type="text"></td>
+                    <td><p id="firstname"></p></td>
                 </tr>
                 <tr>
                     <td>Last Name</td>
-                    <td><input id="lastname" type="text"></td>
+                    <td><p id="lastname"></p></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type="email"></td>
+                    <td><p id="email"></p></td>
                 </tr>
                 <tr>
                     <td>Phone Number</td>
-                    <td><input type="tel"></td>
+                    <td><p id="phone"></p></td>
                 </tr>
                 <tr>
                     <td>Username</td>
-                    <td><input type="text"></td>
+                    <td><p id="username"></p></td>
                 </tr>
             </tbody>
         </table>
     </div>
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            //start
+            fetch('/profile')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.username) {
+                        console.log(data.username);
+                        document.getElementById('username').textContent = data.username || "pranav";
+                        document.getElementById('firstname').textContent = data.firstname;
+                        document.getElementById('lastname').textContent = data.lastname;
+                        document.getElementById('email').textContent = data.email;
+                        document.getElementById('phone').textContent = data.mobile;
+                    } else {
+                        console.error('Failed to fetch username');
+                    }
+                })
+                .catch(error => console.error('Error fetching profile:', error));
+            //end
 
+        });
+    </script>
+</body>
 </html>
