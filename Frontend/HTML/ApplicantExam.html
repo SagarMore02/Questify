@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/ApplicantExam.css">
+    <title>Exam Registration</title>
+</head>
+<script>
+    // Function to fetch exam data from the Node.js backend
+    async function fetchExamData() {
+        try {
+            const response = await fetch('/examForm', {
+                method: 'GET',
+                credentials: 'include' // Include credentials (cookies) for session management
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) { // Unauthorized
+                    alert('You are not logged in. Please log in to view exams.');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+                return;
+            }
+
+            const exams = await response.json();
+            populateTable(exams);
+        } catch (error) {
+            console.error('Fetching exam data failed:', error);
+            alert('An error occurred while fetching exam data.');
+        }
+    }
+
+    // Function to populate the table with fetched data
+    function populateTable(exams) {
+        const tableBody = document.getElementById('examTable').querySelector('tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        exams.forEach(exam => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${exam.name}</td>
+                <td>${exam.date}</td>
+                <td>${exam.time}</td>
+                <td>${exam.duration}</td>
+                <td><button class="apply-button" data-exam="${exam.name}">Apply</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Fetch data initially when the page loads
+    document.addEventListener('DOMContentLoaded', fetchExamData);
+</script>
+
+<body>
+    <div class="container">
+        <h1 class="title">Exam Registration</h1>
+        <p class="note">Note:</p>
+        <ul class="info">
+            <li>You can apply for other subjects of the same course. Once you apply any subject of the same course.</li>
+            <li>You can apply all the subjects in course after that.</li>
+            <li>Blocking students from enrollment form will be generated after <strong>2</strong> attempts of successful payment.</li>
+        </ul>
+        <p class="warning">If there are any discrepancies related to subjects, they must contact the admission staff in office.</p>
+
+        <table class="exam-table">
+            <thead>
+                <tr>
+                    <th>Exam id</th>
+                    <th>Exam Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>PassingMarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+    </div>
+</body>
+</html>
