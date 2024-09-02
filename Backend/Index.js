@@ -63,7 +63,7 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'sagar@123',
+  password: 'root',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -112,7 +112,7 @@ app.post('/login-packet', async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const sql = 'SELECT username, password,usertype FROM user_master WHERE username = ?';
+    const sql = 'SELECT username,firstname,lastname,mobile,email,password,usertype FROM user_master WHERE username = ?';
     const [result] = await connection.execute(sql, [username]);
     connection.release();
 
@@ -127,27 +127,51 @@ app.post('/login-packet', async (req, res) => {
       console.log("Wrong Pass");
       return res.status(401).json({ message: 'Incorrect password.' });
     }
-    req.session.username=username;
+    req.session.username=result[0].username;
+    req.session.firstname=result[0].firstname;
+    req.session.lastname=result[0].lastname;
+    req.session.mobile=result[0].mobile;
+    req.session.email=result[0].email;
 
     switch(user.usertype){
       case 'Applicant':
         console.log('Login successful, redirecting...');
-        res.status(200).json({ redirectURL: '/organ' });
+        res.status(200).json({ redirectURL: '/applicantDash' });
                         break;
       case 'Organizer':
+        console.log('Login successful, redirecting...');
+        res.status(200).json({ redirectURL: '/organ' });
                         break;
       case 'Organization':
+        console.log('Login successful, redirecting...');
+        res.status(200).json({ redirectURL: '/organ' });
                         break;
     }
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ message: 'Error checking username and password' });
+    res.status(500).json({ message: 'Error checking result[0] and password' });
   }
 });
+
+
 //get organizer dashboard
 app.get('/organ', (req, res) => {
   console.log("serving home");
   const filePath = path.join(__dirname, '../Frontend/HTML/OrganizerDash.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+//get Applicant dashboard
+app.get('/applicantDash', (req, res) => {
+  console.log("serving applicant dash");
+  const filePath = path.join(__dirname, '../Frontend/HTML/ApplicantMain.html');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error sending file:', err);
@@ -279,6 +303,7 @@ app.get('/exam', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch exams data' });
   }
 });
+
 app.get('/applications', async (req, res) => {
   try {
       const [results] = await pool.query('SELECT applicationID , examID, adhaarcard, feesstatus FROM Application_Master');
@@ -295,7 +320,7 @@ app.get('/applications', async (req, res) => {
 app.get('/profile', (req, res) => {
   if (req.session.username) {
     // Assuming username is stored in session
-    res.json({ username: req.session.username });
+    res.json({ username: req.session.username,firstname:req.session.firstname,lastname:req.session.lastname,mobile:req.session.mobile,email:req.session.email});
   } else {
     res.status(401).json({ message: 'Not authenticated' });
   }
