@@ -63,7 +63,7 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: '101201',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -184,35 +184,52 @@ app.get('/applicantDash', (req, res) => {
 
 
 app.post('/register', async (req, res) => {
-  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId } = req.body;
+  console.log("Register Hit");
+  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId, location } = req.body;
+  
   // Validate required fields
   if (!fname || !lname || !pass || !email || !usertype) {
     return res.status(400).send('All fields are required.');
   }
+  
+  // Ensure passwords match
+  if (pass !== confirmPassword) {
+    return res.status(400).send('Passwords do not match.');
+  }
+
+  console.log("Inside register", organId);
   let connection;
   try {
     connection = await pool.getConnection();
-
+    
     // Check if the organization exists only if organId is provided and userType is 'Organizer'
     if (organId !== "-1" && usertype === 'Organizer') {
-      const [orgRows] = await connection.query('SELECT * FROM Organization WHERE OrganizationID = ?', [organId]);
+      const [orgRows] = await connection.query('SELECT * FROM organization WHERE organizationID = ?', [organId]);
 
       if (orgRows.length === 0) {
         return res.status(400).send('Organization not found.');
       }
     }
+
     // Insert into user_master
     const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     const [result] = await connection.execute(sql, [username, pass, fname, lname, usertype, mobileno, email, new Date()]);
     const newUserID = result.insertId; // Get the ID of the newly inserted user
+    
+    // Insert into Organization if usertype is 'Organization'
+    if (usertype === 'Organization') {
+      const orgSql = 'INSERT INTO Organization(organizationID, name, location) VALUES (?, ?, ?)';
+      await connection.execute(orgSql, [newUserID, fname, location]);
+    }
 
     // Insert into organizer_organization only if organId is valid and userType is 'Organizer'
     if (organId !== "-1" && usertype === 'Organizer') {
       const insertOrgSql = 'INSERT INTO organizer_organization (organizerID, organizationID) VALUES (?, ?)';
       await connection.execute(insertOrgSql, [newUserID, organId]);
     }
+
     // Respond with success
-    res.status(200).json({ message: 'Registration successful!', redirectURL:"/",receivedData: req.body });
+    res.status(200).json({ message: 'Registration successful!', redirectURL: "/", receivedData: req.body });
 
   } catch (error) {
     console.error('Error:', error);
@@ -221,6 +238,7 @@ app.post('/register', async (req, res) => {
     if (connection) connection.release();
   }
 });
+
 
 
 
@@ -248,7 +266,7 @@ app.get('/applicant', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch users data' });
   }
 });
-
+//safcihbwsaliuvbanziujfeiawe;gvnwioejfnaiuw;ejfvawio;egsvaowpesdjfaw;opackoefegvmeroboeb
 app.post('/status', async (req, res) => {
   const { id, status } = req.body;
   console.log("id : ",id ,"status :",status)
@@ -257,6 +275,11 @@ app.post('/status', async (req, res) => {
     connection = await pool.getConnection();
     // Execute the update query
     const [result] = await connection.query('UPDATE user_master SET status = ? WHERE userId = ?', [status, id]);
+    const [newresult] = await connection.query('select usertype from user_master where userId=?',[id]);
+    if(newresult.usertype==='Organization' && status==="Active"){
+    
+    }
+ 
     // Check if any row was affected
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'User not found or no change in status' });
