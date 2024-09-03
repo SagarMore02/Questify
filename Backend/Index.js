@@ -63,7 +63,7 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '101201',
+  password: 'sagar@123',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -112,7 +112,7 @@ app.post('/login-packet', async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const sql = 'SELECT username,firstname,lastname,mobile,email,password,usertype FROM user_master WHERE username = ?';
+    const sql = 'SELECT username,firstname,lastname,mobile,email,password,usertype,status FROM user_master WHERE username = ?';
     const [result] = await connection.execute(sql, [username]);
     connection.release();
 
@@ -126,6 +126,10 @@ app.post('/login-packet', async (req, res) => {
     if (user.password !== password) {
       console.log("Wrong Pass");
       return res.status(401).json({ message: 'Incorrect password.' });
+    }
+    if(user.status!=="Active"){
+      console.log("User Not Active");
+      return res.status(401).json({ message: 'Inactive User.' });
     }
     req.session.username=result[0].username;
     req.session.firstname=result[0].firstname;
@@ -204,10 +208,12 @@ app.post('/register', async (req, res) => {
     
     // Check if the organization exists only if organId is provided and userType is 'Organizer'
     if (organId !== "-1" && usertype === 'Organizer') {
-      const [orgRows] = await connection.query('SELECT * FROM organization WHERE organizationID = ?', [organId]);
+      const [orgRows] = await connection.query('SELECT * FROM user_master WHERE userID = ?', [organId]);
 
       if (orgRows.length === 0) {
-        return res.status(400).send('Organization not found.');
+        return res.status(500).json({ message: 'Organization not found.\nLength is :'+orgRows.length });
+      }else if(orgRows[0].status!=="Active"){
+        return res.status(500).json({ message: 'Organization not Active.' });
       }
     }
 
