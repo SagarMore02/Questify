@@ -22,8 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const userType = submitButton.value; // Get the value of the submit button
         
         let organId = "-1"; // Use `let` to allow reassignment
+        let location="Pune"
         if (userType === "Organizer") {
         organId = document.querySelector('input[placeholder="Enter Code"]').value;
+        }
+        if(userType==="Organization"){
+            location=document.querySelector('input[placeholder="Enter Location"]').value;
         }
 
         // Validate passwords match
@@ -41,11 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileno: phoneNumber,
             username: username,
             pass: password,
+            confirmPassword: confirmPassword,
             usertype: userType,
-            organId:organId
+            organId: organId,
+            location: location
         };
 
         try {
+            console.log("Trryingg");
             const response = await fetch('/register', {
                 method: 'POST',
                 headers: {
@@ -59,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 alert('Registration successful!');
                 // Redirect or clear the form as needed
-                window.location.href = data.redirectURL;
+                window.top.location.href = data.redirectURL;
             } else {
                 alert('Registration failed: ' + data.message);
             }
