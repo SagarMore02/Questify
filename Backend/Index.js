@@ -225,10 +225,20 @@ app.post('/register', async (req, res) => {
         return res.status(500).json({ message: 'Organization not Active.' });
       }
     }
+    //Check for Unique names:
+    const sql1 = 'SELECT username,firstname,lastname,mobile,email,password,usertype,status FROM user_master WHERE username = ?';
+    const [result1] = await connection.execute(sql1, [username.toLowerCase()]);
+    connection.release();
+
+    if (result1.length !== 0) {
+      console.log("Duplicate Name");
+      return res.status(404).json({ message: 'Duplicate Name' });
+    }
+
 
     // Insert into user_master
     const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [username, hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
+    const [result] = await connection.execute(sql, [username.toLowerCase(), hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
     const newUserID = result.insertId; // Get the ID of the newly inserted user
     
     // Insert into Organization if usertype is 'Organization'
