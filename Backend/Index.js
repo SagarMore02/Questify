@@ -64,10 +64,10 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password: 'sagar@123',
+  password: 'sagar@123',
   //password:'pranav@06',
   //password:'root',
-  password:'101201',
+  //password:'101201',
   //password:'pranav@06',
   database: 'questify',
   waitForConnections: true,
@@ -88,18 +88,10 @@ app.get('/', (req, res) => {
     }
   });
 });
-app.get('/t', (req, res) => {
-  console.log("serving home");
-  const filePath = path.join(__dirname, '../Frontend/HTML/home2.html');
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error sending file:', err);
-      res.status(err.status || 500).send('Error sending file');
-    } else {
-      console.log('File sent:', filePath);
-    }
-  });
-});
+
+
+
+
 app.use('/', express.static(path.join(__dirname, '../Frontend/HTML')));
 
 app.post('/login-packet', async (req, res) => {
@@ -117,7 +109,7 @@ app.post('/login-packet', async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const sql = 'SELECT username,firstname,lastname,mobile,email,password,usertype,status FROM user_master WHERE username = ?';
+    const sql = 'SELECT userID,username,firstname,lastname,mobile,email,password,usertype,status FROM user_master WHERE username = ?';
     const [result] = await connection.execute(sql, [username]);
     connection.release();
 
@@ -142,6 +134,11 @@ app.post('/login-packet', async (req, res) => {
     req.session.lastname=result[0].lastname;
     req.session.mobile=result[0].mobile;
     req.session.email=result[0].email;
+    req.session.myid=result[0].userID;
+
+    console.log("UserId:  "+req.session.myid);
+    console.log("Username:  "+req.session.username);
+    console.log("\n\n\n");
 
     switch(user.usertype){
       case 'Applicant':
@@ -162,7 +159,18 @@ app.post('/login-packet', async (req, res) => {
     res.status(500).json({ message: 'Error checking result[0] and password' });
   }
 });
-
+app.get('/t', (req, res) => {
+  console.log("serving home");
+  const filePath = path.join(__dirname, '../Frontend/HTML/home2.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
 
 //get organizer dashboard
 app.get('/organ', (req, res) => {
@@ -192,6 +200,88 @@ app.get('/applicantDash', (req, res) => {
   });
 });
 
+// generate test
+app.get('/generattest', (req, res) => {
+  console.log("serving test");
+  const filePath = path.join(__dirname, '../Frontend/HTML/ExamCreation.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      res.fil
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+
+// Add Questions:addQuestion
+app.post('/addQuestion', async(req, res) => {
+      const {question,option1,option2,option3,option4,question_marks,correctOpt} = req.body;
+      try {
+        connection = await pool.getConnection();
+    
+        // Insert into user_master
+        const sql = 'INSERT INTO Question_Master(examID, question, optionA, optionB, optionC, optionD, answer_key, question_marks,timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)';
+        const [result] = await connection.execute(sql, [req.session.examID, question, option1, option2, option3, option4, correctOpt, question_marks,new Date()]);
+        res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+    
+      } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Error processing request.');
+      } finally {
+        if (connection) connection.release();
+      }
+
+});
+
+//Set Test : SetTest
+
+app.get('/SetTest', (req, res) => {
+  console.log("serving test");
+  const filePath = path.join(__dirname, '../Frontend/HTML/teacher_que.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      res.fil
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+//Exam Creation:
+
+app.post('/addExam', async(req, res) => {
+  
+  console.log("Adding Exam");
+  const {examTitle,appStartDate,appEndDate,examStartDate,examEndDate,examStartTime,examEndTime,totalMarks,passingMarks,fees,syllabus} = req.body;
+//************************************************************88888888888888888888 */
+  let connection;
+  console.log("OrganizerID:"+req.session.myid);
+  try {
+    connection = await pool.getConnection();
+
+    // Insert into user_master
+    const sql = 'INSERT INTO exam_master(organizerID, name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time,total_marks,passing_marks,fees,syllabus,timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await connection.execute(sql, [req.session.myid, examTitle, appStartDate, appEndDate, examStartTime, examStartDate, examEndDate, examEndTime,totalMarks,passingMarks,fees,syllabus,new Date()]);
+    const newexamID = result.insertId; // Get the ID of the newly inserted user
+    // Respond with success
+
+    req.session.examID = newexamID;
+    res.status(200).json({ ExamID:newexamID,message: 'Registration successful!', redirectURL: "/SetTest", receivedData: req.body });
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Error processing request.');
+  } finally {
+    if (connection) connection.release();
+  }
+  //************************************************************88888888888888888888 */
+
+});
 
 app.post('/register', async (req, res) => {
   console.log("Register Hit");
@@ -225,10 +315,20 @@ app.post('/register', async (req, res) => {
         return res.status(500).json({ message: 'Organization not Active.' });
       }
     }
+    //Check for Unique names:
+    const sql1 = 'SELECT username,firstname,lastname,mobile,email,password,usertype,status FROM user_master WHERE username = ?';
+    const [result1] = await connection.execute(sql1, [username.toLowerCase()]);
+    connection.release();
+
+    if (result1.length !== 0) {
+      console.log("Duplicate Name");
+      return res.status(404).json({ message: 'Duplicate Name' });
+    }
+
 
     // Insert into user_master
     const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [username, hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
+    const [result] = await connection.execute(sql, [username.toLowerCase(), hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
     const newUserID = result.insertId; // Get the ID of the newly inserted user
     
     // Insert into Organization if usertype is 'Organization'
