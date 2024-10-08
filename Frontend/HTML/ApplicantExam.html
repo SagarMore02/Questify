@@ -3,66 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../CSS/ApplicantExam.css">
+    <link rel="stylesheet" href="/css/ApplicantExam.css">
     <title>Exam Registration</title>
 </head>
 <script>
     // Function to fetch exam data from the Node.js backend
-    document.addEventListener('DOMContentLoaded', function() {
-        function fetchData1(endpoint, tableId) {
-                fetch(endpoint)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data); // Log the entire data to check the API response
+    async function fetchExamData() {
+        try {
+            const response = await fetch('/examForm', {
+                method: 'GET',
+                credentials: 'include' // Include credentials (cookies) for session management
+            });
 
-                    const tableBody = document.querySelector(`#${tableId} tbody`);
-                    if (tableBody) {
-                        tableBody.innerHTML = ''; // Clear any existing rows
-
-                        data.forEach(item => {
-                            console.log(`Processing item ID: ${item.examID}, Status: ${item.status}`); // Log each item's status
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${item.examID ||''}</td>
-                                <td>${item.name || ''}</td>
-                                <td>${item.app_start_date || ''}</td>
-                                <td>${item.exam_start_time || ''}</td>
-                                <td>${item.exam_end_time || ''}</td>
-                                <td>${item.status || ''}</td>
-                                <td><button class="btn btn-primary update-status-btn" data-id="${item.id}">Apply</button></td>
-                            `;
-                            tableBody.appendChild(row);
-                        });
-
-                        // Attach click event listeners to buttons
-                        document.querySelectorAll('.update-status-btn').forEach(button => {
-                            button.addEventListener('click', function() {
-                                const id = this.getAttribute('data-id');
-                                const select = document.querySelector(`.status-select[data-id="${id}"]`);
-                                const status = select ? select.value : '';
-
-                                console.log('Selected ID:', id);
-                                console.log('Selected Status:', status);
-
-                                if (status) {
-                                    updateStatus(id, status);
-                                } else {
-                                    console.error('Status is undefined or empty');
-                                }
-                            });
-                        });
-                    } else {
-                        console.error(`Table body with id ${tableId} not found.`);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
+            if (!response.ok) {
+                if (response.status === 401) { // Unauthorized
+                    alert('You are not logged in. Please log in to view exams.');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+                return;
             }
 
-    
-    fetchData1('/exam', 'exams-table');
-    });
+            const exams = await response.json();
+            populateTable(exams);
+        } catch (error) {
+            console.error('Fetching exam data failed:', error);
+            alert('An error occurred while fetching exam data.');
+        }
+    }
+
+    // Function to populate the table with fetched data
+    function populateTable(exams) {
+        const tableBody = document.getElementById('examTable').querySelector('tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        exams.forEach(exam => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${exam.name}</td>
+                <td>${exam.date}</td>
+                <td>${exam.time}</td>
+                <td>${exam.duration}</td>
+                <td><button class="apply-button" data-exam="${exam.name}">Apply</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Fetch data initially when the page loads
+    document.addEventListener('DOMContentLoaded', fetchExamData);
 </script>
 
 <body>
@@ -76,25 +65,21 @@
         </ul>
         <p class="warning">If there are any discrepancies related to subjects, they must contact the admission staff in office.</p>
 
-            <div id="exams-section" class="section">
-                <h2>Exams</h2>
-                <table class="table table-striped" id="exams-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Date</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data will be populated here -->
-                    </tbody>
-                </table>
-            </div>
+        <table class="exam-table">
+            <thead>
+                <tr>
+                    <th>Exam id</th>
+                    <th>Exam Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>PassingMarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
 
     </div>
 </body>
