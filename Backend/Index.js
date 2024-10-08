@@ -64,7 +64,11 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '101201',
+  password: 'sagar@123',
+  //password:'pranav@06',
+  //password:'root',
+  //password:'101201',
+  //password:'pranav@06',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -125,8 +129,8 @@ app.post('/login-packet', async (req, res) => {
     const user = result[0];
     const passwordsql=user.password;
     
-    if (await bcrypt.compare(password,passwordsql)) {
-      console.log("Wrong Pass");
+    if (!await bcrypt.compare(password,passwordsql)) {
+      console.log(password);
       return res.status(401).json({ message: 'Incorrect password.' });
     }
     if(user.status!=="Active"){
