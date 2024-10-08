@@ -25,11 +25,9 @@
             border-radius: 8px;
             box-shadow: 0 4px 15px rgb(64 58 58);
             padding: 30px;
-            /* box-sizing: border-box; */
             overflow-y: auto;
-            max-height: 90vh; /*Limit container height */
-            
-        } 
+            max-height: 90vh;
+        }
 
         .section {
             margin-bottom: 20px;
@@ -74,15 +72,6 @@
         .section button:hover {
             background-color: #0056b3;
             transform: scale(1.05);
-        }
-
-        .questions-form-container {
-            max-height: 500px;
-            overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: #f9f9f9;
         }
 
         .question-box {
@@ -165,23 +154,37 @@
 </head>
 <body>
     <div class="container">
-        <div class="section">
-            <h2>Create Exam Questions</h2>
-            <label for="exam-name">Enter Exam Name</label>
-            <input type="text" id="exam-name" placeholder="Enter exam name">
-            <label for="num-questions">How many questions do you want to create?</label>
-            <input type="number" id="num-questions" min="1" placeholder="Enter number of questions">
-            <label for="exam-duration">Set Exam Duration (in Minutes)</label>
-            <input type="number" id="exam-duration" min="1" placeholder="Enter exam duration in minutes">
-            <button id="btnk">Generate Questions</button>
+        <div id="question-form" class="section">
+            <div class="question-box" id="current-question-box">
+                <h3>Question 1</h3>
+                <input type="text" id="question-text" placeholder="Enter your question">
+                <input type="number" id="question-marks" placeholder="Enter Question Marks">
+                <div class="options-container">
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-1">
+                        <input type="text" id="option-1" placeholder="Option 1">
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-2">
+                        <input type="text" id="option-2" placeholder="Option 2">
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-3">
+                        <input type="text" id="option-3" placeholder="Option 3">
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-4">
+                        <input type="text" id="option-4" placeholder="Option 4">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button id="addQuestion">Add Question</button>
+                </div>
+            </div>
         </div>
 
-        <div id="questions-form" class="questions-form-container"></div>
-
-        <div id="created-questions" class="created-questions"></div>
-        
-        <div id="submit-container" class="buttons hidden">
-            <button onclick="submitQuestions()">Submit All Questions</button>
+        <div id="submit-container" class="buttons">
+            <button id="setTest">Set Test</button>
         </div>
 
         <div id="exam-preview" class="exam-preview hidden">
@@ -193,141 +196,141 @@
     </div>
     
     <script>
+        let questionCount = 1;
+        const button1 = document.getElementById('setTest');
+        const button2 = document.getElementById('addQuestion');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const but = document.getElementById("btnk");
-            but.addEventListener("click", function(){
-                generateQuestionInputs();
-            });
+        button1.addEventListener('click', function() {
+            setTest();
         });
 
-        let questionCount = 0;
-        const questionsArray = [];
+        button2.addEventListener('click', function() {
+            addQuestion();
+        });
 
-        function generateQuestionInputs() {
-            const numQuestions = parseInt(document.getElementById('num-questions').value);
-            const examDuration = parseInt(document.getElementById('exam-duration').value);
-            const examName = document.getElementById('exam-name').value;
-
-            if (!examName.trim()) {
-                alert("Please enter an exam name.");
+        async function  addQuestion() {
+            const questionText = document.getElementById('question-text').value;
+            const question_marks = document.getElementById('question-marks').value;
+            if (!questionText.trim()) {
+                alert("Please enter a question.");
                 return;
             }
 
-            if (isNaN(numQuestions) || numQuestions <= 0) {
-                alert("Please enter a valid number of questions.");
-                return;
+            const options = [];
+            let crc=0;
+            for (let i = 1; i <= 4; i++) {
+                const optionText = document.getElementById(`option-${i}`).value;
+                const isCorrect = document.querySelector(`input[name="answer"]:checked`)?.value === `option-${i}`;
+                options.push({ text: optionText, isCorrect: isCorrect });
+                if(isCorrect){
+                    crc=i;
+                }
+            }
+            let a="";
+            switch (crc){
+                case 1:
+                        a="optionA";
+                        break;
+                case 2:
+                        a="optionB";
+                        break;
+                case 3:
+                        a="optionC";
+                        break;
+                case 4:
+                        a="optionD";
+                        break;
+                default:
+                        a="UnSelected";
+                        break;
             }
 
-            if (isNaN(examDuration) || examDuration <= 0) {
-                alert("Please set a valid exam duration.");
-                return;
-            }
+            // if (options.filter(opt => opt.text.trim()).length < 2) {
+            //     alert("Please provide at least two valid options.");
+            //     return;
+            // }
 
-            questionCount = numQuestions;
-            const formContainer = document.getElementById('questions-form');
-            formContainer.innerHTML = ''; // Clear any previous form
+            // if (!options.some(opt => opt.isCorrect)) {
+            //     alert("Please select a correct answer.");
+            //     return;
+            // }
 
-            for (let i = 0; i < numQuestions; i++) {
-                addQuestion(i);
-            }
+            // Send question data to the server (simulate adding to the database)
+            //
+            //question,option1,option2,option3,option4,correctOpt
+            const questionData = {
+                questionNumber: questionCount,
+                question: questionText,
+                question_marks:question_marks,
+                option1: options[0].text,
+                option2: options[1].text,
+                option3: options[2].text,
+                option4: options[3].text,
+                correctOpt:a
+            };
 
-            // Show the submit button
-            document.getElementById('submit-container').classList.remove('hidden');
-        }
+            try {
+            console.log("Exam Creation");
+            const response = await fetch('/addQuestion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(questionData)
+            });
 
-        function addQuestion(index) {
-            const formContainer = document.getElementById('questions-form');
-            
-            const questionBox = document.createElement('div');
-            questionBox.classList.add('question-box');
-            questionBox.setAttribute('id', `question-box-${index}`);
+            const data = await response.json();
 
-            questionBox.innerHTML = `
-                <h3>Question ${index + 1}</h3>
-                <input type="text" id="question-${index}" placeholder="Enter your question">
-                <div class="options-container" id="options-container-${index}">
-                    ${generateOptionHTML(index, 1)}
-                    ${generateOptionHTML(index, 2)}
-                    ${generateOptionHTML(index, 3)}
-                    ${generateOptionHTML(index, 4)}
-                </div>
-                <button onclick="addOption(${index})">Add Option</button>
-                <button onclick="removeOption(${index})">Remove Option</button>
-                <button onclick="removeQuestion(${index})">Remove Question</button>
-            `;
-
-            formContainer.appendChild(questionBox);
-        }
-
-        function generateOptionHTML(questionIndex, optionIndex) {
-            return `
-                <div class="option">
-                    <input type="radio" name="answer-${questionIndex}" value="option-${optionIndex}">
-                    <input type="text" id="option-${questionIndex}-${optionIndex}" placeholder="Option ${optionIndex}">
-                </div>
-            `;
-        }
-
-        function addOption(questionIndex) {
-            const optionsContainer = document.getElementById(`options-container-${questionIndex}`);
-            const optionCount = optionsContainer.children.length + 1;
-            
-            const newOption = document.createElement('div');
-            newOption.classList.add('option'); // Ensures same styling as other options
-            
-            newOption.innerHTML = `
-                <input type="radio" name="answer-${questionIndex}" value="option-${optionCount}">
-                <input type="text" id="option-${questionIndex}-${optionCount}" placeholder="Option ${optionCount}">
-            `;
-
-            optionsContainer.appendChild(newOption); // Append the new option
-        }
-
-        function removeOption(questionIndex) {
-            const optionsContainer = document.getElementById(`options-container-${questionIndex}`);
-            const optionCount = optionsContainer.children.length;
-
-            if (optionCount > 2) { // Ensure there are always at least two options
-                optionsContainer.lastElementChild.remove();
+            if (response.ok) {
+                console.log(questionData.questionNumber+" Added");
+                // Redirect or clear the form as needed
+                //window.location.href = data.redirectURL;
             } else {
-                alert("You must have at least two options per question.");
+                alert('Registration failed: ' + data.message);
             }
-        }
-
-        function removeQuestion(index) {
-            const questionBox = document.getElementById(`question-box-${index}`);
-            questionBox.remove();
-        }
-
-        function submitQuestions() {
-            const examName = document.getElementById('exam-name').value;
-            const examDuration = document.getElementById('exam-duration').value;
-            const previewExamName = document.getElementById('preview-exam-name');
-            const previewExamQuestions = document.getElementById('exam-questions');
-            const previewExamTime = document.getElementById('exam-time-display');
-
-            previewExamName.innerHTML = `Exam: ${examName}`;
-            previewExamQuestions.innerHTML = '';
-            previewExamTime.innerHTML = `Duration: ${examDuration} minutes`;
-
-            for (let i = 0; i < questionCount; i++) {
-                const questionText = document.getElementById(`question-${i}`).value;
-                const options = document.querySelectorAll(`#options-container-${i} .option`);
-                const questionPreview = document.createElement('div');
-                questionPreview.classList.add('preview-question');
-                questionPreview.innerHTML = `<h4>Q${i + 1}: ${questionText}</h4>`;
-                
-                options.forEach((option, index) => {
-                    const optionText = option.querySelector('input[type="text"]').value;
-                    const isCorrect = option.querySelector('input[type="radio"]').checked;
-                    const correctMark = isCorrect ? ' (Correct)' : '';
-                    questionPreview.innerHTML += `<p>Option ${index + 1}: ${optionText}${correctMark}</p>`;
-                });
-                previewExamQuestions.appendChild(questionPreview);
+            } catch (error) {
+            console.error('Error:', error);
+            alert('Error submitting the form.');
             }
 
-            document.getElementById('exam-preview').classList.remove('hidden');
+            console.log('Question added:', questionData); // Here you would send this to the server
+
+            // Clear the fields and increment question number for the next question
+            document.getElementById('question-text').value = '';
+            document.getElementById('question-marks').value='';
+            document.querySelectorAll('input[name="answer"]').forEach(radio => (radio.checked = false));
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`option-${i}`).value = '';
+            }
+
+            questionCount++;
+            document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
+        }
+
+         function setTest() {
+        //     const examName = document.getElementById('exam-name').value;
+        //     const examDuration = document.getElementById('exam-duration').value;
+
+            // if (!examName.trim() || !examDuration) {
+            //     alert("Please fill in exam name and duration.");
+            //     return;
+            // }
+
+            // // Finalize the exam (simulate saving the test)
+            // console.log('Exam set:', {
+            //     name: examName,
+            //     duration: examDuration,
+            // });
+
+            alert("Test has been successfully set.");
+
+            window.location.href = '/generattest';
+            // document.getElementById("exam-preview").classList.remove("hidden");
+            // document.getElementById("preview-exam-name").innerText = "Exam: " + examName;
+            // document.getElementById("exam-time-display").innerText = "Duration: " + examDuration + " minutes";
+
+            // // Hide the form after finalizing the exam
+            // document.querySelector('.container').style.display = 'none';
         }
     </script>
 </body>

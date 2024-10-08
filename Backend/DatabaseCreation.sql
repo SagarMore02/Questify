@@ -21,7 +21,7 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('SuperUser', 1);
 CREATE TABLE IF NOT EXISTS User_Master(
     userID INT NOT NULL UNIQUE AUTO_INCREMENT,
     username VARCHAR(20) NOT NULL,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(300) NOT NULL,
     firstname VARCHAR(10) NOT NULL,
     lastname VARCHAR(10),
     usertype ENUM('Applicant','Organization','Organizer') NOT NULL,
@@ -72,12 +72,13 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('Organizer_Organiz
 
 -- Exam_Master table
 CREATE TABLE IF NOT EXISTS Exam_Master(
-    examID INT NOT NULL UNIQUE,
+    examID INT NOT NULL UNIQUE AUTO_INCREMENT,
     organizerID INT NOT NULL,
     name VARCHAR(15) NOT NULL,
     app_start_date DATE NOT NULL,
     app_end_date DATE NOT NULL,
     exam_start_time TIME NOT NULL,
+    exam_start_date DATE NOT NULL,
     exam_end_date DATE NOT NULL,
     exam_end_time TIME NOT NULL,
     total_marks INT NOT NULL,
@@ -86,16 +87,16 @@ CREATE TABLE IF NOT EXISTS Exam_Master(
     fees INT NOT NULL,
     syllabus VARCHAR(100) NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (examID, organizerID),
+    PRIMARY KEY (examID),
     FOREIGN KEY (organizerID) REFERENCES Organizer_Organization (organizerID)
 );
 INSERT INTO Table_Registry (table_name, table_number) VALUES ('Exam_Master', 6);
 
 -- Question_Master table
 CREATE TABLE IF NOT EXISTS Question_Master(
-    questionID INT NOT NULL UNIQUE,
+    questionID INT NOT NULL UNIQUE AUTO_INCREMENT,
     examID INT NOT NULL,
-    questiontype VARCHAR(20) NOT NULL,
+    questiontype VARCHAR(20) NULL,
     question VARCHAR(70) NOT NULL,
     optionA VARCHAR(40) NOT NULL,
     optionB VARCHAR(40) NOT NULL,
