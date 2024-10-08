@@ -2,7 +2,7 @@
 /* neww file */
 body {
     height: 100vh;
-    background-color: #ffffff;
+    background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
     display: grid;
     place-items: center;
     font-family: "Kanit", sans-serif;

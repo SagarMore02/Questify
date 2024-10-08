@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const path = require('path');
 const app = express();
 const PORT = 3000;
+const bcrypt = require ('bcryptjs');
 
 // Custom error class (optional)
 class CustomError extends Error {
@@ -63,7 +64,7 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: '101201',
   database: 'questify',
   waitForConnections: true,
   connectionLimit: 10,
@@ -122,8 +123,9 @@ app.post('/login-packet', async (req, res) => {
     }
 
     const user = result[0];
-
-    if (user.password !== password) {
+    const passwordsql=user.password;
+    
+    if (await bcrypt.compare(password,passwordsql)) {
       console.log("Wrong Pass");
       return res.status(401).json({ message: 'Incorrect password.' });
     }
@@ -200,7 +202,10 @@ app.post('/register', async (req, res) => {
   if (pass !== confirmPassword) {
     return res.status(400).send('Passwords do not match.');
   }
+  const Salt = await bcrypt.genSalt(10);
+  const hashedpassword = await bcrypt.hash(pass,Salt);
 
+  console.log (hashedpassword);
   console.log("Inside register", organId);
   let connection;
   try {
@@ -219,7 +224,7 @@ app.post('/register', async (req, res) => {
 
     // Insert into user_master
     const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [username, pass, fname, lname, usertype, mobileno, email, new Date()]);
+    const [result] = await connection.execute(sql, [username, hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
     const newUserID = result.insertId; // Get the ID of the newly inserted user
     
     // Insert into Organization if usertype is 'Organization'

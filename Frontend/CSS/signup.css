@@ -13,7 +13,7 @@ justify-content: center;
 align-items: center;
 padding: 10px;
 /* background: linear-gradient(135deg, #98480b, #80391a); */
-background-color: rgb(255, 255, 255);
+background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
 }
 .container{
 max-width: 700px;
@@ -118,11 +118,12 @@ letter-spacing: 1px;
 cursor: pointer;
 transition: all 0.3s ease;
 /* background: linear-gradient(135deg, #71b7e6, #9b59b6); */
-background-color: #5b1a03;
+background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
 }
 form .button input:hover{
 /* transform: scale(0.99); */
 /* background: linear-gradient(-135deg, #71b7e6, #9b59b6); */
+background:linear-gradient(to left, rgb(90, 13, 172), rgb(164, 128, 203));
 }
 .register-link {
     font-size: 14.5px;
