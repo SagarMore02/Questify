@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS Exam_Master(
     exam_end_time TIME NOT NULL,
     total_marks INT NOT NULL,
     passing_marks INT NOT NULL,
-    status ENUM('Pending','Completed') NOT NULL,
+    status ENUM('Pending','Stopped','Completed') NOT NULL,
     fees INT NOT NULL,
     syllabus VARCHAR(100) NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
