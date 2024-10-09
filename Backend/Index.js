@@ -56,7 +56,7 @@ app.use(session({
   saveUninitialized: true,       // Save uninitialized sessions
   cookie: { 
     secure: false,               // Use true if using HTTPS
-    maxAge: 60000                // Cookie expiration time
+    maxAge: 3600000                // Cookie expiration time
   }
 }));
 
@@ -172,10 +172,111 @@ app.get('/t', (req, res) => {
   });
 });
 
+//To Show all the examns
+app.get('/api/exams', async (req, res) => {
+  const sql = "SELECT * FROM exam_master where organizerID=?";
+  const connection = await pool.getConnection();
+  const [result] = await connection.execute(sql,[req.session.myid]);
+  connection.release();
+  res.json(result);
+  });
+
+  app.post('/api/exams/myexam', async (req, res) => {
+    const{examID}=req.body;
+    const sql = "SELECT * FROM exam_master where examID=? And organizerID=?";
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(sql,[examID,req.session.myid]);
+    connection.release();
+    console.log(result);
+    res.json(result);
+    });
+
+
+//To Update Status
+
+app.post('/api/exams/updatestatus', async (req, res) => {
+  const{examID,status}=req.body;
+  const sql = "UPDATE exam_master set status = ? where examID = ? And organizerID =?";
+  const connection = await pool.getConnection();
+  const [result] = await connection.execute(sql,[status,examID,req.session.myid]);
+  connection.release();
+  console.log(result);
+  res.json(result);
+  });
+
+//To Give Exams Page
+app.get('/api/exam', (req, res) => {
+  console.log("serving exam");
+  const filePath = path.join(__dirname, '../Frontend/HTML/Exams.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+
+//to Update Exam:
+app.post('/updateExam', async(req, res) => {
+  const { examID, name, app_start_date, app_end_date, exam_start_date, exam_end_date, exam_start_time, exam_end_time, total_marks, passing_marks, fees, syllabus } = req.body;
+
+  let connection;
+  console.log("OrganizerID: " + req.session.myid);
+  
+  try {
+      // Get the connection asynchronously
+      connection = await pool.getConnection();
+  
+      // Prepare the SQL query for updating exam_master
+      const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ? AND organizerID=?';
+  
+      // Execute the query and update the data in the database
+      const [result] = await connection.execute(sql, [name,app_start_date,app_end_date,exam_start_time,exam_start_date,exam_end_date,exam_end_time,total_marks,passing_marks,fees,syllabus,new Date(),examID,req.session.myid]);
+  
+      // Check if any rows were updated
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
+      }
+  
+      console.log("Exam updated successfully, Exam ID: " + examID);
+  
+      // Respond with success (you can modify this based on your application's needs)
+      res.json({
+          success: true,
+          message: "Exam updated successfully",
+          examID: examID
+      });
+  
+  } catch (error) {
+      console.error("Error updating exam data:", error);
+      res.status(500).json({ success: false, message: "Error updating exam" });
+  } finally {
+      if (connection) {
+          connection.release(); // Make sure to release the connection
+      }
+  }
+  
+});
+
 //get organizer dashboard
 app.get('/organ', (req, res) => {
   console.log("serving home");
   const filePath = path.join(__dirname, '../Frontend/HTML/OrganizerDash.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+// Get Organizer DashBoard Applicants
+app.get('/ApproveStudent', (req, res) => {
+  const filePath = path.join(__dirname, '../Frontend/HTML/ApproveStudent.html');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error sending file:', err);
@@ -246,7 +347,7 @@ app.get('/SetTest', (req, res) => {
       console.error('Error sending file:', err);
       res.status(err.status || 500).send('Error sending file');
     } else {
-      res.fil
+      //res.fil
       console.log('File sent:', filePath);
     }
   });
@@ -282,6 +383,23 @@ app.post('/addExam', async(req, res) => {
   //************************************************************88888888888888888888 */
 
 });
+
+
+//Delete an Exam
+app.post('/delExam', async(req, res) => {
+  const {examID} = req.body;
+  const sql = "DELETE FROM question_master WHERE examID=?";
+  const connection = await pool.getConnection();
+  const[result1]= await connection.execute(sql,[examID]);
+  const sql1="DELETE FROM exam_master WHERE examID=?";
+  const[result2]= await connection.execute(sql1,[examID]);
+  connection.release();
+  res.status(200).json({ redirectURL: "/api/exam", receivedData: req.body });
+});
+
+
+
+
 
 app.post('/register', async (req, res) => {
   console.log("Register Hit");

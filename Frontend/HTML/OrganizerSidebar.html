@@ -24,8 +24,8 @@
             document.getElementById('dashboard').addEventListener('click', () => Screenchange('OrganizerMainContent.html'));
             document.getElementById('setTest').addEventListener('click', () => hit());
             document.getElementById('viewResult').addEventListener('click', () => Screenchange('ViewResult.html'));
-            document.getElementById('upcomingExam').addEventListener('click', () => Screenchange('UpcomingExam.html'));
-            document.getElementById('approveStudent').addEventListener('click', () => Screenchange('ApproveStudent.html'));
+            document.getElementById('upcomingExam').addEventListener('click', () => Screenchange('/api/exam'));
+            document.getElementById('approveStudent').addEventListener('click', () => Screenchange('/ApproveStudent'));
             document.getElementById('Logout').addEventListener('click', () => handleLogout());
         });
 
