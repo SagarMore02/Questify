@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Exam Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .exam-card {
+            background-color: #fff;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .exam-card h3 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .exam-details {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .exam-details div {
+            flex: 1 1 200px;
+            margin-bottom: 10px;
+        }
+
+        .exam-details div span {
+            font-weight: bold;
+            display: block;
+            color: #666;
+        }
+
+        .apply-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .apply-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4); 
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal form input, .modal form select {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal form button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Exam Details</h1>
+        <div id="examList">
+            <!-- Exam details will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal for applying for an exam -->
+    <div id="applyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Apply for Exam</h2>
+            <form id="applyForm">
+                <input type="hidden" id="modalExamID">
+                <label for="aadhaar">Aadhaar Card Number:</label>
+                <input type="text" id="aadhaar" maxlength="12" required>
+
+                <label for="fees">Fees Status:</label>
+                <select id="fees" required>
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                </select>
+
+                <label for="token">Token Number:</label>
+                <input type="text" id="token" maxlength="30" required>
+
+                <button type="submit">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Fetching data from the API and displaying it in individual divs
+        fetch('/api/exams')
+            .then(response => response.json())
+            .then(data => {
+                const examList = document.getElementById('examList');
+                data.forEach(exam => {
+                    const examCard = `
+                        <div class="exam-card">
+                            <h3>Exam: ${exam.name}</h3>
+                            <div class="exam-details">
+                                <div><span>Exam ID:</span> ${exam.examID}</div>
+                                <div><span>Organizer ID:</span> ${exam.organizerID}</div>
+                                <div><span>Application Start Date:</span> ${exam.app_start_date}</div>
+                                <div><span>Application End Date:</span> ${exam.app_end_date}</div>
+                                <div><span>Exam Start Date:</span> ${exam.exam_start_date}</div>
+                                <div><span>Exam End Date:</span> ${exam.exam_end_date}</div>
+                                <div><span>Total Marks:</span> ${exam.total_marks}</div>
+                                <div><span>Passing Marks:</span> ${exam.passing_marks}</div>
+                                <div><span>Fees:</span> ${exam.fees}</div>
+                                <div><span>Syllabus:</span> ${exam.syllabus}</div>
+                            </div>
+                            <button class="apply-btn" data-exam-id="${exam.examID}">Apply for Exam</button>
+                        </div>
+                    `;
+                    examList.insertAdjacentHTML('beforeend', examCard);
+                });
+
+                // Event listener for Apply buttons
+                const applyButtons = document.querySelectorAll('.apply-btn');
+                applyButtons.forEach(button => {
+                    button.addEventListener('click', handleApplyClick);
+                });
+            })
+            .catch(error => console.error('Error fetching exam data:', error));
+
+        // Get the modal
+        const modal = document.getElementById("applyModal");
+
+        // Get the <span> element that closes the modal
+        const span = document.getElementsByClassName("close")[0];
+
+        // Handle the Apply button click
+        function handleApplyClick(event) {
+            const examID = this.getAttribute('data-exam-id');
+            document.getElementById('modalExamID').value = examID;
+            modal.style.display = "block";
+        }
+
+        // Close the modal when the user clicks on <span> (x)
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Close the modal when the user clicks anywhere outside of the modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('applyForm').addEventListener('submit', async function(event) {
+            
+            event.preventDefault();
+            alert("Calledd")
+            const examID = document.getElementById('modalExamID').value;
+            const adcard = document.getElementById('aadhaar').value;
+            const feesStatus = document.getElementById('fees').value;
+            const token = document.getElementById('token').value;
+
+            // Send the data to the server
+            const response = await fetch('/api/exams/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ examID, adcard, feesStatus, token }),
+            });
+
+            if (response.ok) {
+                alert('You have successfully applied for the exam!');
+                modal.style.display = "none";
+            } else {
+                alert('There was an error applying for the exam. Please try again.');
+            }
+        });
+    </script>
+
+</body>
+</html>

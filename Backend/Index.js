@@ -125,7 +125,7 @@ app.post('/login-packet', async (req, res) => {
       console.log(password);
       return res.status(401).json({ message: 'Incorrect password.' });
     }
-    if(user.status!=="Active"){
+    if(user.status!=="Active" && user.usertype!=='Applicant'){
       console.log("User Not Active");
       return res.status(401).json({ message: 'Inactive User.' });
     }
@@ -174,7 +174,7 @@ app.get('/t', (req, res) => {
 
 //To Show all the examns
 app.get('/api/exams', async (req, res) => {
-  const sql = "SELECT * FROM exam_master where organizerID=?";
+  const sql = "SELECT * FROM exam_master";
   const connection = await pool.getConnection();
   const [result] = await connection.execute(sql,[req.session.myid]);
   connection.release();
@@ -217,6 +217,43 @@ app.get('/api/exam', (req, res) => {
     }
   });
 });
+
+//Fetch Exams for Applicant
+app.get('/api/appgetexam', (req, res) => {
+  console.log("serving exam");
+  const filePath = path.join(__dirname, '../Frontend/HTML/ApplyforExam.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+app.post('/api/exams/apply', async (req, res) => {
+  try {
+    const { examID, adcard } = req.body;
+    const userID = req.session.myid; // Assuming you're using sessions to track the logged-in user
+    console.log("ExamID:", examID, "UserID:", userID, "ADcard:", adcard);
+
+    // SQL query, inserting default values for other required columns
+    const sql = `INSERT INTO Application_Master (applicationID, examID, adhaarcard, feesstatus, appstatus, attendance, marks)
+                 VALUES (?, ?, ?, 'Pending', 'Pending', 'Pending', 0)`;
+
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(sql, [userID, examID, adcard]);
+    connection.release();
+
+    console.log(result);
+    res.status(200).json({ message: 'Application successful', result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to apply for the exam' });
+  }
+});
+
+
 
 
 //to Update Exam:
@@ -487,6 +524,32 @@ app.get('/admin', (req, res) => {
     }
   });
 });
+app.get('/organapplicant', async (req, res) => {
+  console.log("organ");
+  try {
+    const sql = `SELECT 
+                   app.applicationID AS id,
+                   user.firstname AS applicantf_name,
+                   user.lastname AS applicantl_name, 
+                   exam.name AS name, 
+                   app.adhaarcard AS adhaarcard, 
+                   app.feesstatus as feestatus, 
+                   app.appstatus as appstatus, 
+                   app.attendance as attendance
+                 FROM 
+                   Application_Master app 
+                 JOIN 
+                   exam_master exam ON app.examID = exam.examID
+                 JOIN
+                   User_Master user ON app.applicationID = user.userID`;
+
+    const [results] = await pool.query(sql);
+    res.json(results);
+  } catch (err) {
+    console.error('Error fetching applicant data:', err);
+    res.status(500).json({ error: 'Failed to fetch applicant data' });
+  }
+});
 
 
 app.get('/applicant', async (req, res) => {
@@ -497,6 +560,35 @@ app.get('/applicant', async (req, res) => {
   } catch (err) {
       console.error('Error fetching users data:', err);
       res.status(500).json({ error: 'Failed to fetch users data' });
+  }
+});
+
+app.post('/orgstatus', async (req, res) => {
+  const { id, status } = req.body;
+  console.log("id : ",id ,"status :",status)
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    // Execute the update query
+    const [result] = await connection.query('UPDATE application_master SET appstatus = ? WHERE applicationID = ?', [status, id]);
+    //const [newresult] = await connection.query('select usertype from application_master where applicationID=?',[id]);
+    // if(newresult.usertype==='Organization' && status==="Active"){
+    
+    //}
+ 
+    // Check if any row was affected
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found or no change in status' });
+    }
+    // Send success response
+    res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
+  } catch (err) {
+    console.error('Error updating data:', err);
+    res.status(500).json({ error: 'Failed to update user status' });
+  } finally {
+    if (connection) {
+      connection.release(); // Ensure connection is released
+    }
   }
 });
 //safcihbwsaliuvbanziujfeiawe;gvnwioejfnaiuw;ejfvawio;egsvaowpesdjfaw;opackoefegvmeroboeb
