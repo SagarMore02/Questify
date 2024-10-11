@@ -62,10 +62,13 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Status</th>
+                            <th>Applicant Name</th>
+                            <th>Last Name</th>
+                            <th>Exam Name</th>
+                            <th>Adhaar Card</th>
+                            <th>Fees Status</th>
+                            <th>Attendance</th>
+                            <th>Application Status</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -122,14 +125,17 @@
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${item.id || ''}</td>
+                                <td>${item.applicantf_name || ''}</td>
+                                <td>${item.applicantl_name || ''}</td>
                                 <td>${item.name || ''}</td>
-                                <td>${item.email || ''}</td>
-                                <td>${item.usertype || ''}</td>
+                                <td>${item.adhaarcard || ''}</td>
+                                <td>${item.feestatus || ''}</td>
+                                <td>${item.attendance || ''}</td>
                                 <td>
                                     <select class="form-control status-select" data-id="${item.id}">
-                                        <option value="" ${!item.status ? 'selected' : ''} hidden>${item.status}</option>
-                                        <option value="Active" ${item.status === 'Active' ? 'selected' : ''}>Active</option>
-                                        <option value="Inactive" ${item.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                        <option value="" ${!item.appstatus ? 'selected' : ''} hidden>${item.appstatus}</option>
+                                        <option value="Active" ${item.appstatus === 'Active' ? 'selected' : ''}>Active</option>
+                                        <option value="Inactive" ${item.appstatus === 'Inactive' ? 'selected' : ''}>Inactive</option>
                                     </select>
                                 </td>
                                 <td><button class="btn btn-primary update-status-btn" data-id="${item.id}">Update Status</button></td>
@@ -162,7 +168,7 @@
 
             // Function to post data to the /status API
             function updateStatus(id, status) {
-                fetch('/status', {
+                fetch('/orgstatus', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -171,7 +177,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    fetchData('/applicant', 'applicant-table');
+                    fetchData('/organapplicant', 'applicant-table');
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -180,7 +186,7 @@
             }
 
             // Initial fetch of data for the applicants table
-            fetchData('/applicant', 'applicant-table');
+            fetchData('/organapplicant', 'applicant-table');
         });
     </script>
 </body>
