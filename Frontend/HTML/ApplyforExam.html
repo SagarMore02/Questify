@@ -154,6 +154,20 @@
     </div>
 
     <script>
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString(undefined, options);
+        }
+
+        // Utility function to format time
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const date = new Date();
+            date.setHours(hours);
+            date.setMinutes(minutes);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
         // Fetching data from the API and displaying it in individual divs
         fetch('/api/exams')
             .then(response => response.json())
@@ -166,10 +180,10 @@
                             <div class="exam-details">
                                 <div><span>Exam ID:</span> ${exam.examID}</div>
                                 <div><span>Organizer ID:</span> ${exam.organizerID}</div>
-                                <div><span>Application Start Date:</span> ${exam.app_start_date}</div>
-                                <div><span>Application End Date:</span> ${exam.app_end_date}</div>
-                                <div><span>Exam Start Date:</span> ${exam.exam_start_date}</div>
-                                <div><span>Exam End Date:</span> ${exam.exam_end_date}</div>
+                                <div><span>Application Start Date:</span> ${formatDate(exam.app_start_date)}</div>
+                                <div><span>Application End Date:</span> ${formatDate(exam.app_end_date)}</div>
+                                <div><span>Exam Start Date:</span> ${formatDate(exam.exam_start_date)}</div>
+                                <div><span>Exam End Date:</span> ${formatDate(exam.exam_end_date)}</div>
                                 <div><span>Total Marks:</span> ${exam.total_marks}</div>
                                 <div><span>Passing Marks:</span> ${exam.passing_marks}</div>
                                 <div><span>Fees:</span> ${exam.fees}</div>
@@ -218,7 +232,7 @@
         document.getElementById('applyForm').addEventListener('submit', async function(event) {
             
             event.preventDefault();
-            alert("Calledd")
+            //alert("Calledd")
             const examID = document.getElementById('modalExamID').value;
             const adcard = document.getElementById('aadhaar').value;
             const feesStatus = document.getElementById('fees').value;
@@ -232,12 +246,12 @@
                 },
                 body: JSON.stringify({ examID, adcard, feesStatus, token }),
             });
-
+            const responseData = await response.json();
             if (response.ok) {
                 alert('You have successfully applied for the exam!');
                 modal.style.display = "none";
             } else {
-                alert('There was an error applying for the exam. Please try again.');
+                alert(responseData.message);
             }
         });
     </script>
