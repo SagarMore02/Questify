@@ -64,9 +64,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pranav@06',
-  //password:'root',
+  password:'root',
   //password:'101201',
   //password:'pranav@06',
   database: 'questify',
@@ -594,6 +594,62 @@ app.get('/logout', (req, res) => {
     res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
   });
 });
+
+app.get('/start_exam', (req, res) => {
+  console.log("serving home");
+  const filePath = path.join(__dirname, '../Frontend/HTML/temp_exam.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+
+app.post('/get-questions/:examId', async (req, res) => {
+  const { examId } = req.params; // examId comes from URL params
+  let connection;
+
+  // Modified query to fetch questions and their corresponding options from question_master
+  const query = `
+    SELECT questionID, question, optionA, optionB, optionC, optionD
+    FROM question_master
+    WHERE examID = ?;
+  `;
+
+  try {
+    // Fetch questions and options from the database
+    connection = await pool.getConnection();
+
+    const [results] = await connection.query(query, [examId]);
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No questions found for this exam.' });
+    }
+    console.log(results);
+
+    // Format the questions and options into an array
+    const questionsArray = results.map(row => ({
+      id: row.questionID, // Add questionID to the object
+      question: row.question,
+      options: [row.optionA, row.optionB, row.optionC, row.optionD]
+    }));
+
+    // Send the formatted questions array back to the frontend
+    res.json({ examId, questions: questionsArray });
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    return res.status(500).json({ message: 'Server error' });
+  } finally {
+    if (connection) connection.release(); // Release the database connection
+  }
+});
+
+
+
+
 
 
 
