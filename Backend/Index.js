@@ -64,9 +64,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password: 'sagar@123',
+  password: 'sagar@123',
   //password:'pranav@06',
-  password:'root',
+  //password:'root',
   //password:'101201',
   //password:'pranav@06',
   database: 'questify',
@@ -713,7 +713,9 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/start_exam', (req, res) => {
-  console.log("serving home");
+  const {examID} = req.query;
+  req.session.testExamID=examID;
+  console.log("serving home with examID:", req.session.testExamID);
   const filePath = path.join(__dirname, '../Frontend/HTML/temp_exam.html');
   res.sendFile(filePath, (err) => {
     if (err) {
@@ -725,8 +727,8 @@ app.get('/start_exam', (req, res) => {
   });
 });
 
-app.post('/get-questions/:examId', async (req, res) => {
-  const { examId } = req.params; // examId comes from URL params
+app.post('/get-questions', async (req, res) => {
+  const examId = req.session.testExamID; // examId comes from URL params
   let connection;
 
   // Modified query to fetch questions and their corresponding options from question_master
@@ -813,6 +815,36 @@ app.get('/notice/exams', async(req, res) => {
   res.json(exams);
 });
 
+//Insert Into Attempts:
+app.post('/InsertAttempt', async (req, res) => {
+  const{questionId,sel_answer}=req.body;
+  const examId = req.session.testExamID; // examId comes from URL params
+  let connection;
+
+  const sql= 'Select * from Attempt_Master where examID=? and questionID=? and applicationID=?';
+  // Modified query to fetch questions and their corresponding options from question_master
+  const query = `INSERT INTO Attempt_Master (examID, questionID, applicationID, selected_option) VALUES(?,?,?,?)`;
+  const updateQuery = 'UPDATE Attempt_Master SET selected_option = ? WHERE examID = ? AND questionID = ? AND applicationID = ?';
+  try {
+    // Fetch questions and options from the database
+    connection = await pool.getConnection();
+    const[result1]=await connection.query(sql,[examId,questionId,req.session.myid]);
+    if(result1.length>0){
+      const[results]=await connection.query(updateQuery,[sel_answer,examId,questionId,req.session.myid]);
+      console.log(results);
+      return res.status(200).json({ message: 'Attempted' });
+    }else{
+      const [results] = await connection.query(query, [examId,questionId,req.session.myid,sel_answer]);
+      console.log(results);
+      return res.status(200).json({ message: 'Attempted' });
+    }
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    return res.status(500).json({ message: 'Server error' });
+  } finally {
+    if (connection) connection.release(); // Release the database connection
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
