@@ -748,6 +748,14 @@ app.get('/getappliedTest', async(req, res) => {
   }
 });
 
+//Notice Board:
+// Example Node.js/Express API endpoint to get exam data
+app.get('/notice/exams', async(req, res) => {
+  const sql = "SELECT * FROM EXAM_MASTER WHERE examID in(select examID from application_master where applicationID=?)";  
+  const connection = await pool.getConnection();
+  const [exams] = await connection.query(sql,[req.session.myid]);
+  res.json(exams);
+});
 
 
 app.listen(PORT, () => {
