@@ -60,57 +60,30 @@ body {
     background-color: #e9ecef;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.footer {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    margin-top: 20px;
-}
-
-.content {
-    display: flex;
-}
-
-.chart {
-    flex: 1;
-    background-color: #ffffff; /* Adjust background color as needed */
-    padding: 10px;
-    border: 1px solid #ddd; /* Adjust border as needed */
-    margin-right: 40px;
-    border-top: 3px solid skyblue;
-}
-
-.header h3{
-    position: absolute;
-}
-
-.important-notice {
-    position: relative; /* Make the div a containing block for absolutely positioned elements */
-    padding-top: 40px; /* Add padding at the top to make room for the h2 and controls */
+    position: relative; /* Ensure positioning for the h2 and controls */
+    padding-top: 60px; /* Space for the header and controls */
+    overflow: hidden; /* Ensure scrolling content is hidden */
 }
 
 .important-notice h2 {
-    background-color: rgb(37, 104, 167); /* Set the background color to blue */
-    color: white; /* Set the text color to white */
-    padding: 10px; /* Add padding inside the h2 */
-    border-radius: 5px; /* Optional: Rounded corners */
-    position: absolute; /* Position the h2 absolutely within the .important-notice div */
+    background-color: rgb(37, 104, 167);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    position: absolute;
     top: 0;
     left: 0;
-    margin: 0; /* Remove any default margins */
+    margin: 0;
     width: calc(100% - 30px);
 }
 
 .controls {
     position: absolute;
-    top: 0; 
+    top: 0;
     right: 0;
     display: flex;
     align-items: center;
-    gap: 5px; /* Space between minimize and close symbols */
+    gap: 5px;
     padding: 10px;
 }
 
@@ -124,10 +97,52 @@ body {
     text-align: center;
     font-weight: bold;
 }
+
 .controls span {
-    cursor: pointer; /* Change cursor to pointer when hovering over symbols */
+    cursor: pointer;
     font-size: 18px;
     color: white;
     padding: 5px;
     border-radius: 5px;
+}
+
+/* Exam list container for scrolling */
+.exam-list-container {
+    max-height: 150px; /* Adjust height as needed */
+    overflow: hidden;  /* Hide overflowing content */
+    margin-top: 20px;  /* Space between the heading and the exam list */
+}
+
+#exam-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#exam-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+}
+
+/* Footer */
+.footer {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.chart {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-right: 40px;
+    border-top: 3px solid skyblue;
+}
+
+.header h3 {
+    position: absolute;
 }
