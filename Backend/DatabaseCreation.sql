@@ -112,19 +112,19 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('Question_Master',
 
 -- Attempt_Master table
 CREATE TABLE IF NOT EXISTS Attempt_Master (
-    attemptID INT UNIQUE NOT NULL,
+    attemptID INT UNIQUE NOT NULL AUTO_INCREMENT,
     examID INT NOT NULL,
     questionID INT NOT NULL UNIQUE,
     applicationID INT NOT NULL,
     selected_option ENUM('optionA', 'optionB', 'optionC', 'optionD') NOT NULL,
-    correct_option ENUM('optionA', 'optionB', 'optionC', 'optionD') NOT NULL,
-    marks_obt INT NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (examID, questionID, applicationID),
     FOREIGN KEY (examID, applicationID) REFERENCES Application_Master (examID, applicationID),
     FOREIGN KEY (questionID) REFERENCES Question_Master (questionID)
 );
 
+--correct_option ENUM('optionA', 'optionB', 'optionC', 'optionD') NOT NULL,
+--marks_obt INT NOT NULL,
 INSERT INTO Table_Registry (table_name, table_number) VALUES ('Attempt_Master', 8);
 
 -- Transaction_Master table

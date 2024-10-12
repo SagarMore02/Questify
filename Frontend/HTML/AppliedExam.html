@@ -147,11 +147,22 @@
                     const currentTime = new Date();
 
                     if (currentTime >= examStart && currentTime <= examEnd) {
-                        document.getElementById(`take_test_${exam.examID}`).disabled = false;
+                        const takeTestBtn = document.getElementById(`take_test_${exam.examID}`);
+                        takeTestBtn.disabled = false;
+
+                        // Add event listener to the button to redirect to the test page
+                       
                     }
                 });
             })
             .catch(error => console.error('Error fetching exam data:', error));
+
+        // Function to handle starting the test
+        function startTest(examID) {
+            console.log("Hitting");
+            // Redirect to the test page or trigger the test-taking process
+            window.location.href = `/start_exam?examID=${examID}`; // Redirect to the take test page, passing the exam ID
+        }
 
         // Optionally, you can periodically check the time to enable/disable the button in real-time
         setInterval(() => {
@@ -180,6 +191,10 @@
                 // Enable or disable the test button based on the time comparison
                 if (currentTime >= examStart && currentTime <= examEnd) {
                     takeTestBtn.disabled = false; // Enable the button if within the time range
+                    takeTestBtn.addEventListener('click', () => {
+                            console.log("In Action LIstener");
+                            startTest(exam.examID); // Call the function to start the test
+                        });
                 } else {
                     takeTestBtn.disabled = true; // Disable otherwise
                 }
