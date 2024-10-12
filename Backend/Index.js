@@ -125,6 +125,10 @@ app.post('/login-packet', async (req, res) => {
       console.log(password);
       return res.status(401).json({ message: 'Incorrect password.' });
     }
+    if(user.status==="Inactive" && user.usertype==='Applicant'){
+      console.log("User Not Active");
+        return res.status(401).json({ message: 'Inactive User.' });
+    }
     if(user.status!=="Active" && user.usertype!=='Applicant'){
       console.log("User Not Active");
       return res.status(401).json({ message: 'Inactive User.' });
@@ -248,9 +252,17 @@ app.post('/api/exams/apply', async (req, res) => {
     console.log(result);
     res.status(200).json({ message: 'Application successful', result });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to apply for the exam' });
-  }
+      if (error.code === 'ER_DUP_ENTRY') {
+          // Handle duplicate entry error
+          console.log("al");
+          res.status(409).json({ message: 'You Have Already Applied For this Exam' });
+          // You can add custom handling here, like sending an appropriate response
+      } else {
+          // Handle other errors
+          console.error(error);
+          res.status(500).json({ error: 'Failed to apply for the exam' });
+      }
+    }  
 });
 
 
@@ -259,7 +271,20 @@ app.post('/api/exams/apply', async (req, res) => {
 //to Update Exam:
 app.post('/updateExam', async(req, res) => {
   const { examID, name, app_start_date, app_end_date, exam_start_date, exam_end_date, exam_start_time, exam_end_time, total_marks, passing_marks, fees, syllabus } = req.body;
-
+  console.log({
+    examID,
+    name,
+    app_start_date,
+    app_end_date,
+    exam_start_date,
+    exam_end_date,
+    exam_start_time,
+    exam_end_time,
+    total_marks,
+    passing_marks,
+    fees,
+    syllabus
+});
   let connection;
   console.log("OrganizerID: " + req.session.myid);
   
@@ -510,7 +535,7 @@ app.post('/register', async (req, res) => {
 });
 
 
-
+// /api/exams
 
 //Admin Apis
 app.get('/admin', (req, res) => {
@@ -673,7 +698,7 @@ app.get('/profile', (req, res) => {
     res.status(401).json({ message: 'Not authenticated' });
   }
 });
-
+// /api/exams/apply
 app.get('/logout', (req, res) => {
   console.log("Logging Out");
   // Destroy the session
@@ -685,6 +710,42 @@ app.get('/logout', (req, res) => {
     // Redirect to login page or home page
     res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
   });
+});
+
+
+app.get('/UpcomingExam', (req, res) => {
+  console.log("serving Upcoming EXam");
+  const filePath = path.join(__dirname, '../Frontend/HTML/AppliedExam.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
+//********************************************************************************** */
+//For Showing which tests applicant applies
+app.get('/getappliedTest', async(req, res) => {
+  //const { id, status } = req.body;
+  //console.log("id : ",id ,"status :",status)
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    // Execute the update query
+    const me = 3
+    const [result] = await connection.query('select * from exam_master where examID in (select examID from application_master where applicationID=?)', [req.session.myid]);//me]);//
+    // Send success response
+    res.json(result);
+  } catch (err) {
+    console.error('Error updating data:', err);
+    res.status(500).json({ error: 'Failed to update user status' });
+  } finally {
+    if (connection) {
+      connection.release(); // Ensure connection is released
+    }
+  }
 });
 
 
