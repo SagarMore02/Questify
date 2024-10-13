@@ -187,6 +187,7 @@ app.get('/api/exams', async (req, res) => {
 
   app.post('/api/exams/myexam', async (req, res) => {
     const{examID}=req.body;
+    req.session.organExam=examID;
     const sql = "SELECT * FROM exam_master where examID=? And organizerID=?";
     const connection = await pool.getConnection();
     const [result] = await connection.execute(sql,[examID,req.session.myid]);
@@ -269,49 +270,111 @@ app.post('/api/exams/apply', async (req, res) => {
 
 
 //to Update Exam:
-app.post('/updateExam', async(req, res) => {
-  const { examID, name, app_start_date, app_end_date, exam_start_date, exam_end_date, exam_start_time, exam_end_time, total_marks, passing_marks, fees, syllabus } = req.body;
+app.post('/updateExam', async (req, res) => {
+  const {
+      examID,
+      name,
+      app_start_date,
+      app_end_date,
+      exam_start_date,
+      exam_end_date,
+      exam_start_time,
+      exam_end_time,
+      total_marks,
+      passing_marks,
+      fees,
+      syllabus
+  } = req.body;
+
   console.log({
-    examID,
-    name,
-    app_start_date,
-    app_end_date,
-    exam_start_date,
-    exam_end_date,
-    exam_start_time,
-    exam_end_time,
-    total_marks,
-    passing_marks,
-    fees,
-    syllabus
-});
+      examID,
+      name,
+      app_start_date,
+      app_end_date,
+      exam_start_date,
+      exam_end_date,
+      exam_start_time,
+      exam_end_time,
+      total_marks,
+      passing_marks,
+      fees,
+      syllabus
+  });
+
   let connection;
-  console.log("OrganizerID: " + req.session.myid);
-  
+
   try {
+      // Get the current date and time
+      const currentDateTime = new Date();
+
       // Get the connection asynchronously
       connection = await pool.getConnection();
-  
+
+      // Execute err_sql to get existing exam timings
+      const err_sql = `SELECT exam_start_date, exam_start_time, exam_end_date, exam_end_time FROM exam_master WHERE examID = ?`;
+      const [existingExam] = await connection.execute(err_sql, [examID]);
+
+      // Check if the exam exists
+      if (existingExam.length === 0) {
+          return res.status(404).json({ success: false, message: "Exam not found." });
+      }
+
+      const { 
+          exam_start_date: existingExamStartDate, 
+          exam_start_time: existingExamStartTime, 
+          exam_end_date: existingExamEndDate, 
+          exam_end_time: existingExamEndTime 
+      } = existingExam[0];
+
+      // Combine existing exam date and time for comparisons
+      const existingExamStartDateTime = new Date(existingExamStartDate);
+      const existingExamStartDateTimeWithTime = new Date(`${existingExamStartDate.toISOString().split('T')[0]}T${existingExamStartTime}`);
+      const existingExamEndDateTime = new Date(existingExamEndDate);
+      const existingExamEndDateTimeWithTime = new Date(`${existingExamEndDate.toISOString().split('T')[0]}T${existingExamEndTime}`);
+
+      // Check if current date and time is within the exam period
+      if (currentDateTime >= existingExamStartDateTimeWithTime && currentDateTime <= existingExamEndDateTimeWithTime) {
+          return res.status(400).json({ success: false, message: "Exam is live and cannot be edited." });
+      }
+
+      // Combine application dates for validation
+      const appStartDateTime = new Date(app_start_date);
+      const appEndDateTime = new Date(app_end_date);
+
+      // Check if application start date is after application end date
+      if (appStartDateTime > appEndDateTime) {
+          return res.status(400).json({ success: false, message: "Application start date cannot be after application end date." });
+      }
+
+      // Combine new exam dates for validation
+      const newExamStartDateTime = new Date(`${exam_start_date}T${exam_start_time}`);
+      const newExamEndDateTime = new Date(`${exam_end_date}T${exam_end_time}`);
+
+      // Check if exam start date is after exam end date
+      if (newExamStartDateTime > newExamEndDateTime) {
+          return res.status(400).json({ success: false, message: "Exam start date cannot be after exam end date." });
+      }
+
       // Prepare the SQL query for updating exam_master
       const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ? AND organizerID=?';
-  
+      
       // Execute the query and update the data in the database
-      const [result] = await connection.execute(sql, [name,app_start_date,app_end_date,exam_start_time,exam_start_date,exam_end_date,exam_end_time,total_marks,passing_marks,fees,syllabus,new Date(),examID,req.session.myid]);
-  
+      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID, req.session.myid]);
+
       // Check if any rows were updated
       if (result.affectedRows === 0) {
           return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
       }
-  
+
       console.log("Exam updated successfully, Exam ID: " + examID);
-  
-      // Respond with success (you can modify this based on your application's needs)
+
+      // Respond with success
       res.json({
           success: true,
           message: "Exam updated successfully",
           examID: examID
       });
-  
+
   } catch (error) {
       console.error("Error updating exam data:", error);
       res.status(500).json({ success: false, message: "Error updating exam" });
@@ -320,8 +383,9 @@ app.post('/updateExam', async(req, res) => {
           connection.release(); // Make sure to release the connection
       }
   }
-  
 });
+
+
 
 //get organizer dashboard
 app.get('/organ', (req, res) => {
@@ -450,8 +514,10 @@ app.post('/addExam', async(req, res) => {
 //Delete an Exam
 app.post('/delExam', async(req, res) => {
   const {examID} = req.body;
-  const sql = "DELETE FROM question_master WHERE examID=?";
   const connection = await pool.getConnection();
+  const attempts='Delete from attempt_master WHERE examID=?';
+  const[result0]=await connection.execute(attempts,[examID]);
+  const sql = "DELETE FROM question_master WHERE examID=?";
   const[result1]= await connection.execute(sql,[examID]);
   const sql1="DELETE FROM exam_master WHERE examID=?";
   const[result2]= await connection.execute(sql1,[examID]);
@@ -761,9 +827,109 @@ app.post('/get-questions', async (req, res) => {
     if (connection) connection.release(); // Release the database connection
   }
 });
+//Update Questions Api
+app.post('/updateQuestion', async (req, res) => {
+  const {questionId,updatedQuestion,optionA,optionB,optionC,optionD,correctOption,totalMarks}=req.body
+  const examID = req.session.organExam;
+  let connection;
+  // Modified query to fetch questions and their corresponding options from question_master
+  const query = `select * from question_master where questionID=?;`;
+  const ins_query=`Insert Into question_master(examID,question,optionA,optionB,optionC,optionD,answer_key,question_marks) values(?,?,?,?,?,?,?,?);`;
+  const update_query =`UPDATE question_master set question=?,optionA=?,optionB=?,optionC=?,optionD=?,answer_key=?,question_marks=? where questionID=?`;
+  try {
+    // Fetch questions and options from the database
+    connection = await pool.getConnection();
+
+    const [results] = await connection.query(query, [questionId]);
+
+    if (results.length === 0) {
+      //return res.status(404).json({ message: 'No questions found for this exam.' });
+      const[ins_result]=await connection.query(ins_query,[examID,updatedQuestion,optionA,optionB,optionC,optionD,correctOption,totalMarks]);;
+    
+    }else{
+      const[update_result]=await connection.query(update_query,[updatedQuestion,optionA,optionB,optionC,optionD,correctOption,totalMarks,questionId]);
+    }
+    res.status(200).json({ message:"Success" });
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    return res.status(500).json({ message: 'Server error' });
+  } finally {
+    if (connection) connection.release(); // Release the database connection
+  }
+});
+
+//Delete THe QUestion::
+app.post('/deleteQuestion', async (req, res) => {
+  const { questionId } = req.body;
+
+  // Check if questionId is provided
+  if (!questionId) {
+      return res.status(400).json({ message: 'Question ID is required' });
+  }
+
+  let connection;
+  try {
+      // Get a connection from the pool
+      connection = await pool.getConnection();
+
+      // SQL query to delete the question by its ID
+      const deleteQuery = 'DELETE FROM Question_Master WHERE questionID = ?';
+      const [result] = await connection.query(deleteQuery, [questionId]);
+
+      // Check if any rows were affected
+      if (result.affectedRows > 0) {
+          return res.status(200).json({ message: 'Question deleted successfully' });
+      } else {
+          return res.status(404).json({ message: 'Question not found' });
+      }
+  } catch (error) {
+      console.error('Error deleting question:', error);
+      return res.status(500).json({ message: 'Error deleting question' });
+  } finally {
+      // Release the connection back to the pool
+      if (connection) {
+          connection.release();
+      }
+  }
+});
 
 
+//Get Editing Questions
+app.post('/get-my-questions', async (req, res) => {
+  const examId = req.session.organExam; // examId comes from URL params
+  let connection;
 
+  // Modified query to fetch questions and their corresponding options from question_master
+  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time,q.question_marks from question_master q join exam_master e on q.examID=?;`;
+
+  try {
+    // Fetch questions and options from the database
+    connection = await pool.getConnection();
+
+    const [results] = await connection.query(query, [examId]);
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No questions found for this exam.' });
+    }
+    console.log(results);
+
+    // Format the questions and options into an array
+    const questionsArray = results.map(row => ({
+      id: row.questionID, // Add questionID to the object
+      question: row.question,
+      options: [row.optionA, row.optionB, row.optionC, row.optionD],
+      totalMarks: row.question_marks
+    }));
+
+    // Send the formatted questions array back to the frontend
+    res.json({ examId, questions: questionsArray,exam_end_time: results[0].exam_end_time });
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    return res.status(500).json({ message: 'Server error' });
+  } finally {
+    if (connection) connection.release(); // Release the database connection
+  }
+});
 
 
 
@@ -789,7 +955,8 @@ app.get('/getappliedTest', async(req, res) => {
     connection = await pool.getConnection();
     // Execute the update query
     const me = 3
-    const [result] = await connection.query('select * from exam_master where examID in (select examID from application_master where applicationID=?)', [req.session.myid]);//me]);//
+    console.log("req.session.myid==",req.session.myid);
+    const [result] = await connection.query('select * from exam_master where examID in (select examID from application_master where attendance="Pending" and applicationID=?)', [req.session.myid]);//me]);//
     // Send success response
     res.json(result);
   } catch (err) {
@@ -813,19 +980,26 @@ app.get('/notice/exams', async(req, res) => {
 
 //Insert Into Attempts:
 app.post('/InsertAttempt', async (req, res) => {
+  
   const{questionId,sel_answer}=req.body;
   const examId = req.session.testExamID; // examId comes from URL params
   let connection;
-
+  connection = await pool.getConnection();
+  const err_atten= `select attendance from Application_Master where examID=? and applicationID=?`;
+  const[atten] = await connection.execute(err_atten,[examId,req.session.myid]);
+  if(atten[0].attendance!=='Pending'){
+    console.log("Attendence: ",atten[0].attendence,"ExamId: ",examId,"Application id : ",req.session.myid);
+    return res.status(400).json({ amessage: 'Exam is Over!!' });
+  }
   const sql= 'Select * from Attempt_Master where examID=? and questionID=? and applicationID=?';
   // Modified query to fetch questions and their corresponding options from question_master
   const query = `INSERT INTO Attempt_Master (examID, questionID, applicationID, selected_option) VALUES(?,?,?,?)`;
   const updateQuery = 'UPDATE Attempt_Master SET selected_option = ? WHERE examID = ? AND questionID = ? AND applicationID = ?';
   try {
     // Fetch questions and options from the database
-    connection = await pool.getConnection();
+    
     const[result1]=await connection.query(sql,[examId,questionId,req.session.myid]);
-    if(result1.length>0){
+    if(result1.length>0 ){
       const[results]=await connection.query(updateQuery,[sel_answer,examId,questionId,req.session.myid]);
       console.log(results);
       return res.status(200).json({ message: 'Attempted' });
@@ -834,6 +1008,27 @@ app.post('/InsertAttempt', async (req, res) => {
       console.log(results);
       return res.status(200).json({ message: 'Attempted' });
     }
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    return res.status(500).json({ message: 'Server error' });
+  } finally {
+    if (connection) connection.release(); // Release the database connection
+  }
+});
+
+//submit
+app.post('/submitTest', async (req, res) => { // examId comes from URL params
+  let connection;
+  const examId = req.session.testExamID
+  //const sql= 'Select * from Attempt_Master where examID=? and questionID=? and applicationID=?';
+  // Modified query to fetch questions and their corresponding options from question_master
+  //const query = `INSERT INTO Attempt_Master (examID, questionID, applicationID, selected_option) VALUES(?,?,?,?)`;
+  const updateQuery = 'UPDATE Application_master SET attendance = "Present" WHERE examID = ? AND applicationID = ?';
+  try {
+    // Fetch questions and options from the database
+    connection = await pool.getConnection();
+    const[result1]=await connection.query(updateQuery,[examId,req.session.myid]);
+    return res.status(200).json({ message: 'Attempted' });
   } catch (err) {
     console.error('Error fetching questions:', err);
     return res.status(500).json({ message: 'Server error' });
