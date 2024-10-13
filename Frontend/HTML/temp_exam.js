@@ -12,7 +12,11 @@ const nextButton = document.getElementById("next-button");
 const saveButton = document.getElementById("save-button");
 const submitButton = document.getElementById("submit-button");
 
-// Fetch questions from backend
+// Progress bar elements
+const timerDisplay = document.getElementById("time-left");
+const progressBar = document.getElementById("timer-bar");
+
+// Fetch questions and exam end time from backend
 async function fetchQuestions() {
     //const examId = 1; // Replace this with dynamic examId if needed
 
@@ -36,9 +40,62 @@ async function fetchQuestions() {
 
         // Display the first question
         displayQuestion(currentQuestionIndex);
+        // Start the timer using the exam end time
+        startTimerWithEndTime(data.exam_end_time);
+
     } catch (error) {
         console.error('Error fetching questions:', error);
     }
+}
+
+// Function to start the timer and update the progress bar
+function startTimerWithEndTime(examEndTime) {
+    const [hours, minutes, seconds] = examEndTime.split(':').map(Number);
+    const endTime = new Date();
+    endTime.setHours(hours, minutes, seconds, 0);
+    console.log("Exam end time :", endTime);
+    
+    const startTime = Date.now(); // Use the current time as start time
+    const duration = (endTime - startTime) / 1000; // Total exam duration in seconds
+
+    let timeLeft = duration;
+
+    const timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Time's up!";
+            //progressBar.style.width = "100%";
+            progressBar.style.transform = "scaleX(0)";
+            // Auto-submit the exam when time is up
+            submitExam();
+        } else {    
+            timeLeft--;
+
+            // Calculate hours, minutes, and seconds
+            const hoursLeft = Math.floor(timeLeft / 3600);
+            const totalMinutes = Math.floor((timeLeft % 3600) / 60);
+            const totalSeconds = Math.floor(timeLeft % 60);
+
+            // Format the display to include leading zeros
+            timerDisplay.textContent = `${hoursLeft}:${totalMinutes < 10 ? '0' : ''}${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+
+            // Update progress bar
+            // const progressPercentage = ((duration - timeLeft) / duration) * 100;
+            // progressBar.style.width = `${progressPercentage}%`;
+
+            const progressPercentage = timeLeft / duration; // Calculate the remaining time percentage
+            progressBar.style.transform = `scaleX(${progressPercentage})`;
+        }
+    }, 1000); // Update every second
+}
+
+
+// Function to submit the exam automatically when time is up
+function submitExam() {
+    alert("Exam Submitted. Time's up!");
+    saveAnswer();
+    document.getElementById("quiz").style.display = "none"; // Hide the quiz
+    document.getElementById("result").style.display = "block"; // Show the result page
 }
 
 // Function to display a question and its options
@@ -88,60 +145,49 @@ function displayQuestion(index) {
 }
 
 // Save the selected answer for the current question
-// Save the selected answer for the current question
 function saveAnswer() {
-    // Get the selected option
     const selectedOption = document.querySelector('input[name="option"]:checked');
     
     if (selectedOption) {
-        // Save the selected option for the current question
         userAnswers[currentQuestionIndex] = selectedOption.value;
-        
-        // Get the option letter from the data attribute
-        const selectedOptionLetter = selectedOption.getAttribute("data-option-letter");
 
-        // Get the question ID from the questions array
+        const selectedOptionLetter = selectedOption.getAttribute("data-option-letter");
         const questionId = questions[currentQuestionIndex].id;
 
-        // Show the alert with question ID and selected option letter
-        const sel_answer ="option"+selectedOptionLetter;
+        const sel_answer = "option" + selectedOptionLetter;
         console.log(`Question ID: ${questionId}, Selected Option: ${sel_answer}`);
+
         const data = {
-            questionId: questionId,  // Pass the question ID
-            sel_answer: sel_answer  // Pass the selected answer
-          };
-        
-          // Make the POST request using fetch
-          fetch('/InsertAttempt', {
-            method: 'POST',  // HTTP method
+            questionId: questionId,
+            sel_answer: sel_answer
+        };
+
+        fetch('/InsertAttempt', {
+            method: 'POST',
             headers: {
-              'Content-Type': 'application/json'  // Set the content type to JSON
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)  // Convert JavaScript object to JSON string
-          })
-          .then(response => {
+            body: JSON.stringify(data)
+        })
+        .then(response => {
             if (!response.ok) {
-              throw new Error('Network response was not ok');
+                throw new Error('Network response was not ok');
             }
-            return response.json();  // Parse the JSON response
-          })
-          .then(data => {
+            return response.json();
+        })
+        .then(data => {
             console.log('Success:', data);
-            // Handle the success response (display message, update UI, etc.)
-            console.log(data.message);
-          })
-          .catch((error) => {
+        })
+        .catch(error => {
             console.error('Error:', error);
-            // Handle the error response
             alert('Error submitting attempt. Please try again.');
-          });
+        });
 
     } else {
-        userAnswers[currentQuestionIndex] = null; // If no option is selected
+        userAnswers[currentQuestionIndex] = null;
         alert(`No option selected for Question ID: ${questions[currentQuestionIndex].id}`);
     }
 }
-
 
 // Event listeners for navigation buttons
 prevButton.addEventListener("click", (e) => {
@@ -164,21 +210,13 @@ nextButton.addEventListener("click", (e) => {
 
 saveButton.addEventListener("click", (e) => {
     e.preventDefault();
-
-    // Save the answer and show the alert
     saveAnswer();
-
-    console.log(userAnswers); // This logs the user's answers
+    console.log(userAnswers);
 });
 
-// Submit button event
 submitButton.addEventListener("click", (e) => {
     e.preventDefault();
-    saveAnswer();
-    alert("Exam Submitted. Thank you!");
-    console.log(userAnswers); // This will log the user's answers, replace with actual submission logic
-    document.getElementById("quiz").style.display = "none"; // Hide the quiz
-    document.getElementById("result").style.display = "block"; // Show the result page
+    submitExam();
 });
 
 // Fetch questions when the page loads
