@@ -50,7 +50,10 @@
     height: 10px; /* Height of the timer bar */
     background-color: #e0e0e0; /* Background color */
     margin-right: 10px; /* Space between bar and time left */
-    border-radius: 5px; /* Rounded corners */
+    border-radius: 5px;
+    transform-origin: left; /* Make sure scaling happens from the right */
+    transform: scaleX(1); /* Initial scale */
+    transition: transform 0.5s; /* Rounded corners */
 }
 
 /* Quiz content on the right */

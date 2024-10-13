@@ -732,11 +732,7 @@ app.post('/get-questions', async (req, res) => {
   let connection;
 
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `
-    SELECT questionID, question, optionA, optionB, optionC, optionD
-    FROM question_master
-    WHERE examID = ?;
-  `;
+  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time from question_master q join exam_master e on q.examID=?;`;
 
   try {
     // Fetch questions and options from the database
@@ -757,7 +753,7 @@ app.post('/get-questions', async (req, res) => {
     }));
 
     // Send the formatted questions array back to the frontend
-    res.json({ examId, questions: questionsArray });
+    res.json({ examId, questions: questionsArray,exam_end_time: results[0].exam_end_time });
   } catch (err) {
     console.error('Error fetching questions:', err);
     return res.status(500).json({ message: 'Server error' });
