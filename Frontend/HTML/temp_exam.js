@@ -92,6 +92,28 @@ function startTimerWithEndTime(examEndTime) {
 
 // Function to submit the exam automatically when time is up
 function submitExam() {
+
+    fetch('/submitTest', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        //body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting attempt. Please try again.');
+    });
+
     alert("Exam Submitted. Time's up!");
     saveAnswer();
     document.getElementById("quiz").style.display = "none"; // Hide the quiz
@@ -171,11 +193,15 @@ function saveAnswer() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(response);
             }
             return response.json();
         })
         .then(data => {
+            if (data.amessage) {
+                // Display attendance value in an alert
+                alert(`Error: ${data.amessage}`);
+            } 
             console.log('Success:', data);
         })
         .catch(error => {
