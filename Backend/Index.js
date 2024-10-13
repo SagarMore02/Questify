@@ -585,6 +585,7 @@ app.post('/register', async (req, res) => {
 
     // Insert into organizer_organization only if organId is valid and userType is 'Organizer'
     if (organId !== "-1" && usertype === 'Organizer') {
+      console.log("Inserting in organizer_organization");
       const insertOrgSql = 'INSERT INTO organizer_organization (organizerID, organizationID) VALUES (?, ?)';
       await connection.execute(insertOrgSql, [newUserID, organId]);
     }

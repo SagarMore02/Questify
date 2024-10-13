@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let organId = "-1"; // Use `let` to allow reassignment
         let location="Pune"
         if (userType === "Organizer") {
-        organId = document.querySelector('input[placeholder="Enter Code"]').value;
+         const dropdown = document.getElementById('organization-dropdown');
+        organId = dropdown.value;
+        console.log(organId);
         }
         if(userType==="Organization"){
             location=document.querySelector('input[placeholder="Enter Location"]').value;
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             organId: organId,
             location: location
         };
-
+        console.log("Form Data",formData.organId);
         try {
             console.log("Trryingg");
             const response = await fetch('/register', {
