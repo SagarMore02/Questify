@@ -43,10 +43,12 @@
 <span class="details">Confirm Password</span>
 <input type="password" placeholder="Confirm your password" required>
 </div>
-
+<!-- dropdown -->
 <div class="input-box">
-    <span class="details"> Organization Code</span>
-    <input type="text" placeholder="Enter Code" required>
+    <span class="details">Organization Code</span>
+    <select id="organization-dropdown" required>
+        <option value="">Select Organization</option>
+    </select>
 </div>
 </div>
 
@@ -60,5 +62,21 @@
 </div>
 </div>
 </body>
+<script> 
+    fetch('/organization')
+        .then(response => response.json())
+        .then(data => {
+            const dropdown = document.getElementById('organization-dropdown');
+            data.forEach(organization => {
+                const option = document.createElement('option');
+                option.value = organization.id;
+                option.textContent = organization.id+" "+organization.name;
+                dropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching organization IDs:', error);
+        });
+    </script>
 </html>
 <!-- changes -->
