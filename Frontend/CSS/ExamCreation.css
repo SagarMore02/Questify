@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
+    color: #000000;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: rgba(255, 255, 255, 1); /* Changed to solid white */
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 800px; /* Increased max-width for better spacing */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-details {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of elements */
+    justify-content: space-between; /* Distribute space between columns */
+    margin-bottom: 20px;
+}
+
+.input-box {
+    flex: 1 1 calc(50% - 15px); /* Adjusted for spacing */
+    margin-bottom: 25px; /* Increased margin for more space between rows */
+    margin-right: 30px; /* Added margin for spacing between columns */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.input-box input::placeholder {
+color: rgb(0, 0, 0); /* Change this to your desired color */
+opacity: 1; /* Ensures the color is applied in some browsers */
+}
+
+
+.input-box:nth-child(2n) {
+    padding-right: 20px;
+    margin-right: 0; /* Remove margin for the rightmost column in each row */
+}
+
+.input-box span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    color: rgb(0, 0, 0); /* Change text color to white */
+    background: rgba(0, 0, 0, 0.2);        
+}
+
+#submit {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #6200ea;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px; /* Added margin for spacing */
+}
+
+#submit:hover {
+    background: #3700b3;
+}
+
+@media (max-width: 600px) {
+    .input-box {
+        flex: 1 1 100%; /* Stack inputs on smaller screens */
+        margin-right: 0; /* Remove margin on small screens */
+    }
+}
