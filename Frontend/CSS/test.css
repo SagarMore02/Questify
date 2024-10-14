@@ -1,62 +1,80 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+body, html {
     margin: 0;
     padding: 0;
+    font-family: "Poppins", sans-serif; /* A clean, modern font */
+    background: linear-gradient(to right, rgba(85, 3, 172, 0.9), rgba(146, 77, 219, 0.9)); /* Beautiful gradient */
+    height: 100vh; /* Full height for the body */
+    display: flex; /* Centering the container */
+    justify-content: center;
+    align-items: center;
 }
 
 .set-test-container {
     width: 90%;
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px; /* Limit the max width */
+    padding: 30px; /* Added padding */
+    background: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Depth effect */
+    transition: transform 0.3s ease; /* Smooth scaling */
+}
+
+.set-test-container:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
 }
 
 h2 {
-    text-align: center;
-    color: #007BFF;
-    margin-bottom: 20px;
+    text-align: center; /* Center the heading */
+    color: #007BFF; /* Heading color */
+    margin-bottom: 20px; /* Margin for spacing */
+    font-size: 28px; /* Increased font size */
 }
 
 .input-box {
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* More space between input fields */
 }
 
 .input-box label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 5px;
+    display: block; /* Block display for labels */
+    font-weight: 600; /* Bold font */
+    margin-bottom: 5px; /* Space below the label */
 }
 
-.input-box input,
-.input-box textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+.input-box input {
+    width: 100%; /* Full width inputs */
+    padding: 12px; /* More padding for comfort */
+    border: 1px solid #ccc; /* Border style */
+    border-radius: 5px; /* Rounded edges */
+    font-size: 16px; /* Font size for inputs */
+    transition: border 0.3s ease, box-shadow 0.3s ease; /* Transition for focus state */
 }
 
-.input-box textarea {
-    resize: vertical;
-    height: 100px;
+.input-box input:focus {
+    border-color: #007BFF; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Shadow effect on focus */
+    outline: none; /* Remove default outline */
 }
 
 .input-box button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+    width: 100%; /* Full width for the button */
+    padding: 12px; /* Padding for button */
+    background-color: #007BFF; /* Primary color for button */
+    color: #fff; /* Text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    transition: background 0.3s ease, transform 0.3s ease; /* Transition for hover effect */
 }
 
 .input-box button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: scale(1.05); /* Slight scaling on hover */
+}
+
+@media (max-width: 768px) {
+    .set-test-container {
+        width: 95%; /* Responsive width for smaller screens */
+        padding: 20px; /* Adjust padding */
+    }
 }

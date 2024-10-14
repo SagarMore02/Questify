@@ -19,6 +19,7 @@
                 })
                 .catch(error => console.error('Error fetching profile:', error));
             //end
+            document.getElementById('Result').addEventListener('click', () => Screenchange('/getApplicantResult'));
             document.getElementById('UpcomingExam').addEventListener('click', () => Screenchange('/UpcomingExam'));
             document.getElementById('ApplicantDash').addEventListener('click', () => Screenchange('ApplicantDash.html'));
             document.getElementById('ApplicantInfo').addEventListener('click', () => Screenchange('ApplicantInfo.html'));
@@ -59,8 +60,8 @@
                 <li><a href="#" id="ApplicantDash">Dashboard</a></li>
                 <li><a href="#" id="ApplicantInfo">Profile</a></li>
                 <li><a href="#" id="ApplicantExam">Apply For Exam</a></li>
-                <li><a href="#" id="">Pay Fees</a></li>
-                <li><a href="#" id="">Result</a></li>
+                <!-- <li><a href="#" id="">Pay Fees</a></li> -->
+                <li><a href="#" id="Result">Result</a></li>
                 <li><a href="#" id="UpcomingExam">Upcoming Exam</a></li>
                 <li><a href="#" id="Logout">Logout</a></li>
             </ul>

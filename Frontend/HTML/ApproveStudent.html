@@ -7,50 +7,116 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            display: flex;
-            height: 100vh;
-            margin: 0;
-        }
-        .sidebar {
-            min-width: 250px;
-            max-width: 250px;
-            background-color: #343a40;
-            color: white;
-            padding: 15px;
-            flex-shrink: 0;
-        }
-        .sidebar a {
-            color: white;
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
-        }
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(to left,rgba(200, 182, 255, 1), rgba(231, 198, 255, 1));
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+        color: #000000;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 30px; /* Increased padding for a more spacious feel */
+        background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+        backdrop-filter: blur(8px); /* Blurred background */
+        border-radius: 20px; /* Rounded corners */
+        margin: 70px auto; /* Centered with top margin */
+        max-width: 1200px; /* Limit width for better layout */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+        background-size: cover; /* Cover for background */
+        background-blend-mode: overlay; /* Blending effect */
+        position: relative; /* To position loading spinner */
+    }
+
+    .loading {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 999;
+    }
+
+    h1 {
+        color: #000000; /* White color for headings */
+        margin-bottom: 10px;
+        font-size: 32px; /* Increased font size */
+        text-align: center; /* Center alignment */
+    }
+
+    h2 {
+        color: #000000; /* White color for subheadings */
+        margin-bottom: 15px;
+        text-align: center; /* Center alignment */
+    }
+
+    p {
+        color: #000000; /* White color for paragraphs */
+        margin-bottom: 20px;
+        text-align: center; /* Center alignment */
+    }
+
+    table {
+        border-collapse: collapse; /* Merge borders */
+        width: 100%; /* Full width */
+        margin-top: 20px; /* Space above table */
+    }
+
+    th {
+        background-color: rgba(62, 4, 125, 0.9); /* Dark background for table headers */
+        color: rgb(255, 252, 252); /* White text in headers */
+        padding: 10px; /* Padding for table headers */
+        text-align: left; /* Left-align text in headers */
+        border: 1px solid #dee2e6; /* Border for headers */
+    }
+
+    td {
+        padding: 10px; /* Padding for table cells */
+        border: 1px solid #dee2e6; /* Border for cells */
+        transition: background-color 0.3s ease; /* Smooth background change */
+    }
+
+    tr:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Light gray on hover */
+    }
+
+    .update-status-btn {
+        background-color: rgba(85, 3, 172, 0.8); /* Button color */
+        color: white; /* White text */
+        border: none; /* Remove border */
+        border-radius: 4px; /* Rounded corners */
+        padding: 8px 12px; /* Padding for the button */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s ease, transform 0.2s; /* Smooth background change and scale */
+    }
+
+    .update-status-btn:hover {
+        background-color: rgba(62, 4, 125, 0.9); /* Darker shade on hover */
+        transform: translateY(-2px); /* Slight upward movement on hover */
+    }
+
+    .update-status-btn:active {
+        transform: translateY(0); /* Return to original position when active */
+    }
+
+    .highlight {
+        background-color: rgba(85, 3, 172, 0.2) !important; /* Light gray highlight */
+        transition: background-color 0.3s ease; /* Smooth highlight transition */
+    }
+
     </style>
 </head>
 <body>
-    <!-- Sidebar
-    <div class="sidebar">
-        <h2>Applicant Panel</h2>
-        <a href="#applicants" data-target="applicant-section">Applicants</a>
-        <a href="#logout">Logout</a>
-    </div> -->
-
-    <!-- Main Content -->
     <div class="main-content">
+        <div class="loading" id="loading">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
         <div class="container">
             <h1>Dashboard</h1>
             <p>Welcome to the applicant panel. Here you can view and manage applicants.</p>
@@ -69,7 +135,7 @@
                             <th>Fees Status</th>
                             <th>Attendance</th>
                             <th>Application Status</th>
-                            <th></th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -91,29 +157,10 @@
             // Show the initial section
             document.querySelector('#applicant-section')?.classList.add('active');
 
-            // Handle sidebar link clicks
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault(); // Prevent default link behavior
-
-                    // Remove 'active' class from all sections
-                    document.querySelectorAll('.section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-
-                    // Add 'active' class to the clicked section
-                    const targetId = this.getAttribute('data-target');
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
-                    } else {
-                        console.error(`Section with id ${targetId} not found.`);
-                    }
-                });
-            });
-
             // Function to fetch and populate data
             function fetchData(endpoint, tableId) {
+                // Show loading spinner
+                document.getElementById('loading').style.display = 'block';
                 fetch(endpoint)
                 .then(response => response.json())
                 .then(data => {
@@ -141,11 +188,17 @@
                                 <td><button class="btn btn-primary update-status-btn" data-id="${item.id}">Update Status</button></td>
                             `;
                             tableBody.appendChild(row);
+                            
+                            // Add click event listener to highlight the row
+                            row.addEventListener('click', function() {
+                                this.classList.toggle('highlight'); // Toggle highlight on click
+                            });
                         });
 
                         // Attach click event listeners to buttons
                         document.querySelectorAll('.update-status-btn').forEach(button => {
-                            button.addEventListener('click', function() {
+                            button.addEventListener('click', function(event) {
+                                event.stopPropagation(); // Prevent row highlighting when clicking the button
                                 const id = this.getAttribute('data-id');
                                 const select = document.querySelector(`.status-select[data-id="${id}"]`);
                                 const status = select ? select.value : '';
@@ -163,6 +216,10 @@
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
+                })
+                .finally(() => {
+                    // Hide loading spinner
+                    document.getElementById('loading').style.display = 'none';
                 });
             }
 
@@ -178,6 +235,8 @@
                 .then(response => response.json())
                 .then(data => {
                     fetchData('/organapplicant', 'applicant-table');
+                    // Show success message
+                    alert('Status updated successfully!');
                 })
                 .catch(error => {
                     console.error('Error:', error);
