@@ -64,12 +64,11 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'sagar@123',
-  //password:'pranav@06',
+  //password: 'sagar@123',
+  password:'pr@n@v06',
   //password:'root',
   //password:'101201',
-  //password:'pranav@06',
-  database: 'questify',
+  database: 'Questify',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
