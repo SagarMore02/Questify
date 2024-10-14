@@ -859,9 +859,9 @@ app.get('/start_exam', (req, res) => {
 app.post('/get-questions', async (req, res) => {
   const examId = req.session.testExamID; // examId comes from URL params
   let connection;
-
+  
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time from question_master q join exam_master e on q.examID=?;`;
+  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time from question_master q join exam_master e on e.examID=?;`;
 
   try {
     // Fetch questions and options from the database
@@ -870,6 +870,7 @@ app.post('/get-questions', async (req, res) => {
     const [results] = await connection.query(query, [examId]);
 
     if (results.length === 0) {
+      console.log("eroor");
       return res.status(404).json({ message: 'No questions found for this exam.' });
     }
     console.log(results);
@@ -959,11 +960,12 @@ app.post('/deleteQuestion', async (req, res) => {
 
 //Get Editing Questions
 app.post('/get-my-questions', async (req, res) => {
+  console.log("In get my ques");
   const examId = req.session.organExam; // examId comes from URL params
   let connection;
 
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time,q.question_marks from question_master q join exam_master e on q.examID=?;`;
+  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time,q.question_marks from question_master q join exam_master e on e.examID=?;`;
 
   try {
     // Fetch questions and options from the database
@@ -1047,6 +1049,7 @@ app.post('/InsertAttempt', async (req, res) => {
   const{questionId,sel_answer}=req.body;
   const examId = req.session.testExamID; // examId comes from URL params
   let connection;
+  console.log(questionId);
   connection = await pool.getConnection();
   const err_atten= `select attendance from Application_Master where examID=? and applicationID=?`;
   const[atten] = await connection.execute(err_atten,[examId,req.session.myid]);
@@ -1062,6 +1065,7 @@ app.post('/InsertAttempt', async (req, res) => {
     // Fetch questions and options from the database
     
     const[result1]=await connection.query(sql,[examId,questionId,req.session.myid]);
+    console.log(result1.length);
     if(result1.length>0 ){
       const[results]=await connection.query(updateQuery,[sel_answer,examId,questionId,req.session.myid]);
       console.log(results);

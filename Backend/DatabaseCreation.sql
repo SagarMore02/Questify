@@ -122,9 +122,6 @@ CREATE TABLE IF NOT EXISTS Attempt_Master (
     FOREIGN KEY (examID, applicationID) REFERENCES Application_Master (examID, applicationID),
     FOREIGN KEY (questionID) REFERENCES Question_Master (questionID)
 );
-
---correct_option ENUM('optionA', 'optionB', 'optionC', 'optionD') NOT NULL,
---marks_obt INT NOT NULL,
 INSERT INTO Table_Registry (table_name, table_number) VALUES ('Attempt_Master', 8);
 
 -- Transaction_Master table
