@@ -64,8 +64,8 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password: 'sagar@123',
-  password:'pr@n@v06',
+  password: 'sagar@123',
+  //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
   database: 'Questify',
@@ -520,7 +520,20 @@ app.get('/ApplicantResult', async (req, res) => {
   }
 });
 
+//Check IF there is any test
 
+app.get('/CheckTest', async(req, res) => {
+  console.log("serving Check Test");
+  const sql = 'Select * from question_master where examID=?';
+  const connection = await pool.getConnection();
+  const [result] = await connection.query(sql,[req.session.examID]);
+  if(result.length>0){
+    console.log("Values");
+    res.status(200).json({message:'There are Values'});
+  }else{
+    res.status(400).json({message:'Please Add atleast one question'});
+  }
+});
 
 
 
