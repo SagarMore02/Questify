@@ -462,68 +462,6 @@ app.post('/addQuestion', async(req, res) => {
 
 });
 
-app.get('/getApplicantResult', (req, res) => {
-  console.log("Applicant Results :",req.session.myid);
-  const filePath = path.join(__dirname, '../Frontend/HTML/ApplicantResults.html');
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error sending file:', err);
-      res.status(err.status || 500).send('Error sending file');
-    } else {
-      res.fil
-      console.log('File sent:', filePath);
-    }
-  });
-});
-
-//Result:::
-app.get('/ApplicantResult', async (req, res) => {
-  const appID = req.session.myid; // Get the applicant ID from the session
-  const sql = `SELECT 
-      u.userID AS applicationID,
-      u.firstname AS applicant_name,
-      u.lastname AS applicant_lastname,
-      e.examID as examID,
-      e.name AS exam_name,
-      (SELECT COALESCE(SUM(q.question_marks), 0) 
-       FROM attempt_master a
-       JOIN question_master q ON a.examID = q.examID AND a.questionID = q.questionID
-       WHERE a.applicationID = u.userID AND a.examID = e.examID AND a.selected_option = q.answer_key) AS marks_obtained, 
-      e.total_marks,
-      CASE 
-          WHEN (SELECT COALESCE(SUM(q.question_marks), 0) 
-                FROM attempt_master a
-                JOIN question_master q ON a.examID = q.examID AND a.questionID = q.questionID
-                WHERE a.applicationID = u.userID AND a.examID = e.examID AND a.selected_option = q.answer_key) >= e.passing_marks 
-          THEN 'Passed'
-          ELSE 'Failed'
-      END AS status
-  FROM 
-      User_Master u
-  JOIN 
-      Application_Master a ON u.userID = a.applicationID
-  JOIN 
-      Exam_Master e ON a.examID = e.examID
-  WHERE 
-      u.userID = ?;`;
-
-  let connection;
-  try {
-      connection = await pool.getConnection();
-      const [result] = await connection.query(sql, [appID]); // Use connection.query instead of connection.execute
-      res.status(200).json(result); // Correct the syntax for sending JSON response
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' }); // Send an error response
-  } finally {
-      if (connection) connection.release(); // Release the connection back to the pool
-  }
-});
-
-
-
-
-
 //Set Test : SetTest
 
 app.get('/SetTest', (req, res) => {
