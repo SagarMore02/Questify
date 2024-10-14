@@ -1,198 +1,129 @@
-body {
-    font-family: Arial, sans-serif;
+body, html {
     margin: 0;
     padding: 0;
-    display: flex;
-    height: 100vh;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(to left, rgba(85, 3, 172, 0.9), rgba(146, 77, 219, 0.9));
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    color: #fff;
 }
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to left, rgba(62, 4, 125, 0.9), rgba(108, 67, 151, 0.9));
+    padding: 15px 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    border-radius: 0 0 20px 20px;
+}
+
+.navbar .profile-section {
+    font-size: 18px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar ul li {
+    display: inline;
+}
+
+.navbar ul a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.navbar ul a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .main-content {
-    flex-grow: 1;
-    background-color: #f4f4f4;
-    padding: 20px;
-   
-    /* display: flex; */
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    margin: 70px auto;
+    max-width: 1200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background-size: cover;
+    background-blend-mode: overlay;
+}
+
+.header h1 {
+    margin-top: 0;
+    color: #fff;
+    font-size: 32px;
+    text-align: center;
 }
 
 .content {
     display: flex;
-    justify-content: space-between;
-}
-
-.chart {
-    width: 60%;
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.important-notice {
-    width: 35%;
-    background-color: #e9ecef;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.footer {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    text-align: center;
+    gap: 20px;
+    flex-wrap: wrap;
     margin-top: 20px;
 }
 
-.content {
-    display: flex;
-}
-
-.chart {
+.card, .important-notice {
     flex: 1;
-    background-color: #ffffff; /* Adjust background color as needed */
-    padding: 10px;
-    border: 1px solid #ddd; /* Adjust border as needed */
-    margin-right: 40px;
-    border-top: 3px solid skyblue;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-size: cover;
+    background-blend-mode: lighten;
 }
 
-.header h3{
-    position: absolute;
+.card:hover, .important-notice:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-.important-notice {
-    position: relative; /* Make the div a containing block for absolutely positioned elements */
-    padding-top: 40px; /* Add padding at the top to make room for the h2 and controls */
+.card h3 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.card p {
+    font-size: 24px;
+    color: #4b0082;
+    margin: 10px 0 0;
 }
 
 .important-notice h2 {
-    background-color: rgb(37, 104, 167); /* Set the background color to blue */
-    color: white; /* Set the text color to white */
-    padding: 10px; /* Add padding inside the h2 */
-    border-radius: 5px; /* Optional: Rounded corners */
-    
-    position: absolute; /* Position the h2 absolutely within the .important-notice div */
-    top: 0;
-    left: 0;
-    margin: 0; /* Remove any default margins */
-    width: calc(100% - 30px);
+    background-color: rgba(85, 3, 172, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 1;
 }
 
-.sidebar {
-    width: 250px;
-    background-color: #333;
-    color: white;
-    padding: 20px;
-}
-
-.sidebar .profile-section {
-    text-align: left;
-    margin-bottom: 20px;
-}
-
-.sidebar .profile-section .logo {
-    width: 80px;
-    margin-bottom: 10px;
-}
-
-.sidebar nav ul {
+.important-notice ul {
     list-style-type: none;
-    padding: 0;
+    padding: 10px;
 }
 
-.sidebar nav ul li {
-    margin: 15px 0;
+.important-notice ul li {
+    margin: 10px 0;
 }
 
-.sidebar nav ul li a {
-    color: white;
+.important-notice ul li a {
+    color: rgb(85, 3, 172);
     text-decoration: none;
 }
 
-
-.controls {
-    position: absolute;
-    top: 0; 
-    right: 0;
-    display: flex;
-    align-items: center;
-    gap: 5px; /* Space between minimize and close symbols */
-    padding: 10px;
+.important-notice ul li a:hover {
+    text-decoration: underline;
 }
-
-.controls .minimize {
-    width: 20px;
-    text-align: center;
-}
-
-.controls .close {
-    width: 20px;
-    text-align: center;
-    font-weight: bold;
-}
-.controls span {
-    cursor: pointer; /* Change cursor to pointer when hovering over symbols */
-    font-size: 18px;
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-
-/* details css */
-.main-content {
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-.header h3 {
-    margin-bottom: 20px;
-    color: #007BFF;
-    text-align: center;
-    font-size: 24px;
-}
-
-.chart {
-    margin-bottom: 30px;
-}
-
-.user-details {
-     width: 100%;
-    /* display: flex; */
-    flex-wrap: wrap; 
-    justify-content: space-between;
-}
-
-.input-box {
-    width: calc(50% - 10px); /* Adjust width to fit two items per row with a small gap */
-    margin-bottom: 15px;
-}
-
-.details {
-    font-weight: 500;
-    margin-bottom: 5px;
-    display: inline;
-    color: #333;
-}
-
-.input-box input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    color: #333;
-}
-
-.input-box input::placeholder {
-    color: #aaa;
-}
-
-.input-box input:focus {
-    border-color: #007BFF;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
