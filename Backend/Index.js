@@ -155,7 +155,7 @@ app.post('/login-packet', async (req, res) => {
                         break;
       case 'Organization':
         console.log('Login successful, redirecting...');
-        res.status(200).json({ redirectURL: '/organ' });
+        res.status(200).json({ redirectURL: '/OrganizationFrame.html' });
                         break;
     }
   } catch (error) {
@@ -1184,23 +1184,35 @@ app.get('/getExamIds', async (req, res) => {
 });
 
 app.get('/getOrganizer', async (req, res) => {
-  // const organizationID = req.session.organId; // Get organizationID from session
-  const organizationID = 1;
+  const organizationId = req.session.myid; // Assuming the username is stored in session
 
-  // SQL query to fetch all organizers for the given organizationID
-  const sql = `SELECT userID, username, firstname, status FROM user_master WHERE userID IN (SELECT organizerID FROM Organizer_Organization WHERE organizationID = 1);`;
+  if (!organizationId) {
+    return res.status(401).json({ message: 'Unauthorized: Organization not logged in' });
+  }
+
   const connection = await pool.getConnection();
 
   try {
-    const [organizers] = await connection.query(sql, [organizationID]);
-    res.json(organizers);  // Send the list of organizers as a response
+
+    // Step 2: Fetch all organizers linked to this organizationID
+    const sqlFetchOrganizers = `
+      SELECT u.userID as organizerID, u.username as organizerName, u.email as organizerEmail, u.mobile as organizerPhone
+      FROM user_master as u
+      WHERE userID IN (SELECT organizerID FROM Organizer_Organization WHERE organizationID = ?);
+;
+    `;
+    const [organizers] = await connection.query(sqlFetchOrganizers, [organizationId]);
+
+    // Step 3: Send the list of organizers as a response
+    res.json(organizers);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching organizers:', error);
     res.status(500).json({ message: 'Server error' });
   } finally {
     connection.release();
   }
 });
+
 
 
 app.listen(PORT, () => {
