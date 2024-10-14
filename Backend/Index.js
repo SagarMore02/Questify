@@ -64,9 +64,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pranav@06',
-  //password:'root',
+  password:'root',
   //password:'101201',
   //password:'pranav@06',
   database: 'questify',
@@ -845,7 +845,7 @@ app.get('/start_exam', (req, res) => {
   const {examID} = req.query;
   req.session.testExamID=examID;
   console.log("serving home with examID:", req.session.testExamID);
-  const filePath = path.join(__dirname, '../Frontend/HTML/temp_exam.html');
+  const filePath = path.join(__dirname, '../Frontend/HTML/exam.html');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error sending file:', err);
@@ -861,7 +861,13 @@ app.post('/get-questions', async (req, res) => {
   let connection;
   
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time from question_master q join exam_master e on e.examID=?;`;
+  const query = `SELECT q.questionID, q.examID, q.question, q.optionA, q.optionB, q.optionC, q.optionD, 
+       e.exam_start_time, e.exam_end_time 
+        FROM question_master q 
+        JOIN exam_master e ON q.examID = e.examID
+        WHERE q.examID = ?
+        GROUP BY q.questionID, q.examID, q.question, q.optionA, q.optionB, q.optionC, q.optionD, e.exam_start_time, e.exam_end_time;
+`;
 
   try {
     // Fetch questions and options from the database
@@ -1103,6 +1109,99 @@ app.post('/submitTest', async (req, res) => { // examId comes from URL params
     if (connection) connection.release(); // Release the database connection
   }
 });
+
+app.post('/check-result', async (req, res) => {
+  const { studentid, examid } = req.body;
+
+
+  const connection = await pool.getConnection();
+
+  try {
+    // Query 1: Fetch passing marks
+    const passQuery = 'SELECT passing_marks FROM exam_master WHERE examID = ?';
+    const [passResult] = await connection.query(passQuery, [examid]);
+
+    if (!passResult.length) {
+      return res.status(404).json({ message: 'Exam not found' });
+    }
+
+    const passingMarks = passResult[0].passing_marks;
+
+    // Query 2: Fetch attempt and question data
+    const fetchMarksQuery = `
+      SELECT a.examID, a.questionID, a.selected_option, q.answer_key, q.question_marks
+      FROM attempt_master a
+      JOIN question_master q ON a.examID = q.examID AND a.questionID = q.questionID
+      WHERE a.examID = ? AND a.applicationID = ?`;
+
+    const [attemptResults] = await connection.query(fetchMarksQuery, [examid, studentid]);
+
+    if (!attemptResults.length) {
+      return res.status(404).json({ message: 'No attempts found for this student or exam' });
+    }
+
+    // Initialize total score
+    let totalScore = 0;
+
+    // Process each question: Compare selected_option with answer_key and sum marks if correct
+    attemptResults.forEach(row => {
+      if (row.selected_option === row.answer_key) {
+        totalScore += row.question_marks;
+      }
+    });
+
+    // Determine pass or fail based on totalScore and passingMarks
+    const status = totalScore >= passingMarks ? 'Passed' : 'Failed';
+
+    // Return the result to the frontend
+    res.json({
+      studentid: studentid,
+      examid: examid,
+      totalScore: totalScore,
+      status: status
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  } finally {
+    connection.release();
+  }
+});
+
+app.get('/getExamIds', async (req, res) => {
+  const sql = "SELECT examID FROM exam_master";  // Fetch all examIDs from exam_master
+  const connection = await pool.getConnection();
+
+  try {
+    const [exams] = await connection.query(sql);  // No need for req.session.myid here as we fetch all exams
+    res.json(exams);  // Send the list of examIDs as a response
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  } finally {
+    connection.release();
+  }
+});
+
+app.get('/getOrganizer', async (req, res) => {
+  // const organizationID = req.session.organId; // Get organizationID from session
+  const organizationID = 1;
+
+  // SQL query to fetch all organizers for the given organizationID
+  const sql = `SELECT userID, username, firstname, status FROM user_master WHERE userID IN (SELECT organizerID FROM Organizer_Organization WHERE organizationID = 1);`;
+  const connection = await pool.getConnection();
+
+  try {
+    const [organizers] = await connection.query(sql, [organizationID]);
+    res.json(organizers);  // Send the list of organizers as a response
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  } finally {
+    connection.release();
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
