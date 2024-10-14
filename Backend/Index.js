@@ -844,7 +844,7 @@ app.get('/start_exam', (req, res) => {
   const {examID} = req.query;
   req.session.testExamID=examID;
   console.log("serving home with examID:", req.session.testExamID);
-  const filePath = path.join(__dirname, '../Frontend/HTML/temp_exam.html');
+  const filePath = path.join(__dirname, '../Frontend/HTML/exam.html');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error sending file:', err);
