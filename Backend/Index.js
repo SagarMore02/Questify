@@ -64,9 +64,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pranav@06',
-  //password:'root',
+  password:'root',
   //password:'101201',
   //password:'pranav@06',
   database: 'questify',
@@ -716,7 +716,7 @@ app.get('/start_exam', (req, res) => {
   const {examID} = req.query;
   req.session.testExamID=examID;
   console.log("serving home with examID:", req.session.testExamID);
-  const filePath = path.join(__dirname, '../Frontend/HTML/temp_exam.html');
+  const filePath = path.join(__dirname, '../Frontend/HTML/exam.html');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error sending file:', err);
@@ -761,10 +761,6 @@ app.post('/get-questions', async (req, res) => {
     if (connection) connection.release(); // Release the database connection
   }
 });
-
-
-
-
 
 
 app.get('/UpcomingExam', (req, res) => {
@@ -834,12 +830,14 @@ app.post('/InsertAttempt', async (req, res) => {
       console.log(results);
       return res.status(200).json({ message: 'Attempted' });
     }
+    
   } catch (err) {
     console.error('Error fetching questions:', err);
     return res.status(500).json({ message: 'Server error' });
   } finally {
     if (connection) connection.release(); // Release the database connection
   }
+  
 });
 
 app.listen(PORT, () => {
