@@ -88,16 +88,6 @@
             font-size: 20px;
         }
 
-        .question-box input[type="text"] {
-            width: calc(100% - 24px);
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
         .options-container {
             margin-bottom: 20px;
         }
@@ -154,34 +144,34 @@
 </head>
 <body>
     <div class="container">
-        <div id="question-form" class="section">
+        <form id="questionForm">
             <div class="question-box" id="current-question-box">
                 <h3>Question 1</h3>
-                <input type="text" id="question-text" placeholder="Enter your question">
-                <input type="number" id="question-marks" placeholder="Enter Question Marks">
+                <input type="text" id="question-text" placeholder="Enter your question" required>
+                <input type="number" id="question-marks" placeholder="Enter Question Marks" required>
                 <div class="options-container">
                     <div class="option">
-                        <input type="radio" name="answer" value="option-1">
-                        <input type="text" id="option-1" placeholder="Option 1">
+                        <input type="radio" name="answer" value="option-1" required>
+                        <input type="text" id="option-1" placeholder="Option 1" required>
                     </div>
                     <div class="option">
                         <input type="radio" name="answer" value="option-2">
-                        <input type="text" id="option-2" placeholder="Option 2">
+                        <input type="text" id="option-2" placeholder="Option 2" required>
                     </div>
                     <div class="option">
                         <input type="radio" name="answer" value="option-3">
-                        <input type="text" id="option-3" placeholder="Option 3">
+                        <input type="text" id="option-3" placeholder="Option 3" required>
                     </div>
                     <div class="option">
                         <input type="radio" name="answer" value="option-4">
-                        <input type="text" id="option-4" placeholder="Option 4">
+                        <input type="text" id="option-4" placeholder="Option 4" required>
                     </div>
                 </div>
                 <div class="buttons">
-                    <button id="addQuestion">Add Question</button>
+                    <button type="submit" id="addQuestion">Add Question</button>
                 </div>
             </div>
-        </div>
+        </form>
 
         <div id="submit-container" class="buttons">
             <button id="setTest">Set Test</button>
@@ -197,141 +187,91 @@
     
     <script>
         let questionCount = 1;
-        const button1 = document.getElementById('setTest');
-        const button2 = document.getElementById('addQuestion');
 
-        button1.addEventListener('click', function() {
-            setTest();
-        });
+        // Handle form submission to add question
+        document.getElementById('questionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent form from submitting normally
 
-        button2.addEventListener('click', function() {
-            addQuestion();
-        });
-
-        async function  addQuestion() {
-            const questionText = document.getElementById('question-text').value;
-            const question_marks = document.getElementById('question-marks').value;
-            if (!questionText.trim()) {
-                alert("Please enter a question.");
+            // Check if form is valid
+            if (!this.checkValidity()) {
+                this.reportValidity();  // Let the browser show default validation messages
                 return;
             }
 
+            // Get question and options data
+            const questionText = document.getElementById('question-text').value;
+            const questionMarks = document.getElementById('question-marks').value;
             const options = [];
-            let crc=0;
+            let crc = 0;
+
             for (let i = 1; i <= 4; i++) {
                 const optionText = document.getElementById(`option-${i}`).value;
                 const isCorrect = document.querySelector(`input[name="answer"]:checked`)?.value === `option-${i}`;
                 options.push({ text: optionText, isCorrect: isCorrect });
-                if(isCorrect){
-                    crc=i;
+                if (isCorrect) {
+                    crc = i;
                 }
             }
-            let a="";
-            switch (crc){
-                case 1:
-                        a="optionA";
-                        break;
-                case 2:
-                        a="optionB";
-                        break;
-                case 3:
-                        a="optionC";
-                        break;
-                case 4:
-                        a="optionD";
-                        break;
-                default:
-                        a="UnSelected";
-                        break;
+
+            let correctOption = '';
+            switch (crc) {
+                case 1: correctOption = 'optionA'; break;
+                case 2: correctOption = 'optionB'; break;
+                case 3: correctOption = 'optionC'; break;
+                case 4: correctOption = 'optionD'; break;
+                default: correctOption = 'UnSelected'; break;
             }
 
-            // if (options.filter(opt => opt.text.trim()).length < 2) {
-            //     alert("Please provide at least two valid options.");
-            //     return;
-            // }
-
-            // if (!options.some(opt => opt.isCorrect)) {
-            //     alert("Please select a correct answer.");
-            //     return;
-            // }
-
-            // Send question data to the server (simulate adding to the database)
-            //
-            //question,option1,option2,option3,option4,correctOpt
             const questionData = {
                 questionNumber: questionCount,
                 question: questionText,
-                question_marks:question_marks,
+                question_marks: questionMarks,
                 option1: options[0].text,
                 option2: options[1].text,
                 option3: options[2].text,
                 option4: options[3].text,
-                correctOpt:a
+                correctOpt: correctOption
             };
 
             try {
-            console.log("Exam Creation");
-            const response = await fetch('/addQuestion', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(questionData)
+                const response = await fetch('/addQuestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log(`Question ${questionData.questionNumber} Added`);
+                    // Clear form after submission
+                    this.reset();
+                    questionCount++;
+                    document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting the form.');
+            }
+        });
+
+        // Simulate setting the test
+        document.getElementById('setTest').addEventListener('click', async function() {
+            const response = await fetch('/CheckTest', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
             });
 
-            const data = await response.json();
-
             if (response.ok) {
-                console.log(questionData.questionNumber+" Added");
-                // Redirect or clear the form as needed
-                //window.location.href = data.redirectURL;
+                alert("Test has been successfully set.");
+                window.location.href = '/generattest';
             } else {
-                alert('Registration failed: ' + data.message);
+                const errorData = await response.json();
+                alert(errorData.message);
             }
-            } catch (error) {
-            console.error('Error:', error);
-            alert('Error submitting the form.');
-            }
-
-            console.log('Question added:', questionData); // Here you would send this to the server
-
-            // Clear the fields and increment question number for the next question
-            document.getElementById('question-text').value = '';
-            document.getElementById('question-marks').value='';
-            document.querySelectorAll('input[name="answer"]').forEach(radio => (radio.checked = false));
-            for (let i = 1; i <= 4; i++) {
-                document.getElementById(`option-${i}`).value = '';
-            }
-
-            questionCount++;
-            document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
-        }
-
-         function setTest() {
-        //     const examName = document.getElementById('exam-name').value;
-        //     const examDuration = document.getElementById('exam-duration').value;
-
-            // if (!examName.trim() || !examDuration) {
-            //     alert("Please fill in exam name and duration.");
-            //     return;
-            // }
-
-            // // Finalize the exam (simulate saving the test)
-            // console.log('Exam set:', {
-            //     name: examName,
-            //     duration: examDuration,
-            // });
-
-            alert("Test has been successfully set.");
-
-            window.location.href = '/generattest';
-            // document.getElementById("exam-preview").classList.remove("hidden");
-            // document.getElementById("preview-exam-name").innerText = "Exam: " + examName;
-            // document.getElementById("exam-time-display").innerText = "Duration: " + examDuration + " minutes";
-
-            // // Hide the form after finalizing the exam
-            // document.querySelector('.container').style.display = 'none';
-        }
+        });
     </script>
 </body>
 </html>
