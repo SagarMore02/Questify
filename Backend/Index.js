@@ -358,11 +358,11 @@ app.post('/updateExam', async (req, res) => {
       }
 
       // Prepare the SQL query for updating exam_master
-      const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ? AND organizerID=?';
+      const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ?';
       
       // Execute the query and update the data in the database
-      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID, req.session.myid]);
-      console.log("Editing end time::" , exam_end_time);
+      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
+      console.log("Editing Exam ID ::" , examID);
       // Check if any rows were updated
       if (result.affectedRows === 0) {
           return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
@@ -524,6 +524,7 @@ app.get('/ApplicantResult', async (req, res) => {
         const personalIDs = exampleRes.map(row => row.PersonalID);
         const [result] = await connection.query(sql, [appID]); // Use connection.query instead of connection.execute
         const filteredResults = result.filter(row => personalIDs.includes(row.PersonalID));
+        console.log("Filtered Result: ",result);
         console.log("Filtered Result: ",filteredResults);
         console.log("Personal IDs from exampleRes:", personalIDs);
         console.log("Results from the main query:", result);
@@ -876,13 +877,14 @@ app.get('/logout', (req, res) => {
 app.get('/start_exam', async (req, res) => {
   const {examID} = req.query;
   req.session.testExamID=examID;
-  const sql ='Select appstatus from Application_Master where applicationID=? and examID=?';
+  const sql ='Select appstatus,attendance from Application_Master where applicationID=? and examID=?';
   let connection = await pool.getConnection();
 
   const [result]= await connection.execute(sql,[req.session.myid,examID]);
   console.log("Application Status:",result[0].appstatus);
-  console.log("Examid: ",examID,"UserID: ",req.session.myid)
-  if(result[0].appstatus==='Active'){
+  console.log("Examid: ",examID,"UserID: ",req.session.myid);
+  console.log("Application Attendance:",result[0].attendance);
+  if(result[0].appstatus==='Active' && result[0].attendance!='Present'){
   console.log("serving home with examID:", req.session.testExamID);
   const filePath = path.join(__dirname, '../Frontend/HTML/exam.html');
   res.sendFile(filePath, (err) => {
@@ -1130,7 +1132,6 @@ app.post('/InsertAttempt', async (req, res) => {
 
 //submit
 app.post('/submitTest', async (req, res) => { // examId comes from URL params
-  console.log("Inside Submit Button\n\n\n");
   let connection;
   const examId = req.session.testExamID
   //const sql= 'Select * from Attempt_Master where examID=? and questionID=? and applicationID=?';
