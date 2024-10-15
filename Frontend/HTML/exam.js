@@ -200,11 +200,34 @@ function updateProgress() {
 }
 
 function submitExam() {
-    alert("Exam Submitted. Time's up!");
+    console.log("Calling Submit");
+    fetch('/submitTest', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        //body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting attempt. Please try again.');
+    });
+
+    alert("Exam Submitted. Time's up!****");
     saveAnswer();
     document.getElementById("quiz").style.display = "none"; // Hide the quiz
     document.getElementById("result").style.display = "block"; // Show the result page
 }
+
 
 function saveAnswer() {
     const selectedOption = document.querySelector('input[name="option"]:checked');
