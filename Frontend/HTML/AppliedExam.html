@@ -163,11 +163,32 @@
             .catch(error => console.error('Error fetching exam data:', error));
 
         // Function to handle starting the test
-        function startTest(examID) {
+        async function startTest(examID) {
             console.log("Hitting");
-            // Redirect to the test page or trigger the test-taking process
-            window.location.href = `/start_exam?examID=${examID}`; // Redirect to the take test page, passing the exam ID
+            try {
+        // Send a GET request to the '/start_exam' route with examID as a query parameter
+        const response = await fetch(`/start_exam?examID=${examID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (response.ok) {
+            // If the server responds with status 200 (OK), redirect the user to the exam page
+            window.location.href = `/start_exam?examID=${examID}`;
+        } else {
+            // If the application status is not active or an error occurred, show an error message
+            const data = await response.json();
+            alert(data.message || 'An error occurred while starting the exam.');
         }
+    } catch (error) {
+        console.error('Error starting exam:', error);
+        alert('Error connecting to the server.');
+    }
+}
+            // Redirect to the test page or trigger the test-taking process
+            // Redirect to the take test page, passing the exam ID
 
         // Optionally, you can periodically check the time to enable/disable the button in real-time
         setInterval(() => {
