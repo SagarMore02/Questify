@@ -67,7 +67,7 @@ const pool = mysql.createPool({
   //password: 'sagar@123',
   //password:'pranav@06',
   password:'root',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -1128,6 +1128,7 @@ app.post('/submitTest', async (req, res) => { // examId comes from URL params
 app.post('/check-result', async (req, res) => {
   const { studentid, examid } = req.body;
 
+  
 
   const connection = await pool.getConnection();
 
@@ -1183,6 +1184,7 @@ app.post('/check-result', async (req, res) => {
   }
 });
 
+
 app.get('/getExamIds', async (req, res) => {
   const sql = "SELECT examID FROM exam_master";  // Fetch all examIDs from exam_master
   const connection = await pool.getConnection();
@@ -1197,6 +1199,7 @@ app.get('/getExamIds', async (req, res) => {
     connection.release();
   }
 });
+
 
 app.get('/getOrganizer', async (req, res) => {
   const organizationId = req.session.myid; // Assuming the username is stored in session
