@@ -173,6 +173,16 @@
             .then(response => response.json())
             .then(data => {
                 const examList = document.getElementById('examList');
+                if (data.length === 0) {
+                        const noExamsMessage = `
+                            <div class="exam-card">
+                                <h3>No exams have been created yet.</h3>
+                            </div>
+                        `;
+                        examList.insertAdjacentHTML('beforeend', noExamsMessage);
+                        return; // Stop further execution if there are no exams
+                    }
+
                 data.forEach(exam => {
                     const examCard = `
                         <div class="exam-card">
