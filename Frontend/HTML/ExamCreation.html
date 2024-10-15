@@ -110,10 +110,10 @@
                         <span class="details">Exam Start Date</span>
                         <input type="date" id="exam_start_date" name="exam_start_date" required>
                     </div>
-                    <div class="input-box">
+                    <!-- <div class="input-box">
                         <span class="details">Exam End Date</span>
                         <input type="date" id="exam_end_date" name="exam_end_date" required>
-                    </div>
+                    </div> -->
                     <div class="input-box">
                         <span class="details">Exam Start Time</span>
                         <input type="time" id="exam_start_time" name="exam_start_time" required>
@@ -155,7 +155,7 @@
             const appStartDate = formData.get('app_start_date');
             const appEndDate = formData.get('app_end_date');
             const examStartDate = formData.get('exam_start_date');
-            const examEndDate = formData.get('exam_end_date');
+            const examEndDate = formData.get('exam_start_date');
             const examStartTime = formData.get('exam_start_time');
             const examEndTime = formData.get('exam_end_time');
             const totalMarks = formData.get('total_marks');

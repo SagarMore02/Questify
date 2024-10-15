@@ -45,7 +45,7 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('Organization', 3)
 
 -- Application_Master table
 CREATE TABLE IF NOT EXISTS Application_Master(
-    PersonalID INT NOT NULL AUTO_INCREMENT,
+    PersonalID INT NOT NULL UNIQUE AUTO_INCREMENT,
     applicationID INT NOT NULL,
     examID INT NOT NULL,
     adhaarcard VARCHAR(14) NOT NULL,

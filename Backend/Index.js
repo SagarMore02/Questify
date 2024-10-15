@@ -268,10 +268,6 @@ app.post('/api/exams/apply', async (req, res) => {
     }  
 });
 
-
-
-
-//to Update Exam:
 app.post('/updateExam', async (req, res) => {
   const {
       examID,
@@ -279,7 +275,6 @@ app.post('/updateExam', async (req, res) => {
       app_start_date,
       app_end_date,
       exam_start_date,
-      exam_end_date,
       exam_start_time,
       exam_end_time,
       total_marks,
@@ -287,8 +282,9 @@ app.post('/updateExam', async (req, res) => {
       fees,
       syllabus
   } = req.body;
-
-  console.log({
+  
+  const exam_end_date = exam_start_date; // This should be correct
+  console.log("=========",{
       examID,
       name,
       app_start_date,
@@ -306,17 +302,13 @@ app.post('/updateExam', async (req, res) => {
   let connection;
 
   try {
-      // Get the current date and time
       const currentDateTime = new Date();
 
-      // Get the connection asynchronously
       connection = await pool.getConnection();
       
-      // Execute err_sql to get existing exam timings
       const err_sql = `SELECT exam_start_date, exam_start_time, exam_end_date, exam_end_time FROM exam_master WHERE examID = ?`;
       const [existingExam] = await connection.execute(err_sql, [examID]);
 
-      // Check if the exam exists
       if (existingExam.length === 0) {
           return res.status(404).json({ success: false, message: "Exam not found." });
       }
@@ -328,64 +320,178 @@ app.post('/updateExam', async (req, res) => {
           exam_end_time: existingExamEndTime 
       } = existingExam[0];
 
-      // Combine existing exam date and time for comparisons
-      const existingExamStartDateTime = new Date(existingExamStartDate);
-      const existingExamStartDateTimeWithTime = new Date(`${existingExamStartDate.toISOString().split('T')[0]}T${existingExamStartTime}`);
-      const existingExamEndDateTime = new Date(existingExamEndDate);
-      const existingExamEndDateTimeWithTime = new Date(`${existingExamEndDate.toISOString().split('T')[0]}T${existingExamEndTime}`);
+      // Correctly combining date and time for comparison
+      const existingExamStartDateTimeWithTime = new Date(`${existingExamStartDate}T${existingExamStartTime}`);
+      const existingExamEndDateTimeWithTime = new Date(`${existingExamEndDate}T${existingExamEndTime}`);
 
-      // Check if current date and time is within the exam period
+      console.log("====>", existingExamStartDateTimeWithTime);
+      console.log("====>", existingExamEndDateTimeWithTime);
+      console.log("====>", currentDateTime);
+
+      // Exam is live, cannot edit
       if (currentDateTime >= existingExamStartDateTimeWithTime && currentDateTime <= existingExamEndDateTimeWithTime) {
           return res.status(400).json({ success: false, message: "Exam is live and cannot be edited." });
       }
 
-      // Combine application dates for validation
+      // Validate application dates
       const appStartDateTime = new Date(app_start_date);
       const appEndDateTime = new Date(app_end_date);
 
-      // Check if application start date is after application end date
       if (appStartDateTime > appEndDateTime) {
           return res.status(400).json({ success: false, message: "Application start date cannot be after application end date." });
       }
 
-      // Combine new exam dates for validation
       const newExamStartDateTime = new Date(`${exam_start_date}T${exam_start_time}`);
       const newExamEndDateTime = new Date(`${exam_end_date}T${exam_end_time}`);
 
-      // Check if exam start date is after exam end date
       if (newExamStartDateTime > newExamEndDateTime) {
           return res.status(400).json({ success: false, message: "Exam start date cannot be after exam end date." });
       }
 
-      // Prepare the SQL query for updating exam_master
       const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ?';
       
-      // Execute the query and update the data in the database
       const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
-      console.log("Editing Exam ID ::" , examID);
-      // Check if any rows were updated
+
       if (result.affectedRows === 0) {
           return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
       }
 
-      console.log("Exam updated successfully, Exam ID: " + examID);
-
-      // Respond with success
-      res.json({
-          success: true,
-          message: "Exam updated successfully",
-          examID: examID
-      });
+      res.json({ success: true, message: "Exam updated successfully", examID });
 
   } catch (error) {
       console.error("Error updating exam data:", error);
       res.status(500).json({ success: false, message: "Error updating exam" });
   } finally {
       if (connection) {
-          connection.release(); // Make sure to release the connection
+          connection.release();
       }
   }
 });
+
+
+
+
+// //to Update Exam:
+// app.post('/updateExam', async (req, res) => {
+//   const {
+//       examID,
+//       name,
+//       app_start_date,
+//       app_end_date,
+//       exam_start_date,
+//       //exam_end_date,
+//       exam_start_time,
+//       exam_end_time,
+//       total_marks,
+//       passing_marks,
+//       fees,
+//       syllabus
+//   } = req.body;
+//   const exam_end_date = exam_start_date;
+//   console.log({
+//       examID,
+//       name,
+//       app_start_date,
+//       app_end_date,
+//       exam_start_date,
+//       exam_end_date,
+//       exam_start_time,
+//       exam_end_time,
+//       total_marks,
+//       passing_marks,
+//       fees,
+//       syllabus
+//   });
+
+//   let connection;
+
+//   try {
+//       // Get the current date and time
+//       const currentDateTime = new Date();
+
+//       // Get the connection asynchronously
+//       connection = await pool.getConnection();
+      
+//       // Execute err_sql to get existing exam timings
+//       const err_sql = `SELECT exam_start_date, exam_start_time, exam_end_date, exam_end_time FROM exam_master WHERE examID = ?`;
+//       const [existingExam] = await connection.execute(err_sql, [examID]);
+
+//       // Check if the exam exists
+//       if (existingExam.length === 0) {
+//           return res.status(404).json({ success: false, message: "Exam not found." });
+//       }
+
+//       const { 
+//           exam_start_date: existingExamStartDate, 
+//           exam_start_time: existingExamStartTime, 
+//           exam_end_date: existingExamEndDate, 
+//           exam_end_time: existingExamEndTime 
+//       } = existingExam[0];
+
+//       console.log("*******", existingExamStartTime)
+
+//       // Combine existing exam date and time for comparisons
+//       const existingExamStartDateTime = new Date(existingExamStartDate);
+//       const existingExamStartDateTimeWithTime = new Date(`${existingExamStartDate.toISOString().split('T')[0]}T${existingExamStartTime}`);
+//       const existingExamEndDateTime = new Date(existingExamEndDate);
+//       const existingExamEndDateTimeWithTime = new Date(`${existingExamEndDate.toISOString().split('T')[0]}T${existingExamEndTime}`);
+
+//       console.log("====>", existingExamStartDateTimeWithTime);
+//       console.log("====>", existingExamEndDateTimeWithTime);
+//       console.log("====>", currentDateTime);
+
+//       // Check if current date and time is within the exam period
+//       if (currentDateTime >= existingExamStartDateTimeWithTime && currentDateTime <= existingExamEndDateTimeWithTime) {
+//           return res.status(400).json({ success: false, message: "Exam is live and cannot be edited." });
+//       }
+
+//       // Combine application dates for validation
+//       const appStartDateTime = new Date(app_start_date);
+//       const appEndDateTime = new Date(app_end_date);
+
+//       // Check if application start date is after application end date
+//       if (appStartDateTime > appEndDateTime) {
+//           return res.status(400).json({ success: false, message: "Application start date cannot be after application end date." });
+//       }
+
+//       // Combine new exam dates for validation
+//       const newExamStartDateTime = new Date(`${exam_start_date}T${exam_start_time}`);
+//       const newExamEndDateTime = new Date(`${exam_end_date}T${exam_end_time}`);
+
+//       // Check if exam start date is after exam end date
+//       if (newExamStartDateTime > newExamEndDateTime) {
+//           return res.status(400).json({ success: false, message: "Exam start date cannot be after exam end date." });
+//       }
+
+//       // Prepare the SQL query for updating exam_master
+//       const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ?';
+      
+//       // Execute the query and update the data in the database
+//       const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
+//       console.log("Editing Exam ID ::" , examID);
+//       // Check if any rows were updated
+//       if (result.affectedRows === 0) {
+//           return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
+//       }
+
+//       console.log("Exam updated successfully, Exam ID: " + examID);
+
+//       // Respond with success
+//       res.json({
+//           success: true,
+//           message: "Exam updated successfully",
+//           examID: examID
+//       });
+
+//   } catch (error) {
+//       console.error("Error updating exam data:", error);
+//       res.status(500).json({ success: false, message: "Error updating exam" });
+//   } finally {
+//       if (connection) {
+//           connection.release(); // Make sure to release the connection
+//       }
+//   }
+// });
 
 
 
@@ -1175,9 +1281,9 @@ app.post('/check-result', async (req, res) => {
       SELECT a.examID, a.questionID, a.selected_option, q.answer_key, q.question_marks
       FROM attempt_master a
       JOIN question_master q ON a.examID = q.examID AND a.questionID = q.questionID
-      WHERE a.examID = ? AND a.applicationID = ?`;
+      WHERE a.examID = ?`;
 
-    const [attemptResults] = await connection.query(fetchMarksQuery, [examid, studentid]);
+    const [attemptResults] = await connection.query(fetchMarksQuery, [examid]);
     
     if (attemptResults.length<=0) {
       return res.status(404).json({ message: 'No attempts found for this student or exam' });
