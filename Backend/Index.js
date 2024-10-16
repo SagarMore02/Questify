@@ -64,8 +64,8 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password: 'sagar@123',
-  //password:'pranav@06',
+  password: 'sagar@123',
+  password:'pranav@06',
   password:'root',
   //password: 'sagar@123',
   //password:'pr@n@v06',
@@ -91,6 +91,18 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/admin', (req, res) => {
+  console.log("serving home");
+  const filePath = path.join(__dirname, '../Frontend/HTML/AdminLogin.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
 
 
 
@@ -828,17 +840,6 @@ app.post('/register', async (req, res) => {
 // /api/exams
 
 //Admin Apis
-app.get('/admin', (req, res) => {
-  const filePath = path.join(__dirname, '../Frontend/HTML/Index.html');
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error sending file:', err);
-      res.status(err.status || 500).send('Error sending file');
-    } else {
-      console.log('File sent:', filePath);
-    }
-  });
-});
 app.get('/organapplicant', async (req, res) => {
   console.log("organ");
   try {
@@ -998,6 +999,15 @@ app.get('/logout', (req, res) => {
       return res.status(500).send('Error logging out');
     }
     // Redirect to login page or home page
+    const filePath = path.join(__dirname, '../Frontend/HTML/Index.html'); // Adjust the path as necessary
+      res.sendFile(filePath, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(err.status || 500).send('Error sending file');
+        } else {
+          console.log('File sent:', filePath);
+        }
+      });
     res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
   });
 });
@@ -1502,6 +1512,43 @@ app.get('/UpcomingExam', (req, res) => {
     }
   });
 });
+
+app.post('/AdminLogin', async (req, res) => {
+  const { username, password } = req.body;
+  const connection = await pool.getConnection();
+  try {
+    const sql = 'SELECT * FROM superuser WHERE username = ?';
+    const [result] = await connection.execute(sql, [username]);
+    connection.release();
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'No such username found.' });
+    }
+
+    const user = result[0];
+    const passwordsql = user.password;
+
+    if (!await bcrypt.compare(password, passwordsql)) {
+      return res.status(401).json({ message: 'Incorrect password.' });
+    } else {
+      // If login is successful, send the admin HTML file
+      const filePath = path.join(__dirname, '../Frontend/HTML/Index.html'); // Adjust the path as necessary
+      res.sendFile(filePath, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(err.status || 500).send('Error sending file');
+        } else {
+          console.log('File sent:', filePath);
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error For Admin Login:", error);
+    res.status(500).json({ success: false, message: "Error during login." });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
