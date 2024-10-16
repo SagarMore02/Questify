@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Table_Registry (
 -- SuperUser table
 CREATE TABLE IF NOT EXISTS SuperUser(
     username VARCHAR(20) NOT NULL,
-    password VARCHAR(20) NOT NULL
+    password VARCHAR(300) NOT NULL
 );
 INSERT INTO Table_Registry (table_name, table_number) VALUES ('SuperUser', 1);
 
@@ -148,6 +148,10 @@ CREATE TABLE IF NOT EXISTS Change_Log (
     FOREIGN KEY (table_number) REFERENCES Table_Registry (table_number)
 );
 INSERT INTO Table_Registry (table_name, table_number) VALUES ('Change_Log', 10);
-
+INSERT INTO superuser (username, password)VALUES ('PranavG','$2a$10$gMfp1O9EtcY3cs2T3eDKdO/vTBalC.Yv2L/MpQF3rtICYoGje9JF.');
+INSERT INTO superuser (username, password)VALUES ('PranavT','$2a$10$jc3Y76ezMnSgaitsfsrHUuTAzmPLJXwnh/rqyzRu9/4uaK8QWIY36');
+INSERT INTO superuser (username, password)VALUES ('YashK','$2a$10$1i.jk33wWtrbVHC0BTkyP.2bRjf5aAYmrrc/7EW0utLojTqWTacpu');
+INSERT INTO superuser (username, password)VALUES ('AdityaT','$2a$10$jc3Y76ezMnSgaitsfsrHUuTAzmPLJXwnh/rqyzRu9/4uaK8QWIY36');
+INSERT INTO superuser (username, password)VALUES ('SagarM','$2a$10$57BRif12uAt5ndBlv8bljeEuWiz7LMaieOrVshujlixvJrg1lfU.G');
 -- Display all tables
 SHOW TABLES;
