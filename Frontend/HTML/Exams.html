@@ -567,17 +567,32 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            .then(data => {
                const examList = document.getElementById('examList');
                data.forEach(exam => {
-                   const examCard = `
+                let endDate = new Date(exam.exam_end_date);
+                //endDate.setDate(endDate.getDate() + 1);
+                const formattedEndDate = formatDate(endDate);
+                
+
+                let startDate = new Date(exam.app_start_date);
+                //startDate.setDate(startDate.getDate() + 1);
+                const formattedStartDate = formatDate(startDate);
+
+                let appEndDate = new Date(exam.app_end_date);
+                //appEndDate.setDate(appEndDate.getDate() + 2);
+                const formattedappEndDate = formatDate(appEndDate);
+                console.log("formattedEndDate",formattedEndDate);
+                console.log("formattedStartDate",formattedStartDate);
+                console.log("formattedappEndDate",formattedappEndDate);
+                const examCard = `
                        <div class="exam-card">
                            <h3 id="namee_${exam.examID}">Exam: ${exam.name}</h3>
                            <div class="exam-details">
                                <div><span>Exam ID:</span> ${exam.examID}</div>
                                <div><span>Organizer ID:</span> ${exam.organizerID}</div>
-                               <div><span>Application Start Date:</span> ${formatDate(exam.app_start_date)}</div>
-                               <div><span>Application End Date:</span> ${formatDate(exam.app_end_date)}</div>
+                               <div><span>Application Start Date:</span> ${formatDate(formattedStartDate)}</div>
+                               <div><span>Application End Date:</span> ${formatDate(formattedappEndDate)}</div>
                                <div><span>Exam Start Time:</span> ${formatTime(exam.exam_start_time)}</div>
-                               <div><span>Exam Start Date:</span> ${formatDate(exam.exam_start_date)}</div>
-                               <div><span>Exam End Date:</span> ${formatDate(exam.exam_end_date)}</div>
+                               <div><span>Exam Start Date:</span> ${formatDate(formattedEndDate)}</div>
+                               <div><span>Exam End Date:</span> ${formatDate(formattedEndDate)}</div>
                                <div><span>Exam End Time:</span> ${formatTime(exam.exam_end_time)}</div>
                                <div><span>Total Marks:</span> ${exam.total_marks}</div>
                                <div><span>Passing Marks:</span> ${exam.passing_marks}</div>
@@ -668,6 +683,12 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            //alert(`Editing exam with ID: ${examID} and status: ${status}`);
            // Implement your logic to handle the edit action here (e.g., sending data to the server)
        }
+       function addOneDay(dateString) {
+    let date = new Date(dateString);
+    date.setDate(date.getDate() + 1); // Add one day
+    console.log("updated Date",date.toISOString().split('T')[0]);
+    return date.toISOString().split('T')[0]; // Return 'YYYY-MM-DD' format
+}
        function editExam(examID) {
             const idData = { examID: examID };
             fetch('/api/exams/myexam', {
@@ -689,12 +710,12 @@ addQuestionButton.addEventListener('click', createNewQuestion);
        // Populate modal with exam data directly from the response
        document.getElementById('edit_name').value = exam.name || '';
        console.log("Console Logging ::  " + exam.name);
-       document.getElementById('edit_app_start_date').value = exam.app_start_date ? exam.app_start_date.split('T')[0] : '';
-       document.getElementById('edit_app_end_date').value = exam.app_end_date ? exam.app_end_date.split('T')[0] : '';
-       document.getElementById('edit_exam_start_date').value = exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '';
+       document.getElementById('edit_app_start_date').value = exam.app_start_date ? addOneDay(exam.app_start_date.split('T')[0]) : '';
+       document.getElementById('edit_app_end_date').value = exam.app_end_date ? addOneDay(exam.app_end_date.split('T')[0]) : '';
+       document.getElementById('edit_exam_start_date').value = exam.exam_start_date ? addOneDay(exam.exam_start_date.split('T')[0]) : '';
        console.log("Console Logging :: s " + exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '');
        //document.getElementById('edit_exam_end_date').value = exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '';
-       console.log("Console Logging ::  " + exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '');
+       console.log("Console Logging ::  " + exam.exam_start_date ? addOneDay(exam.exam_start_date.split('T')[0]) : '');
        document.getElementById('edit_exam_start_time').value = exam.exam_start_time || '';
        document.getElementById('edit_exam_end_time').value = exam.exam_end_time || '';
        document.getElementById('edit_total_marks').value = exam.total_marks || '';
@@ -723,10 +744,11 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            event.preventDefault(); // Prevent default form submission
 
            const examID = document.querySelector('.edit-btn[data-exam-id]').getAttribute('data-exam-id'); // Get the exam ID from the button
+           console.log("EXAM ID SUBMITTED:",examID);
            const examEndTime = document.getElementById('edit_exam_end_time').value;
            const formattedExamEndTime = examEndTime.length === 5 ? examEndTime + ":00" : examEndTime;
            const updatedData = {
-               examID:examID,
+               //examID:examID,
                name: document.getElementById('edit_name').value,
                app_start_date: document.getElementById('edit_app_start_date').value,
                app_end_date: document.getElementById('edit_app_end_date').value,

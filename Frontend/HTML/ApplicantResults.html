@@ -32,6 +32,7 @@
                 <!-- <th>Applicant Name</th> -->
                 <th>Exam Name</th>
                 <th>Marks Obtained</th>
+                <th>Passing Marks</th>
                 <th>Total Marks</th>
                 <th>Status</th>
             </tr>
@@ -63,6 +64,7 @@
                             <!--<td>${exam.examID || 'N/A'}</td>  Display 'N/A' if applicant name is missing -->
                             <td>${exam.exam_name || 'N/A'}</td> <!-- Display 'N/A' if exam name is missing -->
                             <td>${exam.marks_obtained || 0}</td> <!-- Display 0 if marks_obtained is missing -->
+                            <td>${exam.passing_marks || 0}</td>
                             <td>${exam.total_marks || 0}</td> <!-- Display 0 if total_marks is missing -->
                             <td>${exam.status || 'N/A'}</td> <!-- Display 'N/A' if status is missing -->
                         `;

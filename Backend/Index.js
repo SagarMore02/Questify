@@ -269,8 +269,9 @@ app.post('/api/exams/apply', async (req, res) => {
 });
 
 app.post('/updateExam', async (req, res) => {
+  const examID=req.session.organExam;
   const {
-      examID,
+      //examID,
       name,
       app_start_date,
       app_end_date,
@@ -282,9 +283,8 @@ app.post('/updateExam', async (req, res) => {
       fees,
       syllabus
   } = req.body;
-  
-  const exam_end_date = exam_start_date; // This should be correct
-  console.log("=========",{
+  const exam_end_date = exam_start_date;
+  console.log({
       examID,
       name,
       app_start_date,
@@ -302,13 +302,17 @@ app.post('/updateExam', async (req, res) => {
   let connection;
 
   try {
-      const currentDateTime = new Date();
-
+      // Get the current date and time
+      const currentDateTime = new Date(); // Keep as Date object
+      
+      // Get the connection asynchronously
       connection = await pool.getConnection();
       
+      // Execute SQL to get existing exam timings
       const err_sql = `SELECT exam_start_date, exam_start_time, exam_end_date, exam_end_time FROM exam_master WHERE examID = ?`;
       const [existingExam] = await connection.execute(err_sql, [examID]);
 
+      // Check if the exam exists
       if (existingExam.length === 0) {
           return res.status(404).json({ success: false, message: "Exam not found." });
       }
@@ -320,53 +324,70 @@ app.post('/updateExam', async (req, res) => {
           exam_end_time: existingExamEndTime 
       } = existingExam[0];
 
-      // Correctly combining date and time for comparison
-      const existingExamStartDateTimeWithTime = new Date(`${existingExamStartDate}T${existingExamStartTime}`);
-      const existingExamEndDateTimeWithTime = new Date(`${existingExamEndDate}T${existingExamEndTime}`);
+      // Combine existing exam date and time for comparisons
+      const existingExamStartDateTime = new Date(`${existingExamStartDate}`);
+      const existingExamEndDateTime = new Date(`${existingExamEndDate}`);
 
-      console.log("====>", existingExamStartDateTimeWithTime);
-      console.log("====>", existingExamEndDateTimeWithTime);
-      console.log("====>", currentDateTime);
+      console.log("Current Date:", currentDateTime);
+      console.log("Exam Start DateTime:", existingExamStartDateTime);
+      console.log("Exam End DateTime:", existingExamEndDateTime);
 
-      // Exam is live, cannot edit
-      if (currentDateTime >= existingExamStartDateTimeWithTime && currentDateTime <= existingExamEndDateTimeWithTime) {
+      // Check if current date and time is within the exam period
+      if (currentDateTime >= existingExamStartDateTime) {
           return res.status(400).json({ success: false, message: "Exam is live and cannot be edited." });
       }
 
-      // Validate application dates
+      // Combine application dates for validation
       const appStartDateTime = new Date(app_start_date);
       const appEndDateTime = new Date(app_end_date);
 
+      // Check if application start date is after application end date
       if (appStartDateTime > appEndDateTime) {
           return res.status(400).json({ success: false, message: "Application start date cannot be after application end date." });
       }
 
+      // Combine new exam dates for validation
       const newExamStartDateTime = new Date(`${exam_start_date}T${exam_start_time}`);
       const newExamEndDateTime = new Date(`${exam_end_date}T${exam_end_time}`);
 
+      // Check if exam start date is after exam end date
       if (newExamStartDateTime > newExamEndDateTime) {
           return res.status(400).json({ success: false, message: "Exam start date cannot be after exam end date." });
       }
 
+      // Prepare the SQL query for updating exam_master
       const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ?';
-      
-      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
+      console.log(name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID);
 
+      // Execute the query and update the data in the database
+      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
+      
+      console.log("Editing Exam ID:", examID);
+      
+      // Check if any rows were updated
       if (result.affectedRows === 0) {
           return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
       }
 
-      res.json({ success: true, message: "Exam updated successfully", examID });
+      console.log("Exam updated successfully, Exam ID:", examID);
+
+      // Respond with success
+      res.json({
+          success: true,
+          message: "Exam updated successfully",
+          examID: examID
+      });
 
   } catch (error) {
       console.error("Error updating exam data:", error);
       res.status(500).json({ success: false, message: "Error updating exam" });
   } finally {
       if (connection) {
-          connection.release();
+          connection.release(); // Ensure connection is released
       }
   }
 });
+
 
 
 
@@ -593,6 +614,7 @@ app.get('/ApplicantResult', async (req, res) => {
 
   const sql = `SELECT
       a.PersonalID ,
+      e.passing_marks,
       u.userID AS applicationID,
       u.firstname AS applicant_name,
       u.lastname AS applicant_lastname,
@@ -1151,7 +1173,7 @@ app.post('/get-my-questions', async (req, res) => {
 
 
 
-app.get('/UpcomingExam', (req, res) => {
+app.get('/Exam', (req, res) => {
   console.log("serving Upcoming EXam");
   const filePath = path.join(__dirname, '../Frontend/HTML/AppliedExam.html');
   res.sendFile(filePath, (err) => {
@@ -1258,16 +1280,93 @@ app.post('/submitTest', async (req, res) => { // examId comes from URL params
   }
 });
 
-app.post('/check-result', async (req, res) => {
-  const { studentid, examid } = req.body;
+// app.post('/check-result', async (req, res) => {
+//   const { studentid, examid } = req.body;
 
   
+
+//   const connection = await pool.getConnection();
+
+//   try {
+//     // Query 1: Fetch passing marks
+//     const passQuery = 'SELECT passing_marks FROM exam_master WHERE examID = ?';
+//     const [passResult] = await connection.query(passQuery, [examid]);
+
+//     if (!passResult.length) {
+//       return res.status(404).json({ message: 'Exam not found' });
+//     }
+
+//     const passingMarks = passResult[0].passing_marks;
+
+//     // Query 2: Fetch attempt and question data
+//     const fetchMarksQuery = `
+//       SELECT 
+//       a.examID, 
+//       a.questionID, 
+//       a.selected_option, 
+//       q.answer_key, 
+//       q.question_marks,
+//       e.total_marks,
+//       e.passing_marks
+//       FROM attempt_master a
+//       JOIN question_master q 
+//           ON a.examID = q.examID AND a.questionID = q.questionID
+//       JOIN exam_master e 
+//           ON a.examID = e.examID
+//       WHERE a.examID = ?;`;
+
+//     const [attemptResults] = await connection.query(fetchMarksQuery, [examid]);
+    
+//     if (attemptResults.length<=0) {
+//       return res.status(404).json({ message: 'No attempts found for this student or exam' });
+//     }
+//     console.log("Checking Result FOr organizer");
+//     // Initialize total score
+//     let totalScore = 0;
+//     let passing_marks=0;
+//     let totalMarks=0;
+
+//     // Process each question: Compare selected_option with answer_key and sum marks if correct
+//     attemptResults.forEach(row => {
+//       if (row.selected_option === row.answer_key) {
+//         totalScore += row.question_marks;
+//       }
+//     });
+
+//     attemptResults.forEach(row => {
+//       passing_marks=row.passing_marks;
+//       totalMarks = row.total_marks;
+//     });
+
+
+//     // Determine pass or fail based on totalScore and passingMarks
+//     const status = totalScore >= passingMarks ? 'Passed' : 'Failed';
+
+//     // Return the result to the frontend
+//     res.json({
+//       studentid: studentid,
+//       examid: examid,
+//       totalScore: totalScore,
+//       passing_marks: passing_marks,
+//       totalMarks:totalMarks,
+//       status: status
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server error' });
+//   } finally {
+//     connection.release();
+//   }
+// });
+
+app.post('/check-result', async (req, res) => {
+  const { studentids, examid } = req.body; // Assume studentids is an array of student IDs
 
   const connection = await pool.getConnection();
 
   try {
     // Query 1: Fetch passing marks
-    const passQuery = 'SELECT passing_marks FROM exam_master WHERE examID = ?';
+    const passQuery = 'SELECT passing_marks, total_marks FROM exam_master WHERE examID = ?';
     const [passResult] = await connection.query(passQuery, [examid]);
 
     if (!passResult.length) {
@@ -1275,40 +1374,64 @@ app.post('/check-result', async (req, res) => {
     }
 
     const passingMarks = passResult[0].passing_marks;
+    const totalMarks = passResult[0].total_marks;
 
-    // Query 2: Fetch attempt and question data
-    const fetchMarksQuery = `
-      SELECT a.examID, a.questionID, a.selected_option, q.answer_key, q.question_marks
-      FROM attempt_master a
-      JOIN question_master q ON a.examID = q.examID AND a.questionID = q.questionID
-      WHERE a.examID = ?`;
+    // Store results for all students
+    let results = [];
 
-    const [attemptResults] = await connection.query(fetchMarksQuery, [examid]);
-    
-    if (attemptResults.length<=0) {
-      return res.status(404).json({ message: 'No attempts found for this student or exam' });
-    }
-    console.log("Checking Result FOr organizer");
-    // Initialize total score
-    let totalScore = 0;
+    // Loop through each studentid and fetch results
+    for (const studentid of studentids) {
+      // Query 2: Fetch attempt and question data for this student
+      const fetchMarksQuery = `
+        SELECT 
+        a.examID, 
+        a.questionID, 
+        a.selected_option, 
+        q.answer_key, 
+        q.question_marks
+        FROM attempt_master a
+        JOIN question_master q 
+            ON a.examID = q.examID AND a.questionID = q.questionID
+        WHERE a.examID = ? AND a.studentID = ?;
+      `;
 
-    // Process each question: Compare selected_option with answer_key and sum marks if correct
-    attemptResults.forEach(row => {
-      if (row.selected_option === row.answer_key) {
-        totalScore += row.question_marks;
+      const [attemptResults] = await connection.query(fetchMarksQuery, [examid, studentid]);
+      
+      if (attemptResults.length > 0) {
+        // Initialize total score for this student
+        let totalScore = 0;
+
+        // Process each question: Compare selected_option with answer_key and sum marks if correct
+        attemptResults.forEach(row => {
+          if (row.selected_option === row.answer_key) {
+            totalScore += row.question_marks;
+          }
+        });
+
+        // Determine pass or fail based on totalScore and passingMarks
+        const status = totalScore >= passingMarks ? 'Passed' : 'Failed';
+
+        // Add this student's result to the results array
+        results.push({
+          studentid: studentid,
+          examid: examid,
+          totalScore: totalScore,
+          passingMarks: passingMarks,
+          totalMarks: totalMarks,
+          status: status
+        });
+      } else {
+        results.push({
+          studentid: studentid,
+          examid: examid,
+          message: 'No attempts found for this student'
+        });
       }
-    });
+    }
 
-    // Determine pass or fail based on totalScore and passingMarks
-    const status = totalScore >= passingMarks ? 'Passed' : 'Failed';
+    // Return the results for all students
+    res.json(results);
 
-    // Return the result to the frontend
-    res.json({
-      studentid: studentid,
-      examid: examid,
-      totalScore: totalScore,
-      status: status
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -1364,7 +1487,18 @@ app.get('/getOrganizer', async (req, res) => {
   }
 });
 
-
+app.get('/UpcomingExam', (req, res) => {
+  console.log("serving Upcoming EXam");
+  const filePath = path.join(__dirname, '../Frontend/HTML/AppliedExam.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending file:', err);
+      res.status(err.status || 500).send('Error sending file');
+    } else {
+      console.log('File sent:', filePath);
+    }
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -115,7 +115,7 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('Question_Master',
 CREATE TABLE IF NOT EXISTS Attempt_Master (
     attemptID INT UNIQUE NOT NULL AUTO_INCREMENT,
     examID INT NOT NULL,
-    questionID INT NOT NULL UNIQUE,
+    questionID INT NOT NULL,
     applicationID INT NOT NULL,
     selected_option ENUM('optionA', 'optionB', 'optionC', 'optionD') NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

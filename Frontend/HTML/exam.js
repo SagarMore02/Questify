@@ -245,7 +245,7 @@ function submitExam() {
     });
 
     alert("Exam Submitted. Time's up!****");
-    saveAnswer();
+    //saveAnswer();
     document.getElementById("quiz").style.display = "none"; // Hide the quiz
     document.getElementById("result").style.display = "block"; // Show the result page
 }
@@ -261,7 +261,7 @@ function saveAnswer() {
         const questionId = questions[currentQuestionIndex].id;
 
         const sel_answer = "option" + selectedOptionLetter;
-        alert(`Question ID: ${questionId}, Selected Option: ${sel_answer}`);
+        console.log(`Question ID: ${questionId}, Selected Option: ${sel_answer}`);
 
         const data = {
             questionId: questionId,
