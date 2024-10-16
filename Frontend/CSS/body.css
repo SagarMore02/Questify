@@ -1,0 +1,126 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: #472001;/*linear-gradient(to right, #24b3c1, #34e89e);*/
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-section {
+    background: none(246, 245, 241, 0.879);
+    padding: 30px;
+   /* border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);*/
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  /*  border: 1px solid rgba(255, 255, 255, 0.18);*/
+   color: rgb(35, 20, 2);
+    max-width: 400px;
+    width: 100%;
+}
+
+.left-inner {
+    text-align: center;
+    color:rgb(255, 255, 255);
+    margin-top: 100px;
+}
+
+.logo-top img {
+    max-width: 120px;
+    margin-bottom: 70px;
+    text-align: center;
+    /*border-radius: 0%;*/
+    
+   /* animation: bounce 2s infinite;*/
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+h1 span {
+    color: #cf783e;
+    font-weight: bold;
+}
+
+ul.list {
+    list-style: none;
+    margin-bottom: 20px;
+    
+}
+
+ul.list li {
+    margin: 10px 0;
+    position: relative;
+    padding-left: 25px;
+    font-size: 18px;
+    font-weight: 300;
+    color:rgb(255, 255, 255);
+}
+
+ul.list li .icon {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #fffbfb;
+    transition: color 0.3s ease;
+}
+
+ul.list li:hover .icon {
+    color: #fff;
+}
+
+ul.list li a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+ul.list li:hover a {
+    color: #d69d9d;
+}
+
+.server-status {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.footer {
+    margin-top: 150px;
+}
+
+.foot-link {
+    font-size: 14px;
+}
+
+.foot-link a {
+    color: #eae3e3;
+    text-decoration: none;
+}
+
+.foot-link a:hover {
+    text-decoration: underline;
+}

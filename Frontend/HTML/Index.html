@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
+            flex-shrink: 0;
+        }
+        .sidebar a {
+            color: white;
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a href="#users" data-target="applicant-section">Applicants</a>
+        <a href="#organizers" data-target="organizer-section">Organizers</a>
+        <a href="#organizations" data-target="organizations-section">Organizations</a>
+        <!-- <a href="#exams" data-target="exams-section">Exams</a>
+        <a href="#applications" data-target="applications-section">Applications</a>
+        <a href="#questions" data-target="questions-section">Questions</a>
+        <a href="#transactions" data-target="transactions-section">Transactions</a> -->
+        <a href="/logout" id="LogOut">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <h1>Dashboard</h1>
+            <p>Welcome to the admin panel. Here you can manage users, view reports, and configure settings.</p>
+            
+            <!-- Applicants Table -->
+            <div id="applicant-section" class="section">
+                <h2>Applicants</h2>
+                <table class="table table-striped" id="applicant-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Organizers Table -->
+            <div id="organizer-section" class="section">
+                <h2>Organizers</h2>
+                <table class="table table-striped" id="organizer-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Organizations Table -->
+            <div id="organizations-section" class="section">
+                <h2>Organizations</h2>
+                <table class="table table-striped" id="organizations-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Exams Table -->
+            <!-- <div id="exams-section" class="section">
+                <h2>Exams</h2>
+                <table class="table table-striped" id="exams-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="applications-section" class="section">
+                <h2>Applications</h2>
+                <table class="table table-striped" id="applications-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Exam ID</th>
+                            <th>Aadhaar Card</th>
+                            <th>Fees Status</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="questions-section" class="section">
+                <h2>Questions</h2>
+                <table class="table table-striped" id="questions-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Exam ID</th>
+                            <th>Question</th>
+                            <th>Option A</th>
+                            <th>Option B</th>
+                            <th>Option C</th>
+                            <th>Option D</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            
+            
+            <div id="transactions-section" class="section">
+                <h2>Transactions</h2>
+                <table class="table table-striped" id="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Exam ID</th>
+                            <th>Paid Fees</th>
+                            <th>UPI Token</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- JavaScript to Fetch and Display Data -->
+    <script>
+        document.getElementById('LogOut').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default link behavior
+        loggingOut(); // Call the loggingOut function
+    });
+    function loggingOut() {
+    // Your logout logic here, such as making an API call or clearing session data
+    console.log("Logging out...");
+
+    // Optionally, you can redirect the user or refresh the page after logout
+    window.location.href = '/'; // Redirect to home or login page
+}
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the initial section
+            document.querySelector('#applicant-section')?.classList.add('active');
+
+            // Handle sidebar link clicks
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default link behavior
+
+                    // Remove 'active' class from all sections
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+
+                    // Add 'active' class to the clicked section
+                    const targetId = this.getAttribute('data-target');
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    } else {
+                        console.error(`Section with id ${targetId} not found.`);
+                    }
+                });
+            });
+
+            // Function to fetch and populate data
+            function fetchData(endpoint, tableId) {
+                fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the entire data to check the API response
+
+                    const tableBody = document.querySelector(`#${tableId} tbody`);
+                    if (tableBody) {
+                        tableBody.innerHTML = ''; // Clear any existing rows
+
+                        data.forEach(item => {
+                            console.log(`Processing item ID: ${item.id}, Status: ${item.status}`); // Log each item's status
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.id || ''}</td>
+                                <td>${item.name || ''}</td>
+                                <td>${item.email || ''}</td>
+                                <td>${item.usertype || ''}</td>
+                                <td>
+                                    <select class="form-control status-select" data-id="${item.id}">
+                                    <!-- Hidden default option -->
+                                    <option value="" ${!item.status ? 'selected' : ''} hidden>${item.status}</option>
+                                    <option value="Active" ${item.status === 'Active' ? 'selected' : ''}>Active</option>
+                                    <option value="Inactive" ${item.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                </select>
+
+                                </td>
+                                <td><button class="btn btn-primary update-status-btn" data-id="${item.id}">Update Status</button></td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Attach click event listeners to buttons
+                        document.querySelectorAll('.update-status-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const id = this.getAttribute('data-id');
+                                const select = document.querySelector(`.status-select[data-id="${id}"]`);
+                                const status = select ? select.value : '';
+                        
+                                console.log('Selected ID:', id);
+                                console.log('Selected Status:', status);
+                        
+                                if (status) {
+                                    updateStatus(id, status);
+                                } else {
+                                    console.error('Status is undefined or empty');
+                                }
+                            });
+                        });
+                    } else {
+                        console.error(`Table body with id ${tableId} not found.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+            }
+
+            // Function to fetch and populate data specifically for the exams table
+            function fetchData1(endpoint, tableId) {
+                fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the entire data to check the API response
+
+                    const tableBody = document.querySelector(`#${tableId} tbody`);
+                    if (tableBody) {
+                        tableBody.innerHTML = ''; // Clear any existing rows
+
+                        data.forEach(item => {
+                            console.log(`Processing item ID: ${item.examID}, Status: ${item.status}`); // Log each item's status
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.examID || ''}</td>
+                                <td>${item.name || ''}</td>
+                                <td>${item.app_start_date || ''}</td>
+                                <td>${item.exam_start_time || ''}</td>
+                                <td>${item.exam_end_time || ''}</td>
+                                <td>${item.status || ''}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Attach click event listeners to buttons
+                        document.querySelectorAll('.update-status-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const id = this.getAttribute('data-id');
+                                const select = document.querySelector(`.status-select[data-id="${id}"]`);
+                                const status = select ? select.value : '';
+
+                                console.log('Selected ID:', id);
+                                console.log('Selected Status:', status);
+
+                                if (status) {
+                                    updateStatus(id, status);
+                                } else {
+                                    console.error('Status is undefined or empty');
+                                }
+                            });
+                        });
+                    } else {
+                        console.error(`Table body with id ${tableId} not found.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+            }
+
+            // Function to post data to the /status API
+            function updateStatus(id, status) {
+                fetch('/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, status })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response from server:', data); // Debug: log server response
+
+                    // Reload the data after updating the status to reflect the most recent status
+                    fetchData('/applicant', 'applicant-table');
+                    fetchData('/organizer', 'organizer-table');
+                    fetchData('/organization', 'organizations-table');
+                    fetchData1('/exam', 'exams-table');
+                    fetchData('/application', 'applications-table');
+                    fetchData('/question', 'questions-table');
+                    fetchData('/attempt', 'attempts-table');
+                    fetchData('/transaction', 'transactions-table');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating status.');
+                });
+            }
+
+            // Initial fetch of data for all tables
+            fetchData('/applicant', 'applicant-table');
+            fetchData('/organizer', 'organizer-table');
+            fetchData('/organization', 'organizations-table');
+            fetchData1('/exam', 'exams-table');
+            fetchData('/application', 'applications-table');
+            fetchData('/question', 'questions-table');
+            fetchData('/attempt', 'attempts-table');
+            fetchData('/transaction', 'transactions-table');
+        });
+    </script>
+</body>
+</html>

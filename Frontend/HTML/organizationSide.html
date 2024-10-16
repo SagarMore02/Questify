@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
+            flex-shrink: 0;
+        }
+        .sidebar a {
+            color: white;
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Organization Panel</h2>
+        <a href="#organizers" data-target="organizer-section">Organizers</a>
+        <a href="#" id="logout-link">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Organizers Table -->
+            <div id="organizer-section" class="section">
+                <table class="table table-striped" id="organizer-table">
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- JavaScript to Fetch and Display Data -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the organizer section by default
+            document.querySelector('#organizer-section')?.classList.add('active');
+
+            // Handle sidebar link clicks
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default link behavior
+
+                    // Remove 'active' class from all sections
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+
+                    // Add 'active' class to the clicked section
+                    const targetId = this.getAttribute('data-target');
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    } else {
+                        console.error(`Section with id ${targetId} not found.`);
+                    }
+                });
+            });
+
+            // Fetch and populate organizers data
+            function fetchOrganizers() {
+                fetch('/getOrganizer')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#organizer-table tbody');
+                    if (tableBody) {
+                        tableBody.innerHTML = ''; // Clear existing rows
+
+                        // Populate the table with the fetched data
+                        data.forEach(item => {
+                            const row = `
+                                <tr>
+                                    <td>${item.organizerID || ''}</td>
+                                    <td>${item.organizerName || ''}</td>
+                                    <td>${item.email || ''}</td>
+                                    <td>${item.usertype || ''}</td>
+                                    <td>${item.status || ''}</td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
+                        });
+                    } else {
+                        console.error('Table body not found.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching organizers:', error);
+                });
+            }
+
+            // Fetch organizers when the page loads
+            fetchOrganizers();
+
+            // Logout function
+            document.getElementById('logout-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                // Call the logout endpoint (adjust the path if necessary)
+                fetch('/logout', {
+                    method: 'POST', // Or 'GET' if your logout endpoint is a GET request
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect to the login page
+                        window.location.href = '/';
+                    } else {
+                        console.error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
