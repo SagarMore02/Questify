@@ -82,6 +82,7 @@
         // Function to fetch the result based on the selected examID
         async function fetchResult() {
             const examID = document.getElementById('examID').value;
+            console.log("Exam iddddd....", examID)
             if (!examID) {
                 alert('Please select an exam');
                 return;
@@ -94,7 +95,6 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        studentid: 3,  // Set the student ID dynamically or use a session value
                         examid: examID  // Use the selected examID from the dropdown
                     })
                 });
@@ -104,6 +104,7 @@
                 }
 
                 const data = await response.json();
+                console.log("datatattatat", data);
                 updateTable(data);
             } catch (error) {
                 console.error('Error fetching the results:', error);
@@ -117,22 +118,27 @@
             const tableBody = document.querySelector('#resultTable tbody');
             tableBody.innerHTML = '';  // Clear the existing table rows
 
-            // Add a new row with the fetched data
+            let rows = ''; // Initialize an empty string to store all rows
+
+            data.forEach(item => {
             const row = `
-                <tr>
-                    <td>${data.studentid}</td>
-                    <td>${data.examid}</td>
-                    <td>${data.totalScore}</td>
-                    <td>${data.passing_marks}</td>
-                    <td>${data.totalMarks}</td>
-                    <td>${data.status}</td>
-                </tr>
-            `;
-            tableBody.innerHTML = row;
-        }
+            <tr>
+                <td>${item.applicationID}</td> <!-- Assuming your API returns studentID -->
+                <td>${item.examid}</td>
+                <td>${item.totalScore}</td>
+                <td>${item.passingMarks}</td> <!-- Adjusted from totalMarks to total_marks -->
+                <td>${item.totalMarks}</td>
+                <td>${item.status}</td>
+            </tr>
+        `;
+        rows += row; // Append each row to the rows string
+    });
+
+    tableBody.innerHTML = rows;
+}
 
         // Fetch exams when the page loads
-        window.onload = fetchExams;
+        window.onload = fetchExams();
 
         // Attach the fetchResult function to the button click event
         document.getElementById('fetchResultBtn').addEventListener('click', fetchResult);

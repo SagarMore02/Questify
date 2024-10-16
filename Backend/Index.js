@@ -1360,12 +1360,13 @@ app.post('/submitTest', async (req, res) => { // examId comes from URL params
 // });
 
 app.post('/check-result', async (req, res) => {
-  const { studentids, examid } = req.body; // Assume studentids is an array of student IDs
-
+  //const { examid } = req.body; // No longer using studentid in the request body since we fetch all students
   const connection = await pool.getConnection();
+  //console.log("=====>", examid);
+  const examid=1;
 
   try {
-    // Query 1: Fetch passing marks
+    // Query 1: Fetch passing marks and total marks for the exam
     const passQuery = 'SELECT passing_marks, total_marks FROM exam_master WHERE examID = ?';
     const [passResult] = await connection.query(passQuery, [examid]);
 
@@ -1376,58 +1377,58 @@ app.post('/check-result', async (req, res) => {
     const passingMarks = passResult[0].passing_marks;
     const totalMarks = passResult[0].total_marks;
 
-    // Store results for all students
-    let results = [];
-
-    // Loop through each studentid and fetch results
-    for (const studentid of studentids) {
-      // Query 2: Fetch attempt and question data for this student
-      const fetchMarksQuery = `
-        SELECT 
+    // Query 2: Fetch attempt and question data for all students who took this exam
+    const fetchMarksQuery = `
+      SELECT 
+        a.applicationID,
         a.examID, 
         a.questionID, 
         a.selected_option, 
         q.answer_key, 
         q.question_marks
-        FROM attempt_master a
-        JOIN question_master q 
-            ON a.examID = q.examID AND a.questionID = q.questionID
-        WHERE a.examID = ? AND a.studentID = ?;
-      `;
+      FROM attempt_master a
+      JOIN question_master q 
+          ON a.examID = q.examID AND a.questionID = q.questionID
+      WHERE a.examID = ?;`;
 
-      const [attemptResults] = await connection.query(fetchMarksQuery, [examid, studentid]);
-      
-      if (attemptResults.length > 0) {
-        // Initialize total score for this student
-        let totalScore = 0;
+    const [attemptResults] = await connection.query(fetchMarksQuery, [examid]);
 
-        // Process each question: Compare selected_option with answer_key and sum marks if correct
-        attemptResults.forEach(row => {
-          if (row.selected_option === row.answer_key) {
-            totalScore += row.question_marks;
-          }
-        });
-
-        // Determine pass or fail based on totalScore and passingMarks
-        const status = totalScore >= passingMarks ? 'Passed' : 'Failed';
-
-        // Add this student's result to the results array
-        results.push({
-          studentid: studentid,
-          examid: examid,
-          totalScore: totalScore,
-          passingMarks: passingMarks,
-          totalMarks: totalMarks,
-          status: status
-        });
-      } else {
-        results.push({
-          studentid: studentid,
-          examid: examid,
-          message: 'No attempts found for this student'
-        });
-      }
+    if (attemptResults.length === 0) {
+      return res.status(404).json({ message: 'No attempts found for this exam' });
     }
+
+    console.log("Checking Results For Organizer");
+
+    // Group student attempts by studentID
+    const studentScores = {};
+
+    attemptResults.forEach(row => {
+      if (!studentScores[row.applicationID]) {
+        studentScores[row.applicationID] = {
+          applicationID: row.applicationID,
+          totalScore: 0
+        };
+      }
+      // Compare selected_option with answer_key and sum marks if correct
+      if (row.selected_option === row.answer_key) {
+        studentScores[row.applicationID].totalScore += row.question_marks;
+      }
+    });
+
+    // Prepare results for all students
+    const results = Object.keys(studentScores).map(applicationID => {
+      const student = studentScores[applicationID];
+      const status = student.totalScore >= passingMarks ? 'Passed' : 'Failed';
+
+      return {
+        applicationID: applicationID,
+        examid: examid,
+        totalScore: student.totalScore,
+        passingMarks: passingMarks,
+        totalMarks: totalMarks,
+        status: status
+      };
+    });
 
     // Return the results for all students
     res.json(results);
@@ -1439,6 +1440,8 @@ app.post('/check-result', async (req, res) => {
     connection.release();
   }
 });
+
+
 
 
 app.get('/getExamIds', async (req, res) => {
