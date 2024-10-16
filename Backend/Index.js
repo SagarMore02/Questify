@@ -199,6 +199,14 @@ app.get('/api/exams', async (req, res) => {
   res.json(result);
   });
 
+  app.get('/api/stu/exams', async (req, res) => {
+    const sql = "SELECT * FROM exam_master;";
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(sql,[req.session.myid]);
+    connection.release();
+    res.json(result);
+    });
+
   app.post('/api/exams/myexam', async (req, res) => {
     const{examID}=req.body;
     req.session.organExam=examID;
