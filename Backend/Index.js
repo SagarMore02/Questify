@@ -64,9 +64,7 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'sagar@123',
-  password:'pranav@06',
-  password:'root',
+  password:'Aditya@123',
   //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
