@@ -39,18 +39,6 @@ app.use(helmet.contentSecurityPolicy({
 // Serve static files from the 'Frontend/HTML' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/admin', (req, res) => {
-    const filePath = path.join(__dirname, '../Frontend/HTML/Index.html');
-    res.sendFile(filePath, (err) => {
-      if (err) {
-        console.error('Error sending file:', err);
-        res.status(err.status || 500).send('Error sending file');
-      } else {
-        console.log('File sent:', filePath);
-      }
-    });
-  });
-
 // Serve data endpoints
 app.get('/applicant', async (req, res) => {
     console.log("Okayyy");
