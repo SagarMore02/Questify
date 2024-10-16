@@ -192,7 +192,7 @@ app.get('/t', (req, res) => {
 
 //To Show all the examns
 app.get('/api/exams', async (req, res) => {
-  const sql = "SELECT * FROM exam_master";
+  const sql = "SELECT * FROM exam_master where organizerID=?";
   const connection = await pool.getConnection();
   const [result] = await connection.execute(sql,[req.session.myid]);
   connection.release();
@@ -1008,7 +1008,7 @@ app.get('/logout', (req, res) => {
           console.log('File sent:', filePath);
         }
       });
-    res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
+    //res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
   });
 });
 
