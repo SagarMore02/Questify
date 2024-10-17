@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/teacher_que.css">
+    <title>Teacher's Exam Creation</title>
+</head>
+<body>
+    <div class="container">
+        <form id="questionForm">
+            <div class="question-box" id="current-question-box">
+                <h3>Question 1</h3>
+                <input type="text" id="question-text" placeholder="Enter your question" required>
+                <input type="number" id="question-marks" placeholder="Enter Question Marks" required>
+                <div class="options-container">
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-1" required>
+                        <input type="text" id="option-1" placeholder="Option 1" required>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-2">
+                        <input type="text" id="option-2" placeholder="Option 2" required>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-3">
+                        <input type="text" id="option-3" placeholder="Option 3" required>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-4">
+                        <input type="text" id="option-4" placeholder="Option 4" required>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button type="submit" id="addQuestion">Add Question</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="submit-container" class="buttons">
+            <button id="setTest">Set Test</button>
+        </div>
+
+        <div id="exam-preview" class="exam-preview hidden">
+            <h2>Exam Preview</h2>
+            <h3 id="preview-exam-name"></h3>
+            <div id="exam-questions"></div>
+            <div id="exam-time-display"></div>
+        </div>
+    </div>
+    
+    <script>
+        let questionCount = 1;
+
+        // Handle form submission to add question
+        document.getElementById('questionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent form from submitting normally
+
+            // Check if form is valid
+            if (!this.checkValidity()) {
+                this.reportValidity();  // Let the browser show default validation messages
+                return;
+            }
+
+            // Get question and options data
+            const questionText = document.getElementById('question-text').value;
+            const questionMarks = document.getElementById('question-marks').value;
+            const options = [];
+            let crc = 0;
+
+            for (let i = 1; i <= 4; i++) {
+                const optionText = document.getElementById(`option-${i}`).value;
+                const isCorrect = document.querySelector(`input[name="answer"]:checked`)?.value === `option-${i}`;
+                options.push({ text: optionText, isCorrect: isCorrect });
+                if (isCorrect) {
+                    crc = i;
+                }
+            }
+
+            let correctOption = '';
+            switch (crc) {
+                case 1: correctOption = 'optionA'; break;
+                case 2: correctOption = 'optionB'; break;
+                case 3: correctOption = 'optionC'; break;
+                case 4: correctOption = 'optionD'; break;
+                default: correctOption = 'UnSelected'; break;
+            }
+
+            const questionData = {
+                questionNumber: questionCount,
+                question: questionText,
+                question_marks: questionMarks,
+                option1: options[0].text,
+                option2: options[1].text,
+                option3: options[2].text,
+                option4: options[3].text,
+                correctOpt: correctOption
+            };
+
+            try {
+                const response = await fetch('/addQuestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log(`Question ${questionData.questionNumber} Added`);
+                    // Clear form after submission
+                    this.reset();
+                    questionCount++;
+                    document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting the form.');
+            }
+        });
+
+        // Simulate setting the test
+        document.getElementById('setTest').addEventListener('click', async function() {
+            const response = await fetch('/CheckTest', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                alert("Test has been successfully set.");
+                window.location.href = '/generattest';
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message);
+            }
+        });
+    </script>
+</body>
+</html>

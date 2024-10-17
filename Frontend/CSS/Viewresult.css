@@ -1,0 +1,58 @@
+/* General Table Styling */
+table {
+    width: 50%;
+    border-collapse: collapse;
+    margin: 25px auto;
+    font-size: 18px;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Table Header Styling */
+th {
+    background-color: rgb(85, 3, 172);
+    color: #fff;
+    padding: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Table Cell Styling */
+td {
+    padding: 14px;
+    border: 1px solid rgba(85, 3, 172, 0.2);
+    color: #555;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Row Hover Effect */
+tr:hover {
+    background-color: rgba(146, 77, 219, 0.1);
+    color: rgb(85, 3, 172);
+}
+
+/* Zebra Striping for Rows */
+tr:nth-child(even) {
+    background-color: rgba(146, 77, 219, 0.05);
+}
+
+/* Interactive Focus Effect */
+td:focus {
+    outline: none;
+    background-color: rgba(85, 3, 172, 0.2);
+}
+
+/* Responsive Table for Smaller Screens */
+@media (max-width: 768px) {
+    table {
+        width: 90%;
+        font-size: 16px;
+    }
+
+    th, td {
+        padding: 12px;
+    }
+}

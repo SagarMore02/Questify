@@ -1,0 +1,257 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
+    color: #333;
+}
+
+.navbar {
+    background-color: #5b3ac4; /* Deep purple background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px; /* Adjusted height for a compact look */
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+}
+
+.profile-section h4 {
+    color: #ffffff;
+    font-size: 1.2em;
+    margin: 0;
+    font-weight: 500;
+}
+
+.profile-section span {
+    color: #ffd700; /* Gold color for the username */
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1em;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s, color 0.3s;
+    display: block;
+}
+
+nav ul li a:hover {
+    background-color: #7a4bd7; /* Lighter purple */
+    color: #ffd700; /* Gold color on hover */
+    transform: translateY(-2px); /* Slight upward movement */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+nav ul li::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: #ffd700; /* Gold underline effect */
+    transition: width 0.3s ease-in-out;
+}
+
+nav ul li:hover::after {
+    width: 100%; /* Extends the underline on hover */
+}
+
+.navbar-container .logo {
+    height: 40px;
+    margin-right: 15px;
+}
+
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    nav ul li {
+        width: 100%;
+    }
+
+    nav ul li a {
+        width: 100%;
+        text-align: left;
+        padding: 10px 20px;
+    }
+}
+
+.main-content {
+    flex-grow: 1;
+    background-color: #f4f4f4;
+    padding: 20px;
+    /* border-radius: 3px 0 0 10px;  */
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.chart {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin-right: 20px;
+    border-top: 3px solid #7a4bd7; /* Purple border on top */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.chart:hover {
+    transform: scale(1.02); /* Interactive zoom on hover */
+}
+
+.important-notice {
+    width: 35%;
+    background-color: #e9ecef; /* Light gray */
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    position: relative;
+    padding-top: 60px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.important-notice:hover {
+    transform: translateY(-5px); /* Small upward shift for interactivity */
+}
+
+.important-notice h2 {
+    background-color: #5b3ac4; /* Deep purple */
+    color: white;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    width: calc(100% - 30px);
+}
+
+.controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+}
+
+.controls .minimize,
+.controls .close {
+    width: 20px;
+    text-align: center;
+    font-size: 18px;
+    color: #5b3ac4;
+    background-color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.controls .minimize:hover,
+.controls .close:hover {
+    background-color: #7a4bd7;
+    transform: scale(1.1);
+}
+
+/* Exam list container for scrolling */
+.exam-list-container {
+    max-height: 150px;
+    overflow-y: auto; /* Enables scrolling */
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#exam-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#exam-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+#exam-list li:hover {
+    background-color: #f7f4fc; /* Subtle light purple hover */
+}
+
+/* Footer */
+.footer {
+    background-color: #5b3ac4; /* Purple footer */
+    color: white;
+    padding: 10px;
+    text-align: center;
+    margin-top: 20px;
+    border-radius: 0 0 8px 8px;
+}
+
+.footer:hover {
+    background-color: #7a4bd7; /* Lighter purple on hover */
+}
+
+.header h3 {
+    position: absolute;
+    color: #5b3ac4;
+    font-weight: bold;
+    font-size: 1.8em;
+    transition: color 0.3s;
+}
+
+.header h3:hover {
+    color: #7a4bd7; /* Change color on hover for interactivity */
+}

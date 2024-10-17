@@ -1,0 +1,87 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main Container */
+.set-test-container {
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.set-test-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading Styling */
+h2 {
+    text-align: center;
+    color: rgb(85, 3, 172); /* Violet */
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Box Styling */
+.input-box {
+    margin-bottom: 15px;
+}
+
+.input-box label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: rgb(85, 3, 172);
+}
+
+.input-box input,
+.input-box textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(85, 3, 172, 0.4);
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+}
+
+.input-box input:focus,
+.input-box textarea:focus {
+    border-color: rgb(85, 3, 172);
+    box-shadow: 0 0 5px rgba(85, 3, 172, 0.3);
+}
+
+/* Button Styling */
+.input-box button {
+    width: 100%;
+    padding: 12px;
+    background-color: rgb(85, 3, 172); /* Violet */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.input-box button:hover {
+    background-color: rgb(146, 77, 219); /* Lighter Violet */
+    transform: translateY(-3px);
+}
+
+.input-box button:active {
+    background-color: rgb(70, 2, 145); /* Darker Violet */
+    transform: translateY(0);
+}

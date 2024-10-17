@@ -1,0 +1,96 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #5b3ac4, #8e5fdd); /* Gradient background for a vibrant feel */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+.main-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 900px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.main-content:hover {
+    transform: translateY(-3px); /* Slight lift effect */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #5b3ac4; /* Deep purple for the title */
+    font-weight: 600;
+    font-size: 1.8em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures the rounded corners are applied */
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid #eee; /* Light border for better separation */
+    font-size: 0.95em;
+}
+
+th {
+    background-color: #5b3ac4; /* Deep purple for headers */
+    color: white;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.15);
+}
+
+tr {
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
+}
+
+tr:hover {
+    background-color: #f7f4fc; /* Subtle light purple on hover */
+    transform: scale(1.01); /* Slight scale effect for emphasis */
+}
+
+td {
+    color: #555; /* Slightly muted text for better readability */
+}
+
+td:first-child {
+    font-weight: 500;
+}
+
+.input-box {
+    display: none; /* Hidden as the focus is on the table */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        width: 100%;
+        padding: 15px;
+    }
+
+    th, td {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+}

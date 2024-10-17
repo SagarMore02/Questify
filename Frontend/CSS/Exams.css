@@ -1,0 +1,223 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #5b3ac4, #9378d3); /* Purple gradient background */
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Exam Card Styles */
+.exam-card {
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.exam-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.exam-card h3 {
+    margin: 0;
+    font-size: 1.5em; /* Increased font size for better visibility */
+    color: #5b3ac4; /* Deep purple */
+}
+
+/* Exam Details */
+.exam-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Two rows layout */
+    gap: 15px; /* Space between items */
+    margin-top: 10px;
+}
+
+.exam-details div {
+    padding: 10px; /* Add padding for better spacing */
+    border: 1px solid #eee; /* Light border to separate details */
+    border-radius: 6px; /* Slight rounding for detail boxes */
+    background-color: #f9f9f9; /* Light background for details */
+}
+
+.exam-details div span {
+    font-weight: bold;
+    display: block;
+    color: #666;
+}
+
+/* Button Styles */
+.edit-btn {
+    background-color: #7a4bd7; /* Medium purple */
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+}
+
+.edit-btn:hover {
+    background-color: #5b3ac4; /* Darker purple */
+    transform: scale(1.05);
+}
+
+/* Select Input Styles */
+.selects {
+    padding: 8px; /* Adjusted padding for better click area */
+    font-size: 1em;
+    border-radius: 4px;
+    border: 1px solid #c3b4e6;
+    background: #fff;
+    transition: border-color 0.3s;
+}
+
+.selects:focus {
+    border-color: #5b3ac4;
+    outline: none;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding-top: 30px; /* Reduced padding to move the modal content up */
+    overflow-y: auto; /* Allows scrolling of the modal background if necessary */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 2% auto; /* Reduced margin-top to move it further up */
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh; /* Ensures the modal content doesn't exceed 80% of the viewport height */
+    overflow-y: auto; /* Enables scrolling inside the modal if content overflows */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.close {
+    color: #888;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #5b3ac4; /* Dark purple on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Input Field Styles */
+.user-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns layout */
+    gap: 15px; /* Space between fields */
+}
+
+.input-box {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f7f4fc; /* Light purple background */
+    transition: border-color 0.3s;
+}
+
+.input-box span {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.input-box input {
+    padding: 10px;
+    border: 1px solid #c3b4e6;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: border-color 0.3s;
+}
+
+.input-box input:focus {
+    border-color: #5b3ac4;
+    outline: none;
+    box-shadow: 0 0 6px rgba(91, 58, 196, 0.3); /* Subtle purple glow */
+}
+
+@media (max-width: 768px) {
+    .user-details {
+        grid-template-columns: 1fr; /* Single column for small screens */
+    }
+}
+
+/* Button Styles for Submit */
+#edit_submit,
+#edit_ques,
+#Addques {
+    margin-left: 7%;
+    background-color: #7a4bd7; /* Medium purple */
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#edit_submit:hover,
+#edit_ques:hover,
+#Addques:hover {
+    background-color: #5b3ac4; /* Darker purple on hover */
+    transform: scale(1.05);
+}
+
+/* Modal Title Style */
+.modal .title {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #5b3ac4; /* Purple title */
+    grid-column: span 2; /* Make the title span across both columns */
+}
+
+/* Questions List Container */
+.questions-list-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f7f4fc; /* Light purple background */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.question-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #555;
+}
+
