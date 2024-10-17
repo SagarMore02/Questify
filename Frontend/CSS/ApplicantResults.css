@@ -1,0 +1,98 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2em;
+    color: #374151;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #4f46e5; /* Deep violet for a modern look */
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+td {
+    background-color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+tr:hover td {
+    background-color: #f3f4f6; /* Light gray background on row hover */
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    table {
+        font-size: 16px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+}
+
+#exams-table {
+    margin-top: 20px;
+}
+
+td:nth-child(4), td:nth-child(5) {
+    text-align: center; /* Center-align marks and status */
+}
+
+td.status {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+td.status.approved {
+    color: #10b981; /* Green for approved */
+}
+
+td.status.pending {
+    color: #fbbf24; /* Yellow for pending */
+}
+
+td.status.rejected {
+    color: #ef4444; /* Red for rejected */
+}
+
+@media (max-width: 576px) {
+    th, td {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+}
