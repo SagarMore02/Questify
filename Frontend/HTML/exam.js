@@ -169,10 +169,12 @@ function displayQuestion(index) {
 
     // Clear previous options
     optionsContainer.innerHTML = '';
-
+    console.log("************************************* ");
     // Generate options
     currentQuestion.options.forEach((option, i) => {
-        const optionLabel = document.createElement("label");
+        console.log("Logging I",i);
+        if (option === null || option === "NULL") return;
+        const optionLabel = document.createElement("label");    
         const optionInput = document.createElement("input");
         optionInput.type = "radio";
         optionInput.name = "option";

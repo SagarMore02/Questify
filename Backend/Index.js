@@ -64,8 +64,8 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password:'Aditya@123',
-  //password: 'sagar@123',
+  //password:'Aditya@123',
+  password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -591,24 +591,67 @@ app.get('/generattest', (req, res) => {
 
 
 // Add Questions:addQuestion
-app.post('/addQuestion', async(req, res) => {
-      const {question,option1,option2,option3,option4,question_marks,correctOpt} = req.body;
-      try {
-        connection = await pool.getConnection();
-    
-        // Insert into user_master
-        const sql = 'INSERT INTO Question_Master(examID, question, optionA, optionB, optionC, optionD, answer_key, question_marks,timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)';
-        const [result] = await connection.execute(sql, [req.session.examID, question, option1, option2, option3, option4, correctOpt, question_marks,new Date()]);
-        res.status(200).json({ message: 'Registration successful!', receivedData: req.body });
-    
-      } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Error processing request.');
-      } finally {
-        if (connection) connection.release();
+app.post('/addQuestion', async (req, res) => {
+  const { question, question_marks, options, correctOpt } = req.body;
+  let triggerTest=false;
+  const paddedOptions = Array(6).fill(null).map((_, i) => options[i] || null);
+  console.log(...paddedOptions);
+  let connection;
+  try {
+      connection = await pool.getConnection();
+      
+      // Get the exam's total marks from exam_master
+      const check_exam_marks = `SELECT total_marks FROM exam_master WHERE examID = ?`;
+      const [check_exam_result] = await connection.execute(check_exam_marks, [req.session.examID]);
+
+      // Get the sum of current question marks for this exam from Question_Master
+      const check_question_marks = `SELECT IFNULL(SUM(question_marks), 0) AS questotal FROM Question_Master WHERE examID = ?`;
+      const [check_question_result] = await connection.execute(check_question_marks, [req.session.examID]);
+
+      const currentTotalMarks = Number(check_question_result[0].questotal);
+      const examTotalMarks = Number(check_exam_result[0].total_marks);
+      console.log("Current Marks:",(currentTotalMarks+Number(question_marks)));
+      console.log("Exam Total Marks",examTotalMarks);
+      // Check if adding the new question's marks would exceed the total marks allowed for the exam
+      if (examTotalMarks < (currentTotalMarks + Number(question_marks))) {
+        console.log("Current Marks Inside IF:",(currentTotalMarks+Number(question_marks)));
+          res.status(400).json({ 
+              message: 'Question Marks are Exceeding Exam Total Marks!', 
+              receivedData: req.body,
+              currentTotalMarks,
+              triggerSetTest:triggerTest,
+              attemptedQuestionMarks: question_marks
+          });
+          return;  // Stop further execution after sending a response
       }
 
+      const sql = `
+          INSERT INTO Question_Master 
+          (examID, question, optionA, optionB, optionC, optionD, optionE, optionF, answer_key, question_marks, timestamp) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const [result] = await connection.execute(sql, [
+          req.session.examID,
+          question,
+          ...paddedOptions,
+          correctOpt,
+          question_marks,
+          new Date()
+      ]);
+      if (examTotalMarks == (currentTotalMarks + Number(question_marks))) {
+        triggerTest=true;
+      }
+      res.status(200).json({ message: 'Question added successfully!',triggerSetTest:triggerTest, receivedData: req.body });
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send('Error processing request.');
+  } finally {
+      if (connection) connection.release();
+  }
 });
+
+
 
 app.get('/getApplicantResult', (req, res) => {
   console.log("Applicant Results :",req.session.myid);
@@ -1051,7 +1094,7 @@ app.post('/get-questions', async (req, res) => {
         FROM question_master q 
         JOIN exam_master e ON q.examID = e.examID
         WHERE q.examID = ?
-        GROUP BY q.questionID, q.examID, q.question, q.optionA, q.optionB, q.optionC, q.optionD, e.exam_start_time, e.exam_end_time;
+        GROUP BY q.questionID, q.examID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,q.optionE,q.optionF, e.exam_start_time, e.exam_end_time;
 `;
 
   try {
@@ -1070,7 +1113,7 @@ app.post('/get-questions', async (req, res) => {
     const questionsArray = results.map(row => ({
       id: row.questionID, // Add questionID to the object
       question: row.question,
-      options: [row.optionA, row.optionB, row.optionC, row.optionD]
+      options: [row.optionA, row.optionB, row.optionC, row.optionD,row.optionE,row.optionF]
     }));
 
     // Send the formatted questions array back to the frontend
@@ -1156,7 +1199,7 @@ app.post('/get-my-questions', async (req, res) => {
   let connection;
 
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,e.exam_start_time,e.exam_end_time,q.question_marks from question_master q join exam_master e on e.examID=?;`;
+  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,q.optionE,q.optionF,e.exam_start_time,e.exam_end_time,q.question_marks from question_master q join exam_master e on e.examID=?;`;
 
   try {
     // Fetch questions and options from the database
@@ -1173,7 +1216,7 @@ app.post('/get-my-questions', async (req, res) => {
     const questionsArray = results.map(row => ({
       id: row.questionID, // Add questionID to the object
       question: row.question,
-      options: [row.optionA, row.optionB, row.optionC, row.optionD],
+      options: [row.optionA, row.optionB, row.optionC, row.optionD,row.optionE, row.optionF],
       totalMarks: row.question_marks
     }));
 
