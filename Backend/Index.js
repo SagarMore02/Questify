@@ -1127,13 +1127,13 @@ app.post('/get-questions', async (req, res) => {
 });
 //Update Questions Api
 app.post('/updateQuestion', async (req, res) => {
-  const {questionId,updatedQuestion,optionA,optionB,optionC,optionD,correctOption,totalMarks}=req.body
+  const {questionId,updatedQuestion,options,correctOption,totalMarks}=req.body
   const examID = req.session.organExam;
   let connection;
   // Modified query to fetch questions and their corresponding options from question_master
   const query = `select * from question_master where questionID=?;`;
-  const ins_query=`Insert Into question_master(examID,question,optionA,optionB,optionC,optionD,answer_key,question_marks) values(?,?,?,?,?,?,?,?);`;
-  const update_query =`UPDATE question_master set question=?,optionA=?,optionB=?,optionC=?,optionD=?,answer_key=?,question_marks=? where questionID=?`;
+  const ins_query=`Insert Into question_master(examID,question,optionA,optionB,optionC,optionD,optionE,optionF,answer_key,question_marks) values(?,?,?,?,?,?,?,?);`;
+  const update_query =`UPDATE question_master set question=?,optionA=?,optionB=?,optionC=?,optionD=?,optionE=?,optionF=?,answer_key=?,question_marks=? where questionID=?`;
   try {
     // Fetch questions and options from the database
     connection = await pool.getConnection();
@@ -1142,10 +1142,10 @@ app.post('/updateQuestion', async (req, res) => {
 
     if (results.length === 0) {
       //return res.status(404).json({ message: 'No questions found for this exam.' });
-      const[ins_result]=await connection.query(ins_query,[examID,updatedQuestion,optionA,optionB,optionC,optionD,correctOption,totalMarks]);;
+      const[ins_result]=await connection.query(ins_query,[examID,updatedQuestion,options[1],options[2],options[3],options[4],options[5],options[6],correctOption,totalMarks]);;
     
     }else{
-      const[update_result]=await connection.query(update_query,[updatedQuestion,optionA,optionB,optionC,optionD,correctOption,totalMarks,questionId]);
+      const[update_result]=await connection.query(update_query,[updatedQuestion,options[1],options[2],options[3],options[4],options[5],options[6],correctOption,totalMarks,questionId]);
     }
     res.status(200).json({ message:"Success" });
   } catch (err) {
