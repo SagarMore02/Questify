@@ -173,6 +173,7 @@ function displayQuestion(index) {
     // Generate options
     currentQuestion.options.forEach((option, i) => {
         console.log("Logging I",i);
+        console.log("Logging option",option);
         if (option === null || option === "NULL") return;
         const optionLabel = document.createElement("label");    
         const optionInput = document.createElement("input");

@@ -1089,7 +1089,7 @@ app.post('/get-questions', async (req, res) => {
   let connection;
   
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `SELECT q.questionID, q.examID, q.question, q.optionA, q.optionB, q.optionC, q.optionD, 
+  const query = `SELECT q.questionID, q.examID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,q.optionE, q.optionF, 
        e.exam_start_time, e.exam_end_time 
         FROM question_master q 
         JOIN exam_master e ON q.examID = e.examID

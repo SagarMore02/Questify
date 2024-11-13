@@ -175,6 +175,7 @@
         });
 
         if (response.ok) {
+            alert("Starting");
             // If the server responds with status 200 (OK), redirect the user to the exam page
             window.location.href = `/start_exam?examID=${examID}`;
         } else {
