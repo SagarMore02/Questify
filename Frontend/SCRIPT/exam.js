@@ -37,6 +37,7 @@ async function fetchQuestions() {
         console.log(data);
         examId = data.examId;
         questions = data.questions;
+        console.log("==========>", questions)
 
         // Initialize userAnswers array with null values
         userAnswers = new Array(questions.length).fill(null);
@@ -79,7 +80,7 @@ function generateProgressButtons() {
 
 // Function to highlight the active button
 function updateActiveButton() {
-    const buttons = progressContainer.querySelectorAll('.progress-btn'); // Select all buttons within the progress container
+    const buttons = progressContainer.querySelectorAll('.progress-container'); // Select all buttons within the progress container
     buttons.forEach((button, index) => {
         button.classList.remove('active'); // Remove active class from all buttons
         if (index === currentQuestionIndex) {

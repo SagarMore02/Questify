@@ -6,6 +6,9 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 const bcrypt = require ('bcryptjs');
+const otpGenerator = require('otp-generator');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 // Custom error class (optional)
 class CustomError extends Error {
@@ -64,8 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
+  password:'root',
   //password:'Aditya@123',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -106,12 +110,91 @@ app.get('/admin', (req, res) => {
 
 app.use('/', express.static(path.join(__dirname, '../Frontend/HTML')));
 
+let activeSessions = {};
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'questify24@gmail.com',  // Replace with your email
+    pass: 'dflv uapp hvpr jwyd'    // Replace with your email password
+  }
+});
+
+
+const otpStorage = {};
+const otpKey = Math.random().toString(36).substring(2, 10);
+
+app.post('/register', async (req, res) => {
+  console.log("Register Hit");
+  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId, location } = req.body;
+
+  // Validate required fields
+  if (!fname || !lname || !pass || !email || !usertype) {
+    return res.status(400).send('All fields are required.');
+  }
+
+  // Ensure passwords match
+  if (pass !== confirmPassword) {
+    return res.status(400).send('Passwords do not match.');
+  }
+
+  // Check if the organization exists only if organId is provided and userType is 'Organizer'
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    
+    if (organId !== "-1" && usertype === 'Organizer') {
+      const [orgRows] = await connection.query('SELECT * FROM user_master WHERE userID = ?', [organId]);
+
+      if (orgRows.length === 0) {
+        return res.status(500).json({ message: 'Organization not found.' });
+      } else if (orgRows[0].status !== "Active") {
+        return res.status(500).json({ message: 'Organization not Active.' });
+      }
+    }
+
+    // Check for unique username
+    const sql1 = 'SELECT username FROM user_master WHERE username = ?';
+    const [result1] = await connection.execute(sql1, [username.toLowerCase()]);
+    
+    if (result1.length !== 0) {
+      return res.status(404).json({ message: 'Username already exists' });
+    }
+
+    // Generate OTP
+    const otp = otpGenerator.generate(6, { digits: true});
+    
+    otpStorage[otpKey] = {
+      otp: otp,
+      userDetails: { fname, lname, email, mobileno, username, hashedpassword: await bcrypt.hash(pass, 10), usertype, organId, location },
+      expires: Date.now() + 300000 // OTP valid for 5 minutes
+    };
+    console.log("==============>", otpStorage[otpKey]);
+
+    // Send OTP email
+    const mailOptions = {
+      from: transporter.user,
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otp}. It will expire in 5 minutes.`
+    };
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'OTP sent. Please verify.', redirectURL: "/verify-otp" });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Error processing request.');
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+
 app.post('/login-packet', async (req, res) => {
   const { username, password } = req.body;
   console.log("Username: " + username);
   console.log("Password: " + password);
-
-
 
   if (!username || !password) {
     console.log("Empty packet");
@@ -130,51 +213,209 @@ app.post('/login-packet', async (req, res) => {
       return res.status(404).json({ message: 'No such username found.' });
     }
 
+    if (result.status == 'pending') {
+      return res.status(404).json({ message: 'User not verfied by admin.' });
+    }
+
     const user = result[0];
-    const passwordsql=user.password;
+    const passwordHash = user.password;
     
-    if (!await bcrypt.compare(password,passwordsql)) {
-      console.log(password);
+    if (!await bcrypt.compare(password, passwordHash)) {
+      console.log("Incorrect password");
       return res.status(401).json({ message: 'Incorrect password.' });
     }
-    if(user.status==="Inactive" && user.usertype==='Applicant'){
-      console.log("User Not Active");
-        return res.status(401).json({ message: 'Inactive User.' });
-    }
-    if(user.status!=="Active" && user.usertype!=='Applicant'){
+
+    if (user.status === "Inactive") {
       console.log("User Not Active");
       return res.status(401).json({ message: 'Inactive User.' });
     }
-    req.session.username=result[0].username;
-    req.session.firstname=result[0].firstname;
-    req.session.lastname=result[0].lastname;
-    req.session.mobile=result[0].mobile;
-    req.session.email=result[0].email;
-    req.session.myid=result[0].userID;
 
-    console.log("UserId:  "+req.session.myid);
-    console.log("Username:  "+req.session.username);
+    // Check if the user is already logged in from another session
+    if (activeSessions[user.userID]) {
+      console.log("User already logged in from another session");
+      return res.status(400).json({ message: 'User already logged in from another session.' });
+    }
+
+
+    // Store session info and mark the user as logged in
+    req.session.username = user.username;
+    req.session.firstname = user.firstname;
+    req.session.lastname = user.lastname;
+    req.session.mobile = user.mobile;
+    req.session.email = user.email;
+    req.session.myid = user.userID;
+    activeSessions[user.userID] = req.sessionID; // Track the active session
+
+    console.log("UserId: " + req.session.userID);
+    console.log("Username: " + req.session.username);
     console.log("\n\n\n");
 
-    switch(user.usertype){
+    // Redirect user based on their role
+    switch (user.usertype) {
       case 'Applicant':
-        console.log('Login successful, redirecting...');
-        res.status(200).json({ redirectURL: '/applicantDash' });
-                        break;
+        res.status(200).json({ redirectURL: '/applicantDash', username: req.session.username});
+        break;
       case 'Organizer':
-        console.log('Login successful, redirecting...');
-        res.status(200).json({ redirectURL: '/organ' });
-                        break;
+        res.status(200).json({ redirectURL: '/organ', username: req.session.username});
+        break;
       case 'Organization':
-        console.log('Login successful, redirecting...');
-        res.status(200).json({ redirectURL: '/OrganizationFrame.html' });
-                        break;
+        res.status(200).json({ redirectURL: '/OrganizationFrame.html', username: req.session.username });
+        break;
     }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Error checking result[0] and password' });
   }
 });
+//const sOtp;
+app.post('/verify-otp', async (req, res) => {
+  const { otp } = req.body;
+  
+  //sOtp=otpStorage[otpKey];
+
+  // Check if the OTP entry exists for the given email
+  if (!otpStorage[otpKey].otp) {
+    return res.status(400).json({ message: 'OTP not found. Please request again.' });
+  }
+
+  // Check if the OTP matches
+  if (otpStorage[otpKey].otp !== otp) {
+    return res.status(400).json({ message: 'Invalid OTP.' });
+  }
+
+  // Check if OTP is expired
+  if (Date.now() > otpStorage[otpKey].expires) {
+    delete otpStorage[otpKey];  // Clear the OTP from storage as it has expired
+    return res.status(400).json({ message: 'OTP expired. Please request again.' });
+  }
+
+  // Extract user details from the stored OTP data
+  const { fname, lname, mobileno, username, hashedpassword, usertype, organId, location, email} = otpStorage[otpKey].userDetails;
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+
+    // Insert into `user_master`
+    const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await connection.execute(sql, [username.toLowerCase(), hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
+    const newUserID = result.insertId;
+
+    // Insert into Organization table if the user is of type 'Organization'
+    if (usertype === 'Organization') {
+      const orgSql = 'INSERT INTO Organization(organizationID, name, location) VALUES (?, ?, ?)';
+      await connection.execute(orgSql, [newUserID, fname, location]);
+    }
+
+    // Insert into organizer_organization if the user is of type 'Organizer' and organId is valid
+    if (organId !== "-1" && usertype === 'Organizer') {
+      const insertOrgSql = 'INSERT INTO organizer_organization (organizerID, organizationID) VALUES (?, ?)';
+      await connection.execute(insertOrgSql, [newUserID, organId]);
+    }
+
+    // Cleanup OTP data
+    delete otpStorage[otpKey];
+
+    res.status(200).json({ message: 'Registration successful!' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Error completing registration.');
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+
+
+const resetTokens = {};
+
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  console.log("Received forgot-password request for:", email);
+
+  const connection = await pool.getConnection();
+
+  try {
+      const [user] = await connection.query('SELECT * FROM user_master WHERE email = ?', [email]);
+      
+      if (!user) {
+          return res.status(400).json({ message: 'User not found' });
+      }
+
+      // Generate reset token and expiration
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetExpires = Date.now() + 3600000; // 1-hour expiration
+
+      resetTokens[otpKey] = {
+        token: resetToken,
+        expires: resetExpires
+      };
+
+      // // Store reset token and expiration in database
+      // await connection.query('UPDATE user_master SET resetToken = ?, resetExpires = ? WHERE email = ?', [resetToken, resetExpires, email]);
+
+      const mailOptions = {
+          from: transporter.user,
+          to: email,
+          subject: 'Password Reset',
+          text: `Your password reset token is: ${resetToken}. It will expire in 1 hour.`
+      };
+
+      await transporter.sendMail(mailOptions);
+      res.json({ message: 'Password reset token sent to your email' });
+  } catch (error) {
+      console.error('Error processing forgot-password request:', error);
+      res.status(500).json({ message: 'Error sending email' });
+  }
+});
+
+app.post('/reset-password', async (req, res) => {
+  const { email, token, newPassword, confirmPassword } = req.body;
+
+  // Check if newPassword and confirmPassword match
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: 'Passwords do not match.' });
+  }
+
+  let connection;
+
+  try {
+    // Get a connection from the pool
+    connection = await pool.getConnection();
+
+    // Fetch user from the database based on the email
+    const [results] = await connection.execute('SELECT * FROM user_master WHERE email = ?', [email]);
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Verify token and check expiration
+    if (resetTokens[otpKey].token === token && resetTokens[otpKey].expires > Date.now()) {
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 salt rounds
+
+      // Update the user's password in the database
+      await connection.execute('UPDATE user_master SET password = ? WHERE email = ?', 
+        [hashedPassword, email]
+      );
+
+      res.json({ message: 'Password updated successfully' });
+    } else {
+      res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Server error. Please try again later.' });
+  } finally {
+    if (connection) {
+      connection.release(); // Release the connection back to the pool
+    }
+  }
+});
+
+
 app.get('/t', (req, res) => {
   console.log("serving home");
   const filePath = path.join(__dirname, '../Frontend/HTML/home2.html');
@@ -812,80 +1053,6 @@ app.post('/delExam', async(req, res) => {
 
 
 
-
-app.post('/register', async (req, res) => {
-  console.log("Register Hit");
-  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId, location } = req.body;
-  
-  // Validate required fields
-  if (!fname || !lname || !pass || !email || !usertype) {
-    return res.status(400).send('All fields are required.');
-  }
-  
-  // Ensure passwords match
-  if (pass !== confirmPassword) {
-    return res.status(400).send('Passwords do not match.');
-  }
-  const Salt = await bcrypt.genSalt(10);
-  const hashedpassword = await bcrypt.hash(pass,Salt);
-
-  console.log (hashedpassword);
-  console.log("Inside register", organId);
-  let connection;
-  try {
-    connection = await pool.getConnection();
-    
-    // Check if the organization exists only if organId is provided and userType is 'Organizer'
-    if (organId !== "-1" && usertype === 'Organizer') {
-      const [orgRows] = await connection.query('SELECT * FROM user_master WHERE userID = ?', [organId]);
-
-      if (orgRows.length === 0) {
-        return res.status(500).json({ message: 'Organization not found.\nLength is :'+orgRows.length });
-      }else if(orgRows[0].status!=="Active"){
-        return res.status(500).json({ message: 'Organization not Active.' });
-      }
-    }
-    //Check for Unique names:
-    const sql1 = 'SELECT username,firstname,lastname,mobile,email,password,usertype,status FROM user_master WHERE username = ?';
-    const [result1] = await connection.execute(sql1, [username.toLowerCase()]);
-    connection.release();
-
-    if (result1.length !== 0) {
-      console.log("Duplicate Name");
-      return res.status(404).json({ message: 'Duplicate Name' });
-    }
-
-
-    // Insert into user_master
-    const sql = 'INSERT INTO user_master(username, password, firstname, lastname, usertype, mobile, email, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [username.toLowerCase(), hashedpassword, fname, lname, usertype, mobileno, email, new Date()]);
-    const newUserID = result.insertId; // Get the ID of the newly inserted user
-    
-    // Insert into Organization if usertype is 'Organization'
-    if (usertype === 'Organization') {
-      const orgSql = 'INSERT INTO Organization(organizationID, name, location) VALUES (?, ?, ?)';
-      await connection.execute(orgSql, [newUserID, fname, location]);
-    }
-
-    // Insert into organizer_organization only if organId is valid and userType is 'Organizer'
-    if (organId !== "-1" && usertype === 'Organizer') {
-      console.log("Inserting in organizer_organization");
-      const insertOrgSql = 'INSERT INTO organizer_organization (organizerID, organizationID) VALUES (?, ?)';
-      await connection.execute(insertOrgSql, [newUserID, organId]);
-    }
-
-    // Respond with success
-    res.status(200).json({ message: 'Registration successful!', redirectURL: "/", receivedData: req.body });
-
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Error processing request.');
-  } finally {
-    if (connection) connection.release();
-  }
-});
-
-
 // /api/exams
 
 //Admin Apis
@@ -1041,25 +1208,33 @@ app.get('/profile', (req, res) => {
 // /api/exams/apply
 app.get('/logout', (req, res) => {
   console.log("Logging Out");
-  // Destroy the session
+
+  const user = req.session.userID;
+
+  // Destroy the session and remove the user from active sessions
   req.session.destroy((err) => {
     if (err) {
       console.error('Error destroying session:', err);
       return res.status(500).send('Error logging out');
     }
-    // Redirect to login page or home page
-    const filePath = path.join(__dirname, '../Frontend/HTML/Index.html'); // Adjust the path as necessary
-      res.sendFile(filePath, (err) => {
-        if (err) {
-          console.error('Error sending file:', err);
-          res.status(err.status || 500).send('Error sending file');
-        } else {
-          console.log('File sent:', filePath);
-        }
-      });
-    //res.status(200).json({message:'SuccessFull'}); // Adjust the redirect URL as needed
+
+    if (user) {
+      delete activeSessions[user.userID]; // Remove user from active sessions
+    }
+
+    // Send the file or redirect as necessary
+    const filePath = path.join(__dirname, '../Frontend/HTML/Index.html');
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(err.status || 500).send('Error sending file');
+      } else {
+        console.log('File sent:', filePath);
+      }
+    });
   });
 });
+
 
 app.get('/start_exam', async (req, res) => {
   const {examID} = req.query;
@@ -1340,84 +1515,7 @@ app.post('/submitTest', async (req, res) => { // examId comes from URL params
   }
 });
 
-// app.post('/check-result', async (req, res) => {
-//   const { studentid, examid } = req.body;
 
-  
-
-//   const connection = await pool.getConnection();
-
-//   try {
-//     // Query 1: Fetch passing marks
-//     const passQuery = 'SELECT passing_marks FROM exam_master WHERE examID = ?';
-//     const [passResult] = await connection.query(passQuery, [examid]);
-
-//     if (!passResult.length) {
-//       return res.status(404).json({ message: 'Exam not found' });
-//     }
-
-//     const passingMarks = passResult[0].passing_marks;
-
-//     // Query 2: Fetch attempt and question data
-//     const fetchMarksQuery = `
-//       SELECT 
-//       a.examID, 
-//       a.questionID, 
-//       a.selected_option, 
-//       q.answer_key, 
-//       q.question_marks,
-//       e.total_marks,
-//       e.passing_marks
-//       FROM attempt_master a
-//       JOIN question_master q 
-//           ON a.examID = q.examID AND a.questionID = q.questionID
-//       JOIN exam_master e 
-//           ON a.examID = e.examID
-//       WHERE a.examID = ?;`;
-
-//     const [attemptResults] = await connection.query(fetchMarksQuery, [examid]);
-    
-//     if (attemptResults.length<=0) {
-//       return res.status(404).json({ message: 'No attempts found for this student or exam' });
-//     }
-//     console.log("Checking Result FOr organizer");
-//     // Initialize total score
-//     let totalScore = 0;
-//     let passing_marks=0;
-//     let totalMarks=0;
-
-//     // Process each question: Compare selected_option with answer_key and sum marks if correct
-//     attemptResults.forEach(row => {
-//       if (row.selected_option === row.answer_key) {
-//         totalScore += row.question_marks;
-//       }
-//     });
-
-//     attemptResults.forEach(row => {
-//       passing_marks=row.passing_marks;
-//       totalMarks = row.total_marks;
-//     });
-
-
-//     // Determine pass or fail based on totalScore and passingMarks
-//     const status = totalScore >= passingMarks ? 'Passed' : 'Failed';
-
-//     // Return the result to the frontend
-//     res.json({
-//       studentid: studentid,
-//       examid: examid,
-//       totalScore: totalScore,
-//       passing_marks: passing_marks,
-//       totalMarks:totalMarks,
-//       status: status
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   } finally {
-//     connection.release();
-//   }
-// });
 
 app.post('/check-result', async (req, res) => {
   //const { examid } = req.body; // No longer using studentid in the request body since we fetch all students
@@ -1500,8 +1598,6 @@ app.post('/check-result', async (req, res) => {
     connection.release();
   }
 });
-
-
 
 
 app.get('/getExamIds', async (req, res) => {
