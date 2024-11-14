@@ -59,3 +59,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+// document.getElementById('verifyOtpButton').addEventListener('click', async () => {
+//     const otp = document.getElementById('otp').value;
+
+//     const response = await fetch('/verify-otp', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ otp })
+//     });
+
+//     const result = await response.json();
+//     document.getElementById('message').innerText = result.message;
+
+//     if (response.status === 200) {
+//         // Redirect to the user’s dashboard based on their role
+//         window.location.href = result.redirectURL;
+//     }
+// });

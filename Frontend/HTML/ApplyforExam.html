@@ -169,7 +169,7 @@
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
         // Fetching data from the API and displaying it in individual divs
-        fetch('/api/exams')
+        fetch('/api/stu/exams')
             .then(response => response.json())
             .then(data => {
                 const examList = document.getElementById('examList');

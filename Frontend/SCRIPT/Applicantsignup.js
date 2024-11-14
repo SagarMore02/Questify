@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Registration successful!');
+                alert('proceed for 2FA');
                 // Redirect or clear the form as needed
-                window.top.location.href = data.redirectURL;
+                window.top.location.href = 'verify-otp.html';
             } else {
                 alert('Registration failed: ' + data.message);
             }
