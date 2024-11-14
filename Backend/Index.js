@@ -67,9 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password:'root',
+  //password:'root',
   //password:'Aditya@123',
-  //password: 'sagar@123',
+  password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -229,9 +229,9 @@ app.post('/login-packet', async (req, res) => {
       console.log("User Not Active");
       return res.status(401).json({ message: 'Inactive User.' });
     }
-
+    console.log("Active Sessions:",activeSessions);
     // Check if the user is already logged in from another session
-    if (activeSessions[user.userID]) {
+    if (activeSessions[user.userID]>0) {
       console.log("User already logged in from another session");
       return res.status(400).json({ message: 'User already logged in from another session.' });
     }
@@ -244,9 +244,9 @@ app.post('/login-packet', async (req, res) => {
     req.session.mobile = user.mobile;
     req.session.email = user.email;
     req.session.myid = user.userID;
-    activeSessions[user.userID] = req.sessionID; // Track the active session
+    activeSessions[user.userID] = 1; // Track the active session
 
-    console.log("UserId: " + req.session.userID);
+    console.log("UserId: " + req.session.myid);
     console.log("Username: " + req.session.username);
     console.log("\n\n\n");
 
@@ -646,133 +646,6 @@ app.post('/updateExam', async (req, res) => {
       }
   }
 });
-
-
-
-
-
-// //to Update Exam:
-// app.post('/updateExam', async (req, res) => {
-//   const {
-//       examID,
-//       name,
-//       app_start_date,
-//       app_end_date,
-//       exam_start_date,
-//       //exam_end_date,
-//       exam_start_time,
-//       exam_end_time,
-//       total_marks,
-//       passing_marks,
-//       fees,
-//       syllabus
-//   } = req.body;
-//   const exam_end_date = exam_start_date;
-//   console.log({
-//       examID,
-//       name,
-//       app_start_date,
-//       app_end_date,
-//       exam_start_date,
-//       exam_end_date,
-//       exam_start_time,
-//       exam_end_time,
-//       total_marks,
-//       passing_marks,
-//       fees,
-//       syllabus
-//   });
-
-//   let connection;
-
-//   try {
-//       // Get the current date and time
-//       const currentDateTime = new Date();
-
-//       // Get the connection asynchronously
-//       connection = await pool.getConnection();
-      
-//       // Execute err_sql to get existing exam timings
-//       const err_sql = `SELECT exam_start_date, exam_start_time, exam_end_date, exam_end_time FROM exam_master WHERE examID = ?`;
-//       const [existingExam] = await connection.execute(err_sql, [examID]);
-
-//       // Check if the exam exists
-//       if (existingExam.length === 0) {
-//           return res.status(404).json({ success: false, message: "Exam not found." });
-//       }
-
-//       const { 
-//           exam_start_date: existingExamStartDate, 
-//           exam_start_time: existingExamStartTime, 
-//           exam_end_date: existingExamEndDate, 
-//           exam_end_time: existingExamEndTime 
-//       } = existingExam[0];
-
-//       console.log("*******", existingExamStartTime)
-
-//       // Combine existing exam date and time for comparisons
-//       const existingExamStartDateTime = new Date(existingExamStartDate);
-//       const existingExamStartDateTimeWithTime = new Date(`${existingExamStartDate.toISOString().split('T')[0]}T${existingExamStartTime}`);
-//       const existingExamEndDateTime = new Date(existingExamEndDate);
-//       const existingExamEndDateTimeWithTime = new Date(`${existingExamEndDate.toISOString().split('T')[0]}T${existingExamEndTime}`);
-
-//       console.log("====>", existingExamStartDateTimeWithTime);
-//       console.log("====>", existingExamEndDateTimeWithTime);
-//       console.log("====>", currentDateTime);
-
-//       // Check if current date and time is within the exam period
-//       if (currentDateTime >= existingExamStartDateTimeWithTime && currentDateTime <= existingExamEndDateTimeWithTime) {
-//           return res.status(400).json({ success: false, message: "Exam is live and cannot be edited." });
-//       }
-
-//       // Combine application dates for validation
-//       const appStartDateTime = new Date(app_start_date);
-//       const appEndDateTime = new Date(app_end_date);
-
-//       // Check if application start date is after application end date
-//       if (appStartDateTime > appEndDateTime) {
-//           return res.status(400).json({ success: false, message: "Application start date cannot be after application end date." });
-//       }
-
-//       // Combine new exam dates for validation
-//       const newExamStartDateTime = new Date(`${exam_start_date}T${exam_start_time}`);
-//       const newExamEndDateTime = new Date(`${exam_end_date}T${exam_end_time}`);
-
-//       // Check if exam start date is after exam end date
-//       if (newExamStartDateTime > newExamEndDateTime) {
-//           return res.status(400).json({ success: false, message: "Exam start date cannot be after exam end date." });
-//       }
-
-//       // Prepare the SQL query for updating exam_master
-//       const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ?';
-      
-//       // Execute the query and update the data in the database
-//       const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
-//       console.log("Editing Exam ID ::" , examID);
-//       // Check if any rows were updated
-//       if (result.affectedRows === 0) {
-//           return res.status(404).json({ success: false, message: "Exam not found or not authorized to update" });
-//       }
-
-//       console.log("Exam updated successfully, Exam ID: " + examID);
-
-//       // Respond with success
-//       res.json({
-//           success: true,
-//           message: "Exam updated successfully",
-//           examID: examID
-//       });
-
-//   } catch (error) {
-//       console.error("Error updating exam data:", error);
-//       res.status(500).json({ success: false, message: "Error updating exam" });
-//   } finally {
-//       if (connection) {
-//           connection.release(); // Make sure to release the connection
-//       }
-//   }
-// });
-
 
 
 //get organizer dashboard
@@ -1209,19 +1082,16 @@ app.get('/profile', (req, res) => {
 app.get('/logout', (req, res) => {
   console.log("Logging Out");
 
-  const user = req.session.userID;
-
+  const user = req.session.myid;
+  activeSessions[user]=0;
+    console.log("Logout: ",user,"THis",activeSessions[user]);
+  
   // Destroy the session and remove the user from active sessions
   req.session.destroy((err) => {
     if (err) {
       console.error('Error destroying session:', err);
       return res.status(500).send('Error logging out');
     }
-
-    if (user) {
-      delete activeSessions[user.userID]; // Remove user from active sessions
-    }
-
     // Send the file or redirect as necessary
     const filePath = path.join(__dirname, '../Frontend/HTML/Index.html');
     res.sendFile(filePath, (err) => {
