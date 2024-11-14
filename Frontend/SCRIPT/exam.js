@@ -37,6 +37,7 @@ async function fetchQuestions() {
         console.log(data);
         examId = data.examId;
         questions = data.questions;
+        console.log("==========>", questions)
 
         // Initialize userAnswers array with null values
         userAnswers = new Array(questions.length).fill(null);
@@ -79,7 +80,7 @@ function generateProgressButtons() {
 
 // Function to highlight the active button
 function updateActiveButton() {
-    const buttons = progressContainer.querySelectorAll('.progress-btn'); // Select all buttons within the progress container
+    const buttons = progressContainer.querySelectorAll('.progress-container'); // Select all buttons within the progress container
     buttons.forEach((button, index) => {
         button.classList.remove('active'); // Remove active class from all buttons
         if (index === currentQuestionIndex) {
@@ -169,10 +170,13 @@ function displayQuestion(index) {
 
     // Clear previous options
     optionsContainer.innerHTML = '';
-
+    console.log("************************************* ");
     // Generate options
     currentQuestion.options.forEach((option, i) => {
-        const optionLabel = document.createElement("label");
+        console.log("Logging I",i);
+        console.log("Logging option",option);
+        if (option === null || option === "NULL") return;
+        const optionLabel = document.createElement("label");    
         const optionInput = document.createElement("input");
         optionInput.type = "radio";
         optionInput.name = "option";

@@ -122,3 +122,29 @@ input[type="radio"] {
     background-color: #ffffff; /* White background for result */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
+
+/* Individual progress buttons */
+.progress-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    text-align: center;
+    line-height: 50px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Filled state for answered questions */
+.progress-btn.completed {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* Active button styling */
+.progress-btn.active {
+    border: 2px solid #007bff;
+    color: #007bff;
+}
