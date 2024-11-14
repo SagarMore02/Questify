@@ -358,8 +358,13 @@ editQuesButton.addEventListener('click', async function () {
             // Track the options array for this question
             let currentOptions = [...question.options];
 
+            //Correct Option Logic
+            let key = question.answer;
+            let asciiValue = key.charCodeAt(key.length - 1);
+            asciiValue=asciiValue-65;
             // Display options (up to 6), only non-null options
             currentOptions.forEach((option, i) => {
+                console.log("I iteration::",asciiValue);
                 if (option !== null) {
                     const optionDiv = document.createElement('div');
 
@@ -372,7 +377,7 @@ editQuesButton.addEventListener('click', async function () {
                     optionRadio.type = 'radio';
                     optionRadio.name = `correct-option-${index}`;
                     optionRadio.value = `option-${i}`;
-                    if (i === question.correctOptionIndex) optionRadio.checked = true;
+                    if (i === asciiValue) optionRadio.checked = true;
 
                     // Remove Option Button
                     const removeOptionButton = document.createElement('button');
@@ -510,6 +515,7 @@ editQuesButton.addEventListener('click', async function () {
             questionsListContainer.appendChild(questionDiv);
             questionsListContainer.appendChild(ButtonDiv);
         });
+
     } catch (error) {
         console.error('Error fetching questions:', error);
     }
