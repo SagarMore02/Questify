@@ -188,6 +188,11 @@
         .question-item {
             margin-bottom: 15px;
             padding: 10px;
+            /* border-bottom: 1px solid #ccc; */
+        }
+        .my-class{
+            margin-bottom: 15px;
+            padding: 10px;
             border-bottom: 1px solid #ccc;
         }
 
@@ -272,166 +277,285 @@
         const questionsListContainer = document.getElementById('questions-list-container');
 
                // Add an event listener for the button click
-// Add an event listener for the button click
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 editQuesButton.addEventListener('click', async function () {
     const examId = 1;
     try {
         // Fetch questions from the backend
         const response = await fetch(`http://localhost:3000/get-my-questions`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ examId: examId })
         });
 
-        if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
-        }
-
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
         const data = await response.json();
         const questions = data.questions;
 
         // Clear previous questions
         questionsListContainer.innerHTML = '';
 
-        // Display the questions
+        // Display each question
         questions.forEach((question, index) => {
             const questionDiv = document.createElement('div');
+            const ButtonDiv = document.createElement('div');
+            ButtonDiv.classList.add('my-class');
             questionDiv.classList.add('question-item');
 
-            // Add editable question text
+            // Label and input for question text
+            const questionLabel = document.createElement('label');
+            questionLabel.textContent = `Question ${index + 1}: `;
+            questionDiv.appendChild(questionLabel);
+
             const questionText = document.createElement('input');
             questionText.type = 'text';
             questionText.value = question.question;
             questionText.placeholder = 'Edit your question here';
             questionDiv.appendChild(questionText);
-            const lineBreak = document.createElement('br');
-            questionDiv.appendChild(lineBreak);
-            
+            questionDiv.appendChild(document.createElement('br'));
+
+            // Label and input for total marks
+            const marksLabel = document.createElement('label');
+            marksLabel.textContent = 'Total Marks: ';
+            questionDiv.appendChild(marksLabel);
+
             const totalMarksInput = document.createElement('input');
-            totalMarksInput.type = 'number'; // Using number input for total marks
-            totalMarksInput.value = question.totalMarks || ''; // Assuming totalMarks is sent from the backend
+            totalMarksInput.type = 'number';
+            totalMarksInput.value = question.totalMarks || '';
             totalMarksInput.placeholder = 'Total Marks';
             questionDiv.appendChild(totalMarksInput);
-            
-            // Add options with editable input fields and radio buttons
-            question.options.forEach((option, i) => {
-                const optionDiv = document.createElement('div');
-                
-                // Create a text input for each option
-                const optionInput = document.createElement('input');
-                optionInput.type = 'text';
-                optionInput.value = option; // Set the current option text
-                optionInput.placeholder = `Option ${i + 1}`;
-                
-                // Create a radio button for selecting the correct answer
-                const optionRadio = document.createElement('input');
-                optionRadio.type = 'radio';
-                optionRadio.name = `correct-option-${index}`; // Group radio buttons by question index
-                optionRadio.value = `option-${i}`; // Set the value to identify the option
-                
-                // Check if this option is the correct answer (you may need to adjust this logic)
-                if (i === question.correctOptionIndex) { // Assuming correctOptionIndex is provided
-                    optionRadio.checked = true; // Mark as checked if it's the correct answer
-                }
 
-                // Add the radio button and text input to the option div
-                optionDiv.appendChild(optionRadio);
-                optionDiv.appendChild(optionInput);
-                questionDiv.appendChild(optionDiv);
+            // Track the options array for this question
+            let currentOptions = [...question.options];
+
+            //Correct Option Logic
+            let key = question.answer;
+            let asciiValue = key.charCodeAt(key.length - 1);
+            asciiValue=asciiValue-65;
+            // Display options (up to 6), only non-null options
+            currentOptions.forEach((option, i) => {
+                console.log("I iteration::",asciiValue);
+                if (option !== null) {
+                    const optionDiv = document.createElement('div');
+
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'text';
+                    optionInput.value = option;
+                    optionInput.placeholder = `Option ${i + 1}`;
+
+                    const optionRadio = document.createElement('input');
+                    optionRadio.type = 'radio';
+                    optionRadio.name = `correct-option-${index}`;
+                    optionRadio.value = `option-${i}`;
+                    if (i === asciiValue) optionRadio.checked = true;
+
+                    // Remove Option Button
+                    const removeOptionButton = document.createElement('button');
+                    removeOptionButton.textContent = 'Remove Option';
+                    removeOptionButton.addEventListener('click', () => {
+                        // Only allow removal if there are more than 2 options
+                        if (currentOptions.filter(option => option !== null).length > 2) {
+                            optionDiv.remove(); // Remove the option div from the UI
+                            currentOptions[i] = null; // Mark the option as null in the array
+
+                            // Re-sync radio buttons with updated options
+                            questionDiv.querySelectorAll('div').forEach((optionDiv, idx) => {
+                                const radio = optionDiv.querySelector('input[type="radio"]');
+                                const textInput = optionDiv.querySelector('input[type="text"]');
+                                
+                                // Reset the radio button's value and name
+                                radio.value = `option-${idx}`; // Update the value to match the new index
+                                radio.name = `correct-option-${index}`; // Make sure the radio button is grouped correctly
+
+                                // Reset the input's placeholder to reflect the new option index
+                                textInput.placeholder = `Option ${idx + 1}`;
+
+                                // Adjust the checked state if this is the selected correct option
+                                if (idx === question.correctOptionIndex) {
+                                    radio.checked = true;
+                                } else {
+                                    radio.checked = false;
+                                }
+                            });
+                        } else {
+                            alert('You cannot remove an option when there are only 2 options left.');
+                        }
+                    });
+
+                    optionDiv.appendChild(optionRadio);
+                    optionDiv.appendChild(optionInput);
+                    optionDiv.appendChild(removeOptionButton);
+                    questionDiv.appendChild(optionDiv);
+                }
             });
 
-            // Add save button for each question
+            // Add button to add new option
+            const addOptionButton = document.createElement('button');
+            addOptionButton.textContent = 'Add Option';
+            let clickcount = 0;
+            addOptionButton.addEventListener('click', () => {
+                clickcount++;
+                // Count how many options are currently available (non-null options)
+                const optionCount = currentOptions.filter(option => option !== null).length + clickcount;
+
+                // Only allow adding a new option if there are fewer than 6 options already
+                if (optionCount <= 6) {
+                    const newOptionDiv = document.createElement('div');
+
+                    const newOptionInput = document.createElement('input');
+                    newOptionInput.type = 'text';
+                    newOptionInput.placeholder = `Option ${optionCount + 1}`;
+
+                    const newOptionRadio = document.createElement('input');
+                    newOptionRadio.type = 'radio';
+                    newOptionRadio.name = `correct-option-${index}`;
+                    newOptionRadio.value = `option-${optionCount-1}`
+                    // Remove Button for new options
+                    const newRemoveOptionButton = document.createElement('button');
+                    newRemoveOptionButton.textContent = 'Remove Option';
+                    newRemoveOptionButton.addEventListener('click', () => {
+                        newOptionDiv.remove(); // Remove the new option div from the UI
+                        currentOptions.push(null); // Mark this option as null in the array
+                    });
+
+                    newOptionDiv.appendChild(newOptionRadio);
+                    newOptionDiv.appendChild(newOptionInput);
+                    newOptionDiv.appendChild(newRemoveOptionButton);
+                    questionDiv.appendChild(newOptionDiv);
+
+                    // Add the new option to the array
+                    currentOptions.push(null); // Push a null value for the new option
+                } else {
+                    alert("You cannot add more than 6 options.");
+                }
+            });
+            ButtonDiv.appendChild(addOptionButton);
+
+            // Save changes button for each question
             const saveButton = document.createElement('button');
             saveButton.textContent = 'Save Changes';
-            saveButton.addEventListener('click', async function() {
+            saveButton.addEventListener('click', async function () {
                 const updatedQuestion = questionText.value;
-                const updatedOptions = Array.from(questionDiv.querySelectorAll('input[type="text"]'))
-                                            .map(input => input.value); // Get values of option inputs
 
-                // Find the selected correct option
+                // Gather up to 6 options, filling null for missing options
+                const optionInputs = Array.from(questionDiv.querySelectorAll('input[type="text"]'));
+                const updatedOptions = Array(7).fill(null).map((_, i) => optionInputs[i] ? optionInputs[i].value || null : null);
+
+                // Identify the correct option based on the selected radio button
                 const selectedRadio = questionDiv.querySelector('input[type="radio"]:checked');
-                const correctOption = selectedRadio ? selectedRadio.value : null;
-                let a="";
-                switch (correctOption){
-                case "option-0":
-                        a="optionA";
-                        break;
-                case "option-1":
-                        a="optionB";
-                        break;
-                case "option-2":
-                        a="optionC";
-                        break;
-                case "option-3":
-                        a="optionD";
-                        break;
-                default:
-                        a="UnSelected";
-                        break;
-            }
-                // Prepare data to send to server
+                const correctOptionIndex = selectedRadio ? parseInt(selectedRadio.value.split('-')[1], 10) : -1;
+
+                if (correctOptionIndex === -1) {
+                    alert('Please select the correct option before saving!');
+                    return;
+                }
+                console.log("Selected Radio Value",selectedRadio.value);
+                const correctOptionText = updatedOptions[correctOptionIndex];
+
+                let correctOptionKey = "";
+                switch (selectedRadio.value) {
+                    case "option-0": correctOptionKey = "optionA"; break;
+                    case "option-1": correctOptionKey = "optionB"; break;
+                    case "option-2": correctOptionKey = "optionC"; break;
+                    case "option-3": correctOptionKey = "optionD"; break;
+                    case "option-4": correctOptionKey = "optionE"; break;
+                    case "option-5": correctOptionKey = "optionF"; break;
+                    default: correctOptionKey = "UnSelected"; break;
+                }
+                console.log("Logging Selected Option::",updatedOptions);
                 const updateData = {
                     questionId: question.id,
                     updatedQuestion: updatedQuestion,
-                    optionA: updatedOptions[1],
-                    optionB: updatedOptions[2],
-                    optionC: updatedOptions[3],
-                    optionD: updatedOptions[4],
-                    totalMarks: totalMarksInput.value,
-                    correctOption: a // Send the selected correct option
+                    options: updatedOptions,
+                    correctOption: correctOptionKey,
+                    totalMarks: totalMarksInput.value
                 };
-                console.log(updateData);
-                // Send updated data to server
+
                 const updateResponse = await fetch('/updateQuestion', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updateData)
                 });
 
-                if (updateResponse.ok) {
-                    alert('Question updated successfully!');
-                    // Optionally, refresh the question list
-                } else {
-                    alert('Failed to update question');
-                }
+                if (updateResponse.ok) alert('Question updated successfully!');
+                else alert('Failed to update question');
             });
+            ButtonDiv.appendChild(saveButton);
 
-            const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete Question';
-                deleteButton.classList.add('delete-button'); // Optional: add a class for styling
-                deleteButton.addEventListener('click', async function () {
-                    const confirmation = confirm('Are you sure you want to delete this question?');
-                    if (confirmation) {
-                        const deleteResponse = await fetch('/deleteQuestion', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ questionId: question.id })
-                        });
-
-                        if (deleteResponse.ok) {
-                            alert('Question deleted successfully!');
-                            questionDiv.remove(); // Remove the question from the UI
-                        } else {
-                            alert('Failed to delete question');
-                        }
-                    }
-                });
-
-            questionDiv.appendChild(saveButton);    
-            questionDiv.appendChild(deleteButton);
             questionsListContainer.appendChild(questionDiv);
+            questionsListContainer.appendChild(ButtonDiv);
         });
 
     } catch (error) {
         console.error('Error fetching questions:', error);
     }
 });
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Function to create a new question
