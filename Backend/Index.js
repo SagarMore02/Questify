@@ -458,6 +458,29 @@ app.get('/api/exams', async (req, res) => {
     });
 
 
+//Dashboard:
+app.get('/api/dashboard-data', async(req, res) => {
+  const User = req.session.myid; // You can pass examId via query parameter
+  let connection =await pool.getConnection();
+  let query = `select count(*) as stdcnt from user_master where usertype='Applicant';`;
+  const[st_cnt_res]=await connection.execute(query);
+  query = `select count(a.applicationID) as st_app_rest from application_master a join exam_master e on a.examID=e.examID where organizerID=?`;
+  const[st_app_res]=await connection.execute(query,[User]);
+  query = `select count(*) as up_exam_rest from exam_master where organizerID=?;`;
+  const[up_exam_res]=await connection.execute(query,[User]);
+  query = ` select count(a.applicationID) as pd_app_rest from application_master a join exam_master e on a.examID=e.examID where e.organizerID=? and a.appstatus!='Active';`;
+  const[pd_app_res]=await connection.execute(query,[User]);
+  
+  const dashboardData = {
+    totalStudents: st_cnt_res[0].stdcnt,
+    studentsApplied: st_app_res[0].st_app_rest,
+    upcomingExams: up_exam_res[0].up_exam_rest,
+    pendingApprovals: pd_app_res[0].pd_app_rest
+  };
+  res.json(dashboardData);
+
+});
+
 //To Update Status
 
 app.post('/api/exams/updatestatus', async (req, res) => {
@@ -933,6 +956,7 @@ app.get('/organapplicant', async (req, res) => {
   console.log("organ");
   try {
     const sql = `SELECT 
+                   app.PersonalID,
                    app.applicationID AS id,
                    user.firstname AS applicantf_name,
                    user.lastname AS applicantl_name, 
@@ -969,13 +993,13 @@ app.get('/applicant', async (req, res) => {
 });
 
 app.post('/orgstatus', async (req, res) => {
-  const { id, status } = req.body;
+  const { id, status,ename } = req.body;
   console.log("id : ",id ,"status :",status)
   let connection;
   try {
     connection = await pool.getConnection();
     // Execute the update query
-    const [result] = await connection.query('UPDATE application_master SET appstatus = ? WHERE applicationID = ?', [status, id]);
+    const [result] = await connection.query('UPDATE application_master SET appstatus = ? WHERE PersonalID=?', [status, ename]);
     //const [newresult] = await connection.query('select usertype from application_master where applicationID=?',[id]);
     // if(newresult.usertype==='Organization' && status==="Active"){
     

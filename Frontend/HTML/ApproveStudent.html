@@ -99,13 +99,13 @@
                                 <td>${item.feestatus || ''}</td>
                                 <td>${item.attendance || ''}</td>
                                 <td>
-                                    <select class="form-control status-select" data-id="${item.id}">
+                                    <select class="form-control status-select" meta-name="${item.PersonalID}" data-id="${item.id}">
                                         <option value="" ${!item.appstatus ? 'selected' : ''} hidden>${item.appstatus}</option>
                                         <option value="Active" ${item.appstatus === 'Active' ? 'selected' : ''}>Active</option>
                                         <option value="Inactive" ${item.appstatus === 'Inactive' ? 'selected' : ''}>Inactive</option>
                                     </select>
                                 </td>
-                                <td><button class="btn btn-primary update-status-btn" data-id="${item.id}">Update Status</button></td>
+                                <td><button class="btn btn-primary update-status-btn" meta-name="${item.PersonalID}" data-id="${item.id}">Update Status</button></td>
                             `;
                             tableBody.appendChild(row);
                         });
@@ -113,12 +113,13 @@
                         // Attach click event listeners to buttons
                         document.querySelectorAll('.update-status-btn').forEach(button => {
                             button.addEventListener('click', function() {
+                                const ename= this.getAttribute('meta-name');
                                 const id = this.getAttribute('data-id');
                                 const select = document.querySelector(`.status-select[data-id="${id}"]`);
                                 const status = select ? select.value : '';
                                 
                                 if (status) {
-                                    updateStatus(id, status);
+                                    updateStatus(id, status,ename);
                                 } else {
                                     console.error('Status is undefined or empty');
                                 }
@@ -134,13 +135,14 @@
             }
 
             // Function to post data to the /status API
-            function updateStatus(id, status) {
+            function updateStatus(id, status,ename) {
+                console.log(id," ",status," ",ename);
                 fetch('/orgstatus', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ id, status })
+                    body: JSON.stringify({ id, status,ename })
                 })
                 .then(response => response.json())
                 .then(data => {
