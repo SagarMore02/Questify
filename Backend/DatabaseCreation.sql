@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS User_Master(
     lastname VARCHAR(10),
     usertype ENUM('Applicant','Organization','Organizer') NOT NULL,
     mobile VARCHAR(15) NOT NULL,
-    email VARCHAR(25) NOT NULL,
+    email VARCHAR(50) NOT NULL,
     status ENUM('Pending','Active','Inactive') DEFAULT 'Pending',
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userID)
