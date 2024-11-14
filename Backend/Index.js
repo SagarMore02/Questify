@@ -1197,9 +1197,9 @@ app.post('/get-my-questions', async (req, res) => {
   console.log("In get my ques");
   const examId = req.session.organExam; // examId comes from URL params
   let connection;
-
+  console.log("Exam ID::" ,examId);
   // Modified query to fetch questions and their corresponding options from question_master
-  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,q.optionE,q.optionF,e.exam_start_time,e.exam_end_time,q.question_marks,q.answer_key from question_master q join exam_master e on e.examID=?;`;
+  const query = `select q.questionID, q.question, q.optionA, q.optionB, q.optionC, q.optionD,q.optionE,q.optionF,e.exam_start_time,e.exam_end_time,q.question_marks,q.answer_key from question_master q join exam_master e on e.examID=q.examID where e.examID=?;`;
 
   try {
     // Fetch questions and options from the database
