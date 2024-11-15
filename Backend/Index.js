@@ -67,9 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password:'root',
+  password:'root',
   //password:'Aditya@123',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -1516,6 +1516,21 @@ app.get('/getExamIds', async (req, res) => {
   }
 });
 
+app.get('/getAllExams', async (req, res) => {
+  const sql = "SELECT name, exam_start_date, total_marks FROM exam_master";  // Fetch all examIDs from exam_master
+  const connection = await pool.getConnection();
+
+  try {
+    const [exams] = await connection.query(sql);  // No need for req.session.myid here as we fetch all exams
+    res.json(exams);  // Send the list of examIDs as a response
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  } finally {
+    connection.release();
+  }
+});
+
 
 app.get('/getOrganizer', async (req, res) => {
   const organizationId = req.session.myid; // Assuming the username is stored in session
@@ -1594,6 +1609,8 @@ app.post('/AdminLogin', async (req, res) => {
     res.status(500).json({ success: false, message: "Error during login." });
   }
 });
+
+
 
 
 

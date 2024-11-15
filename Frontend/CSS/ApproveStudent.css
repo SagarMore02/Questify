@@ -98,3 +98,44 @@ tr:hover {
     background-color: rgba(85, 3, 172, 0.2) !important; /* Light gray highlight */
     transition: background-color 0.3s ease; /* Smooth highlight transition */
 }
+/* Modal Background Overlay */
+#confirmationModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensures modal appears in front of other elements */
+}
+
+/* Modal Content Box */
+#confirmationModal .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+/* Modal Buttons */
+#confirmButton, #cancelButton {
+    padding: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+#confirmButton {
+    background-color: green;
+}
+
+#cancelButton {
+    background-color: red;
+}
+
