@@ -138,6 +138,16 @@
                         <span class="details">Syllabus</span>
                         <input type="text" id="syllabus" name="syllabus" maxlength="100" placeholder="Enter Syllabus" required>
                     </div>
+                    <div class="input-box">
+                        <span class="details">Department</span>
+                        <select id="department" name="department" required>
+                            <option value="N/A" selected>N/A</option>
+                            <option value="Computer-Science">Computer Science</option>
+                            <option value="Computer-Applications">Computer Applications</option>
+                            <option value="Data-Science">Data Science</option>
+                            <option value="IMCA">IMCA</option>
+                        </select>
+                    </div>
                 </div>
                 <input id="submit" type="submit" value="Create Exam">
             </form>
@@ -162,7 +172,12 @@
             const passingMarks = formData.get('passing_marks');
             const fees = formData.get('fees');
             const syllabus = formData.get('syllabus');
-            
+            const dept = formData.get('department');
+            if (dept === "N/A") {
+           alert("Please select a valid department.");
+            return;  // Prevent form submission
+        }
+
             if(parseInt(passingMarks)>parseInt(totalMarks)){
                 alert('Passing Marks Cannot be Greater than Total Marks');
                 document.getElementById('passing_marks').value='';
@@ -204,7 +219,8 @@
             totalMarks    : totalMarks,
             passingMarks  : passingMarks,
             fees          : fees,
-            syllabus      : syllabus
+            syllabus      : syllabus,
+            dept:dept
             };
 
             try {

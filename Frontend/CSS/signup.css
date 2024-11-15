@@ -97,6 +97,10 @@ transition: all 0.3s ease;
     height: 35px;
     width: 170px;
 }
+#department{
+    height: 35px;
+    width: 170px;
+}
 #dot-1:checked ~ .category label .one,
 #dot-2:checked ~ .category label .two,
 #dot-3:checked ~ .category label .three{
