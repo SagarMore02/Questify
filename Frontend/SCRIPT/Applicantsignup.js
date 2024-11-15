@@ -10,7 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         console.log('Form submit event triggered'); // Log when the event is triggered
         event.preventDefault(); // Prevent the default form submission
+        const dept = document.getElementById('department').value;
 
+        if (dept === "N/A") {
+           alert("Please select a valid department.");
+            return;  // Prevent form submission
+        }
         // Extract form values into separate variables
         const firstName = document.querySelector('input[placeholder="Enter First Name"]').value;
         const lastName = document.getElementById('lastname').value;
@@ -21,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmPassword = document.querySelector('input[placeholder="Confirm your password"]').value;
         const userType = submitButton.value; // Get the value of the submit button
         
+        
+
         let organId = "-1"; // Use `let` to allow reassignment
         let location="Pune"
         if (userType === "Organizer") {
@@ -50,7 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmPassword: confirmPassword,
             usertype: userType,
             organId: organId,
-            location: location
+            location: location,
+            dept:dept
         };
         console.log("Form Data",formData.organId);
         try {

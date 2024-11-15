@@ -127,7 +127,7 @@ const otpKey = Math.random().toString(36).substring(2, 10);
 
 app.post('/register', async (req, res) => {
   console.log("Register Hit");
-  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId, location } = req.body;
+  const { fname, lname, email, mobileno, username, pass, confirmPassword, usertype, organId, location ,dept} = req.body;
 
   // Validate required fields
   if (!fname || !lname || !pass || !email || !usertype) {
@@ -167,7 +167,7 @@ app.post('/register', async (req, res) => {
     
     otpStorage[otpKey] = {
       otp: otp,
-      userDetails: { fname, lname, email, mobileno, username, hashedpassword: await bcrypt.hash(pass, 10), usertype, organId, location },
+      userDetails: { fname, lname, email, mobileno, username, hashedpassword: await bcrypt.hash(pass, 10), usertype, organId, location ,dept},
       expires: Date.now() + 300000 // OTP valid for 5 minutes
     };
     console.log("==============>", otpStorage[otpKey]);
@@ -290,7 +290,7 @@ app.post('/verify-otp', async (req, res) => {
   }
 
   // Extract user details from the stored OTP data
-  const { fname, lname, mobileno, username, hashedpassword, usertype, organId, location, email} = otpStorage[otpKey].userDetails;
+  const { fname, lname, mobileno, username, hashedpassword, usertype, organId, location, email,dept} = otpStorage[otpKey].userDetails;
   let connection;
 
   try {
@@ -305,6 +305,12 @@ app.post('/verify-otp', async (req, res) => {
     if (usertype === 'Organization') {
       const orgSql = 'INSERT INTO Organization(organizationID, name, location) VALUES (?, ?, ?)';
       await connection.execute(orgSql, [newUserID, fname, location]);
+    }
+
+    if (usertype === 'Applicant') {
+      console.log("Applicant");
+      const orgSql = `update user_master set Department=? where username=?;`;
+      await connection.execute(orgSql, [dept,username.toLowerCase()]);
     }
 
     // Insert into organizer_organization if the user is of type 'Organizer' and organId is valid
@@ -439,7 +445,7 @@ app.get('/api/exams', async (req, res) => {
   });
 
   app.get('/api/stu/exams', async (req, res) => {
-    const sql = "SELECT * FROM exam_master;";
+    const sql = "select e.examID,e.organizerID,e.name,e.app_start_date,e.app_end_date,e.exam_start_time,e.exam_start_date,e.exam_end_date,e.exam_end_time,e.total_marks,e.passing_marks,e.status,e.fees,e.syllabus,e.timestamp,e.Department from exam_master e join user_master u on e.Department=u.Department where u.userID=?;";
     const connection = await pool.getConnection();
     const [result] = await connection.execute(sql,[req.session.myid]);
     connection.release();
@@ -563,7 +569,8 @@ app.post('/updateExam', async (req, res) => {
       total_marks,
       passing_marks,
       fees,
-      syllabus
+      syllabus,
+      dept
   } = req.body;
   const exam_end_date = exam_start_date;
   console.log({
@@ -638,11 +645,11 @@ app.post('/updateExam', async (req, res) => {
       }
 
       // Prepare the SQL query for updating exam_master
-      const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? WHERE examID = ?';
-      console.log(name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID);
+      const sql = 'UPDATE exam_master SET name = ?, app_start_date = ?, app_end_date = ?, exam_start_time = ?, exam_start_date = ?, exam_end_date = ?, exam_end_time = ?, total_marks = ?, passing_marks = ?, fees = ?, syllabus = ?, timestamp = ? ,Department=? WHERE examID = ?';
+      console.log(name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), dept,examID);
 
       // Execute the query and update the data in the database
-      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(), examID]);
+      const [result] = await connection.execute(sql, [name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time, total_marks, passing_marks, fees, syllabus, new Date(),dept, examID]);
       
       console.log("Editing Exam ID:", examID);
       
@@ -905,7 +912,7 @@ app.get('/SetTest', (req, res) => {
 app.post('/addExam', async(req, res) => {
   
   console.log("Adding Exam");
-  const {examTitle,appStartDate,appEndDate,examStartDate,examEndDate,examStartTime,examEndTime,totalMarks,passingMarks,fees,syllabus} = req.body;
+  const {examTitle,appStartDate,appEndDate,examStartDate,examEndDate,examStartTime,examEndTime,totalMarks,passingMarks,fees,syllabus,dept} = req.body;
 //************************************************************88888888888888888888 */
   let connection;
   console.log("OrganizerID:"+req.session.myid);
@@ -913,8 +920,8 @@ app.post('/addExam', async(req, res) => {
     connection = await pool.getConnection();
 
     // Insert into user_master
-    const sql = 'INSERT INTO exam_master(organizerID, name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time,total_marks,passing_marks,fees,syllabus,timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await connection.execute(sql, [req.session.myid, examTitle, appStartDate, appEndDate, examStartTime, examStartDate, examEndDate, examEndTime,totalMarks,passingMarks,fees,syllabus,new Date()]);
+    const sql = 'INSERT INTO exam_master(organizerID, name, app_start_date, app_end_date, exam_start_time, exam_start_date, exam_end_date, exam_end_time,total_marks,passing_marks,fees,syllabus,timestamp,Department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)';
+    const [result] = await connection.execute(sql, [req.session.myid, examTitle, appStartDate, appEndDate, examStartTime, examStartDate, examEndDate, examEndTime,totalMarks,passingMarks,fees,syllabus,new Date(),dept]);
     const newexamID = result.insertId; // Get the ID of the newly inserted user
     // Respond with success
 
