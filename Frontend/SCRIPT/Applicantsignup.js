@@ -10,12 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         console.log('Form submit event triggered'); // Log when the event is triggered
         event.preventDefault(); // Prevent the default form submission
-        const dept = document.getElementById('department').value;
-
-        if (dept === "N/A") {
-           alert("Please select a valid department.");
-            return;  // Prevent form submission
-        }
+        
         // Extract form values into separate variables
         const firstName = document.querySelector('input[placeholder="Enter First Name"]').value;
         const lastName = document.getElementById('lastname').value;
@@ -27,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const userType = submitButton.value; // Get the value of the submit button
         
         
-
+        let dept;
         let organId = "-1"; // Use `let` to allow reassignment
         let location="Pune"
         if (userType === "Organizer") {
@@ -35,10 +30,22 @@ document.addEventListener('DOMContentLoaded', () => {
         organId = dropdown.value;
         console.log(organId);
         }
+        else {
         if(userType==="Organization"){
             location=document.querySelector('input[placeholder="Enter Location"]').value;
+        }else{
+            console.log("LlLLLLL",document.getElementById('department').value);
+        if(document.getElementById('department').value !==null){
+             dept= document.getElementById('department').value || '';
+            if (dept === "N/A") {
+                alert("Please select a valid department.");
+                 return;  // Prevent form submission
+             }
         }
-
+        }
+    }
+        
+        
         // Validate passwords match
         if (password !== confirmPassword) {
             alert('Passwords do not match.');

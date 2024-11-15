@@ -67,9 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password:'root',
+  //password:'root',
   //password:'Aditya@123',
-  //password: 'sagar@123',
+  password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -1419,10 +1419,10 @@ app.post('/submitTest', async (req, res) => { // examId comes from URL params
 
 
 app.post('/check-result', async (req, res) => {
-  //const { examid } = req.body; // No longer using studentid in the request body since we fetch all students
+  const { examid } = req.body; // No longer using studentid in the request body since we fetch all students
   const connection = await pool.getConnection();
   //console.log("=====>", examid);
-  const examid=1;
+  //const examid=1;
 
   try {
     // Query 1: Fetch passing marks and total marks for the exam

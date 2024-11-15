@@ -132,10 +132,10 @@
             // Logout function
             document.getElementById('logout-link').addEventListener('click', function(event) {
                 event.preventDefault();
-                
+                console.log("LG");
                 // Call the logout endpoint (adjust the path if necessary)
                 fetch('/logout', {
-                    method: 'POST', // Or 'GET' if your logout endpoint is a GET request
+                    method: 'GET', // Or 'GET' if your logout endpoint is a GET request
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -143,7 +143,7 @@
                 .then(response => {
                     if (response.ok) {
                         // Redirect to the login page
-                        window.location.href = '/';
+                        window.top.location.href = '/';
                     } else {
                         console.error('Logout failed');
                     }
