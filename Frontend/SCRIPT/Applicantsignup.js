@@ -98,18 +98,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function showModal() {
     const modal = document.getElementById('confirmationModal');
     const modalText = document.getElementById('modalText');
-    modalText.textContent = `Proceed for 2-factor authentication`;
+    modalText.textContent = `For 2-factor authentication`;
 
     modal.style.display = 'flex';
 
     document.getElementById('confirmButton').onclick = () => {
-        modal.style.display = 'none';
-        window.location.href = '/verify-otp.html'; // Correct usage of window.location.href
+        //modal.style.display = 'none';
+        //window.location.href = '/verify-otp.html'; // Correct usage of window.location.href
     };
 
     document.getElementById('cancelButton').onclick = () => {
         modal.style.display = 'none';
-        window.location.reload(); // Reload the page
+        //window.location.reload(); // Reload the page
     };
 }
 
@@ -117,3 +117,34 @@ function hideModal() {
     const modal = document.getElementById('confirmationModal');
     modal.style.display = 'none';
 }
+
+
+
+document.getElementById("otpForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+  
+    const otp = document.getElementById("otpInput").value;
+    const email = localStorage.getItem("email"); // Assuming email is stored in localStorage
+  
+    try {
+      const response = await fetch('/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert("OTP verified successfully. Registration complete!");
+        window.location.href = "/login.html"; // Redirect to login or any other page
+      } else {
+        alert(data.message || "OTP verification failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  });
+  
