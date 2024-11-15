@@ -67,9 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password:'root',
+  password:'root',
   //password:'Aditya@123',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -1555,6 +1555,7 @@ app.get('/getOrganizer', async (req, res) => {
 ;
     `;
     const [organizers] = await connection.query(sqlFetchOrganizers, [organizationId]);
+    console.log(organizers);
 
     // Step 3: Send the list of organizers as a response
     res.json(organizers);
