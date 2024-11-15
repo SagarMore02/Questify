@@ -1204,11 +1204,12 @@ app.post('/get-questions', async (req, res) => {
 //Update Questions Api
 app.post('/updateQuestion', async (req, res) => {
   const {questionId,updatedQuestion,options,correctOption,totalMarks}=req.body
+  console.log(req.body);
   const examID = req.session.organExam;
   let connection;
   // Modified query to fetch questions and their corresponding options from question_master
   const query = `select * from question_master where questionID=?;`;
-  const ins_query=`Insert Into question_master(examID,question,optionA,optionB,optionC,optionD,optionE,optionF,answer_key,question_marks) values(?,?,?,?,?,?,?,?);`;
+  const ins_query=`Insert Into question_master(examID,question,optionA,optionB,optionC,optionD,optionE,optionF,answer_key,question_marks) values(?,?,?,?,?,?,?,?,?,?);`;
   const update_query =`UPDATE question_master set question=?,optionA=?,optionB=?,optionC=?,optionD=?,optionE=?,optionF=?,answer_key=?,question_marks=? where questionID=?`;
   try {
     // Fetch questions and options from the database
@@ -1217,9 +1218,12 @@ app.post('/updateQuestion', async (req, res) => {
     const [results] = await connection.query(query, [questionId]);
 
     if (results.length === 0) {
+      
       //return res.status(404).json({ message: 'No questions found for this exam.' });
       const[ins_result]=await connection.query(ins_query,[examID,updatedQuestion,options[1],options[2],options[3],options[4],options[5],options[6],correctOption,totalMarks]);;
-    
+      const[mum_mum] = await connection.query(`select sum(question_marks) as mumum from question_master group by examID having examID=?`,[examID]);
+      console.log("ExxxxammmIIDDD",mum_mum[0].mumum);
+      const[add_mks] = await connection.query(`update exam_master set total_marks = ? where examID=?;`,[mum_mum[0].mumum,examID]);
     }else{
       const[update_result]=await connection.query(update_query,[updatedQuestion,options[1],options[2],options[3],options[4],options[5],options[6],correctOption,totalMarks,questionId]);
     }
