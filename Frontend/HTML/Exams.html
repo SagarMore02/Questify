@@ -231,10 +231,6 @@
                             <span class="details">Exam Date</span>
                             <input type="date" id="edit_exam_start_date" name="exam_start_date" required>
                         </div>
-                        <!-- <div class="input-box">
-                            <span class="details">Exam End Date</span>
-                            <input type="date" id="edit_exam_end_date" name="exam_end_date" required>
-                        </div> -->
                         <div class="input-box">
                             <span class="details">Exam Start Time</span>
                             <input type="time" id="edit_exam_start_time" name="exam_start_time" required>
@@ -254,6 +250,15 @@
                         <div class="input-box">
                             <span class="details">Fees</span>
                             <input type="number" id="edit_fees" name="fees" required>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Department</span>
+                            <select id="department" name="department" required>
+                                <option value="Computer-Science">Computer Science</option>
+                                <option value="Computer-Applications">Computer Applications</option>
+                                <option value="Data-Science">Data Science</option>
+                                <option value="IMCA">IMCA</option>
+                            </select>
                         </div>
                         <div class="input-box">
                             <span class="details">Syllabus</span>
@@ -722,6 +727,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                                <div><span>Passing Marks:</span> ${exam.passing_marks}</div>
                                <div><span>Fees:</span> ${exam.fees}</div>
                                <div><span>Syllabus:</span> ${exam.syllabus}</div>
+                               <div><span>Department:</span> ${exam.Department}</div>
                                <div>
                                    <span>Status:</span>
                                    <select name="status" class="selects" data-exam-id="${exam.examID}" id="status_${exam.examID}">
@@ -830,7 +836,8 @@ addQuestionButton.addEventListener('click', createNewQuestion);
        }
        
        const exam = result[0]; // Access the first item directly
-
+       console.log("Result set",exam.Department);
+       document.getElementById('department').value = exam.Department || '';
        // Populate modal with exam data directly from the response
        document.getElementById('edit_name').value = exam.name || '';
        console.log("Console Logging ::  " + exam.name);
@@ -884,6 +891,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                passing_marks: document.getElementById('edit_passing_marks').value,
                fees: document.getElementById('edit_fees').value,
                syllabus: document.getElementById('edit_syllabus').value,
+               dept:document.getElementById('department').value
            };
 
            fetch('/updateExam', {

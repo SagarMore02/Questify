@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS User_Master(
     firstname VARCHAR(10) NOT NULL,
     lastname VARCHAR(10),
     usertype ENUM('Applicant','Organization','Organizer') NOT NULL,
+    Department ENUM('Computer-Science','Computer-Applications','Data-Science','IMCA','N/A') DEFAULT 'N/A',
     mobile VARCHAR(15) NOT NULL,
     email VARCHAR(50) NOT NULL,
     status ENUM('Pending','Active','Inactive') DEFAULT 'Pending',
@@ -75,6 +76,7 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('Organizer_Organiz
 CREATE TABLE IF NOT EXISTS Exam_Master(
     examID INT NOT NULL UNIQUE AUTO_INCREMENT,
     organizerID INT NOT NULL,
+    Department ENUM('Computer-Science','Computer-Applications','Data-Science','IMCA','N/A') DEFAULT 'N/A',
     name VARCHAR(15) NOT NULL,
     app_start_date DATE NOT NULL,
     app_end_date DATE NOT NULL,
