@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         console.log('Form submit event triggered'); // Log when the event is triggered
         event.preventDefault(); // Prevent the default form submission
-        
+
         // Extract form values into separate variables
         const firstName = document.querySelector('input[placeholder="Enter First Name"]').value;
         const lastName = document.getElementById('lastname').value;
@@ -20,32 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.querySelector('input[placeholder="Enter your password"]').value;
         const confirmPassword = document.querySelector('input[placeholder="Confirm your password"]').value;
         const userType = submitButton.value; // Get the value of the submit button
-        
-        
-        let dept;
-        let organId = "-1"; // Use `let` to allow reassignment
-        let location="Pune"
-        if (userType === "Organizer") {
-         const dropdown = document.getElementById('organization-dropdown');
-        organId = dropdown.value;
-        console.log(organId);
+
+        let dept = '';
+        let organId = '-1'; // Default value
+        let location = 'Pune';
+
+        if (userType === 'Organizer') {
+            const dropdown = document.getElementById('organization-dropdown');
+            organId = dropdown.value;
+            console.log(organId);
+        } else if (userType === 'Organization') {
+            location = document.querySelector('input[placeholder="Enter Location"]').value;
+        } else {
+            const departmentField = document.getElementById('department');
+            if (departmentField) {
+                dept = departmentField.value || '';
+                if (dept === 'N/A') {
+                    alert('Please select a valid department.');
+                    return; // Prevent form submission
+                }
+            }
         }
-        else {
-        if(userType==="Organization"){
-            location=document.querySelector('input[placeholder="Enter Location"]').value;
-        }else{
-            console.log("LlLLLLL",document.getElementById('department').value);
-        if(document.getElementById('department').value !==null){
-             dept= document.getElementById('department').value || '';
-            if (dept === "N/A") {
-                alert("Please select a valid department.");
-                 return;  // Prevent form submission
-             }
-        }
-        }
-    }
-        
-        
+
         // Validate passwords match
         if (password !== confirmPassword) {
             alert('Passwords do not match.');
@@ -65,11 +61,16 @@ document.addEventListener('DOMContentLoaded', () => {
             usertype: userType,
             organId: organId,
             location: location,
-            dept:dept
+            dept: dept
         };
-        console.log("Form Data",formData.organId);
+
+        console.log('Form Data:', formData);
+
+        // Show the modal immediately
+        showModal();
+
         try {
-            console.log("Trryingg");
+            console.log('Submitting form...');
             const response = await fetch('/register', {
                 method: 'POST',
                 headers: {
@@ -81,15 +82,38 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('proceed for 2FA');
-                // Redirect or clear the form as needed
-                window.top.location.href = 'verify-otp.html';
+                console.log('Registration successful');
             } else {
                 alert('Registration failed: ' + data.message);
+                hideModal(); // Hide modal if registration fails
             }
         } catch (error) {
             console.error('Error:', error);
             alert('Error submitting the form.');
+            hideModal(); // Hide modal if an error occurs
         }
     });
 });
+
+function showModal() {
+    const modal = document.getElementById('confirmationModal');
+    const modalText = document.getElementById('modalText');
+    modalText.textContent = `Proceed for 2-factor authentication`;
+
+    modal.style.display = 'flex';
+
+    document.getElementById('confirmButton').onclick = () => {
+        modal.style.display = 'none';
+        window.location.href = '/verify-otp.html'; // Correct usage of window.location.href
+    };
+
+    document.getElementById('cancelButton').onclick = () => {
+        modal.style.display = 'none';
+        window.location.reload(); // Reload the page
+    };
+}
+
+function hideModal() {
+    const modal = document.getElementById('confirmationModal');
+    modal.style.display = 'none';
+}
