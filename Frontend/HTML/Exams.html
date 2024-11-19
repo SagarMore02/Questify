@@ -195,10 +195,83 @@
             padding: 10px;
             border-bottom: 1px solid #ccc;
         }
+        /* Modal container styles */
+        #confirmationModal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 50%; /* Center vertically */
+        left: 50%; /* Center horizontally */
+        transform: translate(-50%, -50%); /* Adjust for true centering */
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* Ensure it appears above other elements */
+        width: 300px;
+        max-width: 80%;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        color: #333;
+        }
+
+        /* Modal text styles */
+        #modalText {
+        margin-bottom: 20px;
+        font-size: 16px;
+        }
+
+        /* Button styles */
+        #confirmationModal button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        margin: 5px;
+        }
+
+        /* Confirm button styles */
+        #confirmButton {
+        background-color: #28a745; /* Green */
+        color: white;
+        }
+
+        #confirmButton:hover {
+        background-color: #218838;
+        }
+
+        /* Cancel button styles */
+        #cancelButton {
+        background-color: #dc3545; /* Red */
+        color: white;
+        }
+
+        #cancelButton:hover {
+        background-color: #c82333;
+        }
+
+        /* Overlay background to dim the rest of the page */
+        #modalOverlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
+        z-index: 999; /* Below the modal but above other content */
+        }
+
 
     </style>
 </head>
 <body>
+
+    <div id="confirmationModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; z-index: 1000;">
+        <p id="modalText"></p>
+        <button id="confirmButton">Yes</button>
+        <button id="cancelButton">No</button>
+    </div>
 
     <div class="container">
         <h1>Exam Details</h1>
@@ -282,30 +355,6 @@
         const questionsListContainer = document.getElementById('questions-list-container');
 
                // Add an event listener for the button click
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -526,40 +575,6 @@ editQuesButton.addEventListener('click', async function () {
     }
 });
  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //******************************************************************************************************************************************************************************************************************
 function createNewQuestion() {
@@ -870,6 +885,10 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                        </div>
                    `;
                    examList.insertAdjacentHTML('beforeend', examCard);
+                   const statusDropdown = document.getElementById(`status_${exam.examID}`);
+                   statusDropdown.addEventListener('change', (event) => {
+                   handleStatusChange(event, exam.examID);
+            });
                });
 
                // Event listeners for Edit Exam buttons
@@ -884,7 +903,35 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            });
            //select Tags
            })
-           .catch(error => console.error('Error fetching exam data:', error));     
+           .catch(error => console.error('Error fetching exam data:', error));  
+           
+           
+
+           function handleStatusChange(event, examID) {
+            const selectedStatus = event.target.value;
+
+            if (selectedStatus === 'Completed' || selectedStatus === 'Stopped') {
+                // Show confirmation modal
+                const modal = document.getElementById('confirmationModal');
+                const modalText = document.getElementById('modalText');
+                modalText.textContent = `Are you sure you want to change the status to "${selectedStatus}"?`;
+                modal.style.display = 'flex';
+
+                // Confirm action
+                document.getElementById('confirmButton').onclick = () => {
+                    modal.style.display = 'none';
+                    // Remove the exam card from the UI
+                    document.getElementById(`examCard_${examID}`).remove();
+                };
+
+                // Cancel action
+                document.getElementById('cancelButton').onclick = () => {
+                    modal.style.display = 'none';
+                    // Reset status dropdown to previous value
+                    event.target.value = ''; // Reset to default (Pending)
+                };
+            }
+        }
            
        async function selectChanger() {
                const examID = this.getAttribute('data-exam-id');
@@ -1051,7 +1098,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
     console.error('Error updating exam:', error);
 });
 
-       }
+}
    </script>
 
     
