@@ -504,7 +504,6 @@ editQuesButton.addEventListener('click', async function () {
                 
                 if (updateResponse.ok){ 
                 const responseData = await updateResponse.json();
-                // alert('Question updated successfully!');
                 document.getElementById('edit_total_marks').value = responseData.totmks;
                 console.log(responseData);
                 if(responseData.message==="NotCool"){
@@ -839,6 +838,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                    `;
                    examList.insertAdjacentHTML('beforeend', examCard);
                    const statusDropdown = document.getElementById(`status_${exam.examID}`);
+                   
                    statusDropdown.addEventListener('change', (event) => {
                    handleStatusChange(event, exam.examID);
             });
@@ -860,35 +860,42 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            
            
 
-           function handleStatusChange(event, examID) {
-            const selectedStatus = event.target.value;
+        function handleStatusChange(event, examID) {
+    const selectedStatus = event.target.value; // New status selected by the user
+    const statusDropdown = document.getElementById(`status_${examID}`);
+    const currentStatus = statusDropdown.getAttribute('data-current-status') || 'Pending'; // Fetch current status or default to "Pending"
 
-            if (selectedStatus === 'Completed' || selectedStatus === 'Stopped') {
-                // Show confirmation modal
-                const modal = document.getElementById('confirmationModal');
-                const modalText = document.getElementById('modalText');
-                modalText.textContent = `Are you sure you want to change the status to "${selectedStatus}"?`;
-                modal.style.display = 'flex';
+    if (selectedStatus === 'Completed' || selectedStatus === 'Stopped') {
+        // Show confirmation modal
+        const modal = document.getElementById('confirmationModal');
+        const modalText = document.getElementById('modalText');
 
-                // Confirm action
-                document.getElementById('confirmButton').onclick = () => {
-                    modal.style.display = 'none';
-                    // Remove the exam card from the UI
-                    document.getElementById(`examCard_${examID}`).remove();
-                };
+        // Update modal text based on the selected status
+        modalText.textContent = 
+            selectedStatus === 'Stopped' 
+                ? `Current status is "${currentStatus}". Do you want to change the status to "${selectedStatus}"? This action will remove the exam from the dashboard.` 
+                : `Current status is "${currentStatus}". Do you want to change the status to "${selectedStatus}"? You will not be able to edit or delete this exam.`;
 
-                // Cancel action
-                document.getElementById('cancelButton').onclick = () => {
-                    modal.style.display = 'none';
-                    // Reset status dropdown to previous value
-                    event.target.value = ''; // Reset to default (Pending)
-                };
-            }
-        }
-           
+        modal.style.display = 'flex';
+
+        // Confirm action
+        document.getElementById('confirmButton').onclick = () => {
+            modal.style.display = 'none';
+            window.location.reload();
+        };
+
+        // Cancel action
+        document.getElementById('cancelButton').onclick = () => {
+            modal.style.display = 'none';
+            // Reset dropdown to the current status
+            event.target.value = currentStatus;
+        };
+    }
+}
+     
        async function selectChanger() {
                const examID = this.getAttribute('data-exam-id');
-               alert(`Selected option: ${this.value}\nExam ID:${examID}`); // Display the selected option
+               //alert(`Selected option: ${this.value}\nExam ID:${examID}`); // Display the selected option
                const statData={examID:examID,status:this.value};
                
                const response = await fetch('/api/exams/updatestatus', {
@@ -899,7 +906,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                body: JSON.stringify(statData),
                });
                if (response.ok) {
-               alert(`Exam ${examID} has been Updated successfully!`);
+               //alert(`Exam ${examID} has been Updated successfully!`);
                //location.reload();
            } else {
                alert('Error Updating exam!');
