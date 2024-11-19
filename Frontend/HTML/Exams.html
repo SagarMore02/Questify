@@ -4,299 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/Exams.css">
-    <title>Exam Details</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .exam-card {
-            background-color: #fff;
-            padding: 20px;
-            margin: 15px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .exam-card h3 {
-            margin: 0;
-            font-size: 1.2em;
-            color: #333;
-        }
-
-        .exam-details {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .exam-details div {
-            flex: 1 1 200px;
-            margin-bottom: 10px;
-        }
-
-        .exam-details div span {
-            font-weight: bold;
-            display: block;
-            color: #666;
-        }
-
-        .edit-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .edit-btn:hover {
-            background-color: #0056b3;
-        }
-
-        select {
-            padding: 5px;
-            font-size: 1em;
-            border-radius: 4px;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            max-width: 600px;
-            border-radius: 8px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Additional styles for input fields and labels */
-        .user-details {
-            display: flex;                 /* Enable flexbox */
-            flex-wrap: wrap;              /* Allow items to wrap to the next line */
-            gap: 10px;
-        }
-
-        .input-box {
-            flex: 1 0 calc(50% - 10px);   /* Allow items to take 50% of the width minus gap */
-            padding: 20px;                /* Add padding */
-            border: 1px solid #ccc;       /* Optional: Add a border */
-            text-align: center;            /* Center text inside the divs */
-            box-sizing: border-box;
-        }
-
-        .input-box span {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .input-box input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 40%;
-        }
-
-        #edit_submit {
-            margin-left: 7%;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        #edit_ques {
-            margin-left: 7%;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        #Addques {
-            margin-left: 7%;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        #edit_submit:hover {
-            background-color: #218838;
-        }
-
-        /* Modal Title Style */
-        .modal .title {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        .questions-list-container {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-        }
-
-        .question-item {
-            margin-bottom: 15px;
-            padding: 10px;
-            /* border-bottom: 1px solid #ccc; */
-        }
-        .my-class{
-            margin-bottom: 15px;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-        .modal-unique {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content-unique {
-    background-color: #fff;
-    margin: 15% auto;
+     body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
     padding: 20px;
-    border: 1px solid #888;
-    width: 40%;
-    text-align: center;
-}
-
-.close-unique {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+    background: linear-gradient(to right, #ffffff, #dcd6f7); /* Soft white-to-light-purple gradient */
+    }
+    
+    .question-item {
+    background-color: #fdfdfd;
+    border: 1px solid #c3c3e5; /* Light purple border */
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .question-item label {
+    font-size: 16px;
+    color: #6a1b9a; /* Purple text color */
+    display: inline-block;
+    margin-bottom: 10px;
+    }
+    
+    .question-item input[type="text"],
+    .question-item input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    }
+    
+    .question-item input[type="text"]:focus,
+    .question-item input[type="number"]:focus {
+    border-color: #6a1b9a;
+    outline: none;
+    box-shadow: 0 0 5px rgba(106, 27, 154, 0.3);
+    }
+    
+    .question-item div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    }
+    
+    .question-item input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #6a1b9a; /* Purple radio button */
+    }
+    
+    .question-item button {
+    background-color: #e57373; /* Red for remove buttons */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 10px;
+    border-radius: 5px;
     cursor: pointer;
-}
-
-.modal-buttons-unique button {
-    margin: 10px;
-}
-        /* Modal container styles */
-        #confirmationModal {
-        display: none; /* Hidden by default */
-        position: fixed;
-        top: 50%; /* Center vertically */
-        left: 50%; /* Center horizontally */
-        transform: translate(-50%, -50%); /* Adjust for true centering */
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 1000; /* Ensure it appears above other elements */
-        width: 300px;
-        max-width: 80%;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        color: #333;
-        }
-
-        /* Modal text styles */
-        #modalText {
-        margin-bottom: 20px;
-        font-size: 16px;
-        }
-
-        /* Button styles */
-        #confirmationModal button {
-        padding: 10px 20px;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s;
+    }
+    
+    .question-item button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+    }
+    
+    .my-class {
+        text-align: right;
+        margin-top: 20px;
+        display: flex;           /* Use flexbox for layout */
+        justify-content: flex-end; /* Align items to the right */
+        gap: 10px;               /* Add space between buttons */
+        flex-wrap: wrap;         /* Ensure buttons wrap to the next line if needed */
+    }
+    
+    
+    .my-class button {
+        background-color: #6a1b9a; /* Purple for Add and Save buttons */
+        color: white;
         border: none;
+        padding: 10px 15px;
         border-radius: 5px;
-        font-size: 14px;
         cursor: pointer;
-        margin: 5px;
-        }
+        font-size: 16px;
+        transition: background-color 0.3s ease, transform 0.2s;
+    }
 
-        /* Confirm button styles */
-        #confirmButton {
-        background-color: #28a745; /* Green */
-        color: white;
-        }
+    .my-class button:hover {
+    background-color: #4e1481; /* Darker purple on hover */
+    transform: scale(1.05);    /* Slight enlargement on hover */
+}
 
-        #confirmButton:hover {
-        background-color: #218838;
-        }
-
-        /* Cancel button styles */
-        #cancelButton {
-        background-color: #dc3545; /* Red */
-        color: white;
-        }
-
-        #cancelButton:hover {
-        background-color: #c82333;
-        }
-
-        /* Overlay background to dim the rest of the page */
-        #modalOverlay {
-        display: none; /* Hidden by default */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
-        z-index: 999; /* Below the modal but above other content */
-        }
-
+    @media (max-width: 768px) {
+    .question-item input[type="text"],
+    .question-item input[type="number"] {
+    width: 100%;
+    }
+    
+    .question-item div {
+    flex-direction: column;
+    align-items: flex-start;
+    }
+    
+    .question-item button {
+    margin: 5px 0 0 0;
+    }
+    
+    .my-class button {
+    margin: 10px 0;
+    display: block;
+    }
+    }
+    
 
     </style>
+    <title>Exam Details</title>
 </head>
 <body>       
 <body>
@@ -704,14 +531,13 @@ editQuesButton.addEventListener('click', async function () {
                 
                 if (updateResponse.ok){ 
                 const responseData = await updateResponse.json();
-                //alert('Question updated successfully!');
                 document.getElementById('edit_total_marks').value = responseData.totmks;
                 console.log(responseData);
                 if(responseData.message==="NotCool"){
                     totalMarksSpan.textContent = responseData.totmks;
                     currentPassingMarksSpan.textContent = responseData.passingMarks;
                     modal.style.display = 'block';
-
+                    modal.style.zIndex = '1000';
                 }
                 
             }
@@ -1052,6 +878,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                    `;
                    examList.insertAdjacentHTML('beforeend', examCard);
                    const statusDropdown = document.getElementById(`status_${exam.examID}`);
+                   
                    statusDropdown.addEventListener('change', (event) => {
                    handleStatusChange(event, exam.examID);
             });
@@ -1073,32 +900,39 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            
            
 
-           function handleStatusChange(event, examID) {
-            const selectedStatus = event.target.value;
+        function handleStatusChange(event, examID) {
+    const selectedStatus = event.target.value; // New status selected by the user
+    const statusDropdown = document.getElementById(`status_${examID}`);
+    const currentStatus = statusDropdown.getAttribute('data-current-status') || 'Pending'; // Fetch current status or default to "Pending"
 
-            if (selectedStatus === 'Completed' || selectedStatus === 'Stopped') {
-                // Show confirmation modal
-                const modal = document.getElementById('confirmationModal');
-                const modalText = document.getElementById('modalText');
-                modalText.textContent = `Are you sure you want to change the status to "${selectedStatus}"?`;
-                modal.style.display = 'flex';
+    if (selectedStatus === 'Completed' || selectedStatus === 'Stopped') {
+        // Show confirmation modal
+        const modal = document.getElementById('confirmationModal');
+        const modalText = document.getElementById('modalText');
 
-                // Confirm action
-                document.getElementById('confirmButton').onclick = () => {
-                    modal.style.display = 'none';
-                    window.location.reload();
-                    document.getElementById(`examCard_${examID}`).remove();
-                };
+        // Update modal text based on the selected status
+        modalText.textContent = 
+            selectedStatus === 'Stopped' 
+                ? `Current status is "${currentStatus}". Do you want to change the status to "${selectedStatus}"? This action will remove the exam from the dashboard.` 
+                : `Current status is "${currentStatus}". Do you want to change the status to "${selectedStatus}"? You will not be able to edit or delete this exam.`;
 
-                // Cancel action
-                document.getElementById('cancelButton').onclick = () => {
-                    modal.style.display = 'none';
-                    // Reset status dropdown to previous value
-                    event.target.value = ''; // Reset to default (Pending)
-                };
-            }
-        }
-           
+        modal.style.display = 'flex';
+
+        // Confirm action
+        document.getElementById('confirmButton').onclick = () => {
+            modal.style.display = 'none';
+            window.location.reload();
+        };
+
+        // Cancel action
+        document.getElementById('cancelButton').onclick = () => {
+            modal.style.display = 'none';
+            // Reset dropdown to the current status
+            event.target.value = currentStatus;
+        };
+    }
+}
+     
        async function selectChanger() {
                const examID = this.getAttribute('data-exam-id');
                //alert(`Selected option: ${this.value}\nExam ID:${examID}`); // Display the selected option

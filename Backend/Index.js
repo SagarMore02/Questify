@@ -70,6 +70,7 @@ const pool = mysql.createPool({
   //password:'root',
   //password:'Aditya@123',
   password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
