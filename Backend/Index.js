@@ -67,8 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password:'root',
+  //password:'root',
   //password:'Aditya@123',
+  password: 'sagar@123',
   //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
@@ -905,8 +906,23 @@ app.get('/ApplicantResult', async (req, res) => {
 
 app.get('/CheckTest', async(req, res) => {
   console.log("serving Check Test");
-  const sql = 'Select * from question_master where examID=?';
   const connection = await pool.getConnection();
+  const check_exam_marks = `SELECT total_marks FROM exam_master WHERE examID = ?`;
+  const [check_exam_result] = await connection.execute(check_exam_marks, [req.session.examID]);
+  const check_question_marks = `SELECT IFNULL(SUM(question_marks), 0) AS questotal FROM Question_Master WHERE examID = ?`;
+  const [check_question_result] = await connection.execute(check_question_marks, [req.session.examID]);
+
+  const currentTotalMarks = Number(check_question_result[0].questotal);
+  const examTotalMarks = Number(check_exam_result[0].total_marks);
+  console.log("Current Marks:",(currentTotalMarks));
+  console.log("Exam Total Marks",examTotalMarks);
+    // Check if adding the new question's marks would exceed the total marks allowed for the exam
+  if (examTotalMarks > currentTotalMarks) {
+        console.log("Current Marks Inside IF:",(currentTotalMarks));
+        res.status(400).json({message: 'Exam Marks are less than Question Total Marks , Exam cannot be created!',});
+        return;
+  }
+  const sql = 'Select * from question_master where examID=?';
   const [result] = await connection.query(sql,[req.session.examID]);
   if(result.length>0){
     console.log("Values");
@@ -1588,11 +1604,11 @@ app.post('/check-result', async (req, res) => {
 
 
 app.get('/getExamIds', async (req, res) => {
-  const sql = "SELECT examID FROM exam_master";  // Fetch all examIDs from exam_master
+  const sql = "SELECT examID FROM exam_master where organizerID=?";  // Fetch all examIDs from exam_master
   const connection = await pool.getConnection();
 
   try {
-    const [exams] = await connection.query(sql);  // No need for req.session.myid here as we fetch all exams
+    const [exams] = await connection.query(sql,[req.session.myid]);  // No need for req.session.myid here as we fetch all exams
     res.json(exams);  // Send the list of examIDs as a response
   } catch (error) {
     console.error(error);

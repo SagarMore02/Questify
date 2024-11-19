@@ -677,13 +677,14 @@ editQuesButton.addEventListener('click', async function () {
                 
                 if (updateResponse.ok){ 
                 const responseData = await updateResponse.json();
-                alert('Question updated successfully!');
+                //alert('Question updated successfully!');
                 document.getElementById('edit_total_marks').value = responseData.totmks;
                 console.log(responseData);
                 if(responseData.message==="NotCool"){
                     totalMarksSpan.textContent = responseData.totmks;
                     currentPassingMarksSpan.textContent = responseData.passingMarks;
                     modal.style.display = 'block';
+                    
                 }
                 
             }
@@ -1033,36 +1034,6 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            
            
 
-        //    function handleStatusChange(event, examID) {
-        //     const selectedStatus = event.target.value;
-        //     const statusDropdown = document.getElementById(`status_${examID}`);
-        //     const currentStatus = statusDropdown.value;
-
-        //     if (selectedStatus === 'Completed' || selectedStatus === 'Stopped') {
-        //         // Show confirmation modal
-        //         const modal = document.getElementById('confirmationModal');
-        //         const modalText = document.getElementById('modalText');
-        //         if (selectedStatus === "Stopped") {
-        //             modalText.textContent = `Current status is "Pending".Do you want to change the status to "${selectedStatus}"? You cannot edit or delete exam once stopped`;
-        //         } else {
-        //             modalText.textContent = `Current status is "Pending". Do you want to change the status to "${selectedStatus}"? You cannot edit or delete exam once completed`;
-        //         }
-        //         modal.style.display = 'flex';
-
-        //         // Confirm action
-        //         document.getElementById('confirmButton').onclick = () => {
-        //              document.getElementById(`examCard_${examID}`).remove(); // Remove exam card
-        //              window.location.reload();
-        //             }
-        //         };
-
-        //         // Cancel action
-        //         document.getElementById('cancelButton').onclick = () => {
-        //             modal.style.display = 'none';
-        //             // Reset status dropdown to previous value
-        //             event.target.value = ''; // Reset to default (Pending)
-        //         };
-        //     }
         function handleStatusChange(event, examID) {
     const selectedStatus = event.target.value; // New status selected by the user
     const statusDropdown = document.getElementById(`status_${examID}`);
@@ -1095,9 +1066,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
         };
     }
 }
-
-        
-           
+     
        async function selectChanger() {
                const examID = this.getAttribute('data-exam-id');
                //alert(`Selected option: ${this.value}\nExam ID:${examID}`); // Display the selected option
