@@ -1045,7 +1045,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                 // Confirm action
                 document.getElementById('confirmButton').onclick = () => {
                     modal.style.display = 'none';
-                    // Remove the exam card from the UI
+                    window.location.reload();
                     document.getElementById(`examCard_${examID}`).remove();
                 };
 
@@ -1060,7 +1060,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
            
        async function selectChanger() {
                const examID = this.getAttribute('data-exam-id');
-               alert(`Selected option: ${this.value}\nExam ID:${examID}`); // Display the selected option
+               //alert(`Selected option: ${this.value}\nExam ID:${examID}`); // Display the selected option
                const statData={examID:examID,status:this.value};
                
                const response = await fetch('/api/exams/updatestatus', {
@@ -1071,7 +1071,7 @@ addQuestionButton.addEventListener('click', createNewQuestion);
                body: JSON.stringify(statData),
                });
                if (response.ok) {
-               alert(`Exam ${examID} has been Updated successfully!`);
+               //alert(`Exam ${examID} has been Updated successfully!`);
                //location.reload();
            } else {
                alert('Error Updating exam!');
