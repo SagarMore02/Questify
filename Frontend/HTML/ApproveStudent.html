@@ -76,7 +76,7 @@
                                 <td>${item.feestatus || ''}</td>
                                 <td>${item.attendance || ''}</td>
                                 <td>
-                                    <select class="form-control status-select" meta-name="${item.PersonalID}" data-id="${item.id}">
+                                    <select class="form-control status-select" meta-name="${item.PersonalID}" id="status-${item.PersonalID}" data-id="${item.PersonalID}">
                                         <option value="" ${!item.appstatus ? 'selected' : ''} hidden>${item.appstatus}</option>
                                         <option value="Active" ${item.appstatus === 'Active' ? 'selected' : ''}>Active</option>
                                         <option value="Inactive" ${item.appstatus === 'Inactive' ? 'selected' : ''}>Inactive</option>
@@ -94,9 +94,10 @@
                                 const id = this.getAttribute('data-id');
                                 const name = this.getAttribute('data-name');
                                 const exam = this.getAttribute('data-exam');
-                                const select = document.querySelector(`.status-select[data-id="${id}"]`);
-                                const status = select ? select.value : '';
-                                
+                                const select = document.getElementById(`status-${ename}`); // Make sure you're selecting by the correct ID
+                                const status = select ? select.value : ''; 
+                                //const status = select.value;
+                                console.log("status:",status);
                                 if (status) {
                                     showModal(id, status, ename, name, exam);
                                 } else {
