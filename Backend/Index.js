@@ -437,31 +437,58 @@ app.get('/t', (req, res) => {
 
 //To Show all the examns
 app.get('/api/exams', async (req, res) => {
-  const sql = "SELECT * FROM exam_master where organizerID=?";
+  const pql = `Update exam_master set status='Completed' where exam_end_date<CURDATE();`; 
+  const sql = "SELECT * FROM exam_master where organizerID=? AND status='Pending' ";
   const connection = await pool.getConnection();
+
+  const [result1] = await connection.execute(pql);
   const [result] = await connection.execute(sql,[req.session.myid]);
+  
   connection.release();
   res.json(result);
   });
 
   app.get('/api/stu/exams', async (req, res) => {
-    const sql = "select e.examID,e.organizerID,e.name,e.app_start_date,e.app_end_date,e.exam_start_time,e.exam_start_date,e.exam_end_date,e.exam_end_time,e.total_marks,e.passing_marks,e.status,e.fees,e.syllabus,e.timestamp,e.Department from exam_master e join user_master u on e.Department=u.Department where u.userID=?;";
+    const sql = "SELECT e.examID, e.organizerID, e.name, e.app_start_date, e.app_end_date, e.exam_start_time, e.exam_start_date, e.exam_end_date, e.exam_end_time, e.total_marks, e.passing_marks, e.status, e.fees, e.syllabus, e.timestamp, e.Department FROM exam_master e JOIN user_master u ON e.Department = u.Department WHERE u.userID = ? AND CURDATE() >= e.app_start_date AND CURDATE() = e.app_end_date AND NOW() <= DATE_ADD(e.app_end_date, INTERVAL 1 DAY);";
     const connection = await pool.getConnection();
     const [result] = await connection.execute(sql,[req.session.myid]);
     connection.release();
     res.json(result);
     });
 
-  app.post('/api/exams/myexam', async (req, res) => {
-    const{examID}=req.body;
-    req.session.organExam=examID;
-    const sql = "SELECT * FROM exam_master where examID=? And organizerID=?";
-    const connection = await pool.getConnection();
-    const [result] = await connection.execute(sql,[examID,req.session.myid]);
-    connection.release();
-    console.log(result);
-    res.json(result);
-    });
+    app.post('/api/exams/myexam', async (req, res) => {
+      const { examID } = req.body;
+      req.session.organExam = examID;
+      const sql = "SELECT * FROM exam_master where examID=? And organizerID=?";
+      const connection = await pool.getConnection();
+      const [result] = await connection.execute(sql, [examID, req.session.myid]);
+  
+      const currentDateTime = new Date(); // Convert current date/time to Date object
+      console.log(currentDateTime.toLocaleString());
+      console.log("*");
+  
+      const formattedDate1 = new Date(result[0].exam_start_date);
+      formattedDate1.setDate(formattedDate1.getDate() + 1);
+      const formattedDate = formattedDate1.toISOString().split('T')[0];
+      const dbDate = new Date(formattedDate + "T" + result[0].exam_start_time);
+      console.log(dbDate);
+      console.log(result[0].exam_start_time);
+  
+      // Subtract 5 minutes from dbDate
+      const fiveMinutesBeforeExam = new Date(dbDate.getTime() - 5 * 60 * 1000);
+      console.log(fiveMinutesBeforeExam.toLocaleString());
+  
+      // Compare current date/time with five minutes before the exam
+      if (currentDateTime >= fiveMinutesBeforeExam) {
+          return res.status(400).json({ success: false, message: "Exam is live and cannot be edited." });
+      }
+  
+      connection.release();
+      console.log(result);
+      res.json({ success: true, data: result });
+  });
+  
+  
 
 
 //Dashboard:
@@ -988,6 +1015,7 @@ app.get('/organapplicant', async (req, res) => {
 });
 
 
+
 app.get('/applicant', async (req, res) => {
   console.log("Okayyy");
   try {
@@ -1027,6 +1055,7 @@ app.post('/orgstatus', async (req, res) => {
     }
   }
 });
+
 //safcihbwsaliuvbanziujfeiawe;gvnwioejfnaiuw;ejfvawio;egsvaowpesdjfaw;opackoefegvmeroboeb
 app.post('/status', async (req, res) => {
   const { id, status } = req.body;
@@ -1222,12 +1251,29 @@ app.post('/updateQuestion', async (req, res) => {
       //return res.status(404).json({ message: 'No questions found for this exam.' });
       const[ins_result]=await connection.query(ins_query,[examID,updatedQuestion,options[1],options[2],options[3],options[4],options[5],options[6],correctOption,totalMarks]);;
       const[mum_mum] = await connection.query(`select sum(question_marks) as mumum from question_master group by examID having examID=?`,[examID]);
-      console.log("ExxxxammmIIDDD",mum_mum[0].mumum);
+      const[getogtot] = await connection.query(`select total_marks from exam_master where examID=?`,[examID]);
+      const[tum_tum] = await connection.query(`select passing_marks from exam_master where examID=?`,[examID]);
       const[add_mks] = await connection.query(`update exam_master set total_marks = ? where examID=?;`,[mum_mum[0].mumum,examID]);
+      console.log("New Total: ",mum_mum[0].mumum,"Old Total: ",getogtot[0].total_marks);
+      if(getogtot[0].total_marks == mum_mum[0].mumum){
+        res.status(200).json({ message:"Cool",totmks:mum_mum[0].mumum,passingMarks:tum_tum[0].passing_marks });
+      }else{
+      res.status(200).json({ message:"NotCool",totmks:mum_mum[0].mumum,passingMarks:tum_tum[0].passing_marks });
+    }
     }else{
       const[update_result]=await connection.query(update_query,[updatedQuestion,options[1],options[2],options[3],options[4],options[5],options[6],correctOption,totalMarks,questionId]);
+      const[mum_mum] = await connection.query(`select sum(question_marks) as mumum from question_master group by examID having examID=?`,[examID]);
+      const[getogtot] = await connection.query(`select total_marks from exam_master where examID=?`,[examID]);
+      const[tum_tum] = await connection.query(`select passing_marks from exam_master where examID=?`,[examID]);
+      const[add_mks] = await connection.query(`update exam_master set total_marks = ? where examID=?;`,[mum_mum[0].mumum,examID]);
+      console.log("New Total: ",mum_mum[0].mumum,"Old Total: ",getogtot[0].total_marks);
+      if(getogtot[0].total_marks == mum_mum[0].mumum){
+        res.status(200).json({ message:"Cool",totmks:mum_mum[0].mumum,passingMarks:tum_tum[0].passing_marks });
+      }else{
+      res.status(200).json({ message:"NotCool",totmks:mum_mum[0].mumum,passingMarks:tum_tum[0].passing_marks });
     }
-    res.status(200).json({ message:"Success" });
+  }
+    
   } catch (err) {
     console.error('Error fetching questions:', err);
     return res.status(500).json({ message: 'Server error' });
@@ -1235,6 +1281,42 @@ app.post('/updateQuestion', async (req, res) => {
     if (connection) connection.release(); // Release the database connection
   }
 });
+
+
+
+app.post('/updatePassingMarks', async (req, res) => {
+  try {
+      const {passingMarks } = req.body;
+      const examID = req.session.organExam;
+      if (passingMarks === undefined) {
+          return res.status(400).json({ error: 'Question ID and passing marks are required' });
+      }
+
+      // Validate that passingMarks is a number
+      if (isNaN(passingMarks) || passingMarks < 0) {
+          return res.status(400).json({ error: 'Passing marks must be a valid number' });
+      }
+      const connection = await pool.getConnection();
+      // Update the database
+      const result = await connection.query(
+          `UPDATE exam_master SET passing_marks = ? WHERE examID = ?`,
+          [passingMarks, examID]
+      );
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Exam not found or no changes made' });
+      }
+
+      res.status(200).json({ message: 'Passing marks updated successfully!' });
+  } catch (error) {
+      console.error('Error updating passing marks:', error);
+      res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
+
 
 //Delete THe QUestion::
 app.post('/deleteQuestion', async (req, res) => {
