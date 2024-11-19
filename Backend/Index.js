@@ -1015,6 +1015,7 @@ app.get('/organapplicant', async (req, res) => {
 });
 
 
+
 app.get('/applicant', async (req, res) => {
   console.log("Okayyy");
   try {
@@ -1054,6 +1055,7 @@ app.post('/orgstatus', async (req, res) => {
     }
   }
 });
+
 //safcihbwsaliuvbanziujfeiawe;gvnwioejfnaiuw;ejfvawio;egsvaowpesdjfaw;opackoefegvmeroboeb
 app.post('/status', async (req, res) => {
   const { id, status } = req.body;
