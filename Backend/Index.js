@@ -69,8 +69,8 @@ const pool = mysql.createPool({
   user: 'root',
   //password:'root',
   //password:'Aditya@123',
-  password: 'sagar@123',
-  //password:'pr@n@v06',
+  //password: 'sagar@123',
+  password:'pr@n@v06',
   //password:'root',
   //password:'101201',
   database: 'Questify',
@@ -123,7 +123,7 @@ const transporter = nodemailer.createTransport({
 
 
 const otpStorage = {};
-const otpKey = Math.random().toString(36).substring(2, 10);
+const otpKey = Math.floor(1000 + Math.random() * 9000);
 
 app.post('/register', async (req, res) => {
   console.log("Register Hit");
@@ -163,7 +163,7 @@ app.post('/register', async (req, res) => {
     }
 
     // Generate OTP
-    const otp = otpGenerator.generate(6, { digits: true});
+    const otp = otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
     
     otpStorage[otpKey] = {
       otp: otp,

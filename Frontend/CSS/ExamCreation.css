@@ -1,0 +1,145 @@
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background: linear-gradient(to right, #5503ac, #8e24aa); /* Enhanced gradient background */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding-top: 100px;
+}
+
+.container {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 16px; /* Softer corners */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+    width: 100%;
+    max-width: 650px; /* Adjusted for wider layout */
+    animation: fadeIn 1s ease-in-out; /* Smooth fade-in animation */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title {
+    text-align: center;
+    color: #5503ac;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase; /* All caps for emphasis */
+    letter-spacing: 1.5px; /* Spacing for a modern look */
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive columns */
+    gap: 25px; /* Improved spacing between fields */
+}
+
+.input-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-box span {
+    font-weight: bold;
+    color: #6a1b9a;
+    margin-bottom: 10px; /* Space below labels */
+    font-size: 14px; /* Slightly larger label text */
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select {
+    width: 100%;
+    padding: 12px 14px; /* Adjusted padding for better spacing */
+    border: 1px solid #ddd;
+    border-radius: 8px; /* Rounded corners for inputs */
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease; /* Smooth transitions */
+    background-color: #f9f9f9;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+select:focus {
+    border-color: #5503ac; /* Violet border */
+    box-shadow: 0 0 8px rgba(85, 3, 172, 0.3); /* Glow effect */
+    background-color: #fff; /* Highlight background */
+    outline: none;
+}
+
+button,
+input[type="submit"] {
+    background: linear-gradient(to right, #6a1b9a, #8e24aa); /* Gradient button background */
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px; /* Rounded button edges */
+    cursor: pointer;
+    font-size: 18px; /* Slightly larger button text */
+    font-weight: bold;
+    transition: all 0.3s ease; /* Smooth transitions */
+    text-transform: uppercase;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background: linear-gradient(to right, #8e24aa, #aa47bc); /* Lighter gradient on hover */
+    transform: scale(1.03); /* Slight zoom effect */
+}
+
+button:active,
+input[type="submit"]:active {
+    transform: scale(0.98); /* Pressed effect */
+}
+
+input[type="submit"] {
+    margin-top: 20px; /* Space above the button */
+}
+
+select {
+    appearance: none; /* Remove default dropdown styling */
+    background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%236a1b9a" d="M2 0L0 2h4z"/></svg>') no-repeat right 12px center;
+    background-color: #f9f9f9;
+    background-size: 10px;
+}
+
+select:hover {
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 80px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+}
