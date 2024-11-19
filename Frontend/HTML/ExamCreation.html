@@ -155,6 +155,34 @@
     </div>
 
     <script>
+        function isDateTimeValid(inputDate, inputTime) {
+                    const now = new Date();
+
+                    // Parse input date and time
+                    const [year, month, day] = inputDate.split('-').map(Number);
+                    const [hours, minutes] = inputTime.split(':').map(Number);
+
+                    const inputDateTime = new Date(year, month - 1, day, hours, minutes);
+
+                    // Check if the date is earlier than today
+                    const inputDateOnly = new Date(year, month - 1, day);
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                    if (inputDateOnly < today) {
+                        // If the date is earlier than today, check the time
+                        return false; // Automatically invalid if date is earlier
+                    }
+
+                    if (inputDateOnly.getTime() === today.getTime()) {
+                        // If the date is today, check the time
+                        if (hours < now.getHours() || (hours === now.getHours() && minutes < now.getMinutes())) {
+                            return false; // Invalid if time is earlier
+                        }
+                    }
+
+                    return true; // Valid if the date is not earlier or the time is not earlier
+                }
+
         document.getElementById('exam-form').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
             
@@ -173,6 +201,16 @@
             const fees = formData.get('fees');
             const syllabus = formData.get('syllabus');
             const dept = formData.get('department');
+
+            if (!isDateTimeValid(appStartDate,"24:00")) {
+                    alert("The input Application date and time are Invalid.");
+                    return;
+            }
+            if(!isDateTimeValid(examStartDate,examStartTime)){
+                alert("The input Exam date and time are Invalid.");
+                return;
+            }
+
             if (dept === "N/A") {
            alert("Please select a valid department.");
             return;  // Prevent form submission

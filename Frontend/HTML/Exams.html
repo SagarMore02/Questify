@@ -195,11 +195,42 @@
             padding: 10px;
             border-bottom: 1px solid #ccc;
         }
+        .modal-unique {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content-unique {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    text-align: center;
+}
+
+.close-unique {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-buttons-unique button {
+    margin: 10px;
+}
 
     </style>
 </head>
-<body>
-
+<body>       
     <div class="container">
         <h1>Exam Details</h1>
         <div id="examList">
@@ -276,21 +307,76 @@
             </div>
         </div>
     </div>
+
+    <div id="updatePassingMarksModal" class="modal-unique">
+        <div class="modal-content-unique">
+            <span id="closePassingMarksModal" class="close-unique">&times;</span>
+            <h2>Updated Exam Marks According To Updated Question Marks</h2>
+            <h3>Do you wish to keep same exam passing marks or update to new?</h3>
+            <p>Total Marks: <span id="totalMarksDisplay"></span></p>
+            <p>Current Passing Marks: <span id="currentPassingMarksDisplay"></span></p>
+            <label for="newPassingMarksInput">New Passing Marks:</label>
+            <input type="number" id="newPassingMarksInput" placeholder="Enter new passing marks">
+            <div class="modal-buttons-unique">
+                <button id="passingMarksKeepButton">Keep</button>
+                <button id="passingMarksUpdateButton">Update</button>
+            </div>
+        </div>
+    </div>
     <script>
         
         const editQuesButton = document.getElementById('edit_ques');
         const questionsListContainer = document.getElementById('questions-list-container');
-
+        const modal = document.getElementById('updatePassingMarksModal');
+        const closeModal = document.getElementById('closePassingMarksModal');
+        const updateButton = document.getElementById('passingMarksUpdateButton');
+        const keepButton = document.getElementById('passingMarksKeepButton');
+        const totalMarksSpan = document.getElementById('totalMarksDisplay');
+        const currentPassingMarksSpan = document.getElementById('currentPassingMarksDisplay');
+        const newPassingMarksInput = document.getElementById('newPassingMarksInput');
                // Add an event listener for the button click
 
 
 
+               keepButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            window.onclick = function (event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
 
 
+        updateButton.addEventListener('click', async () => {
+        const newPassingMarks = newPassingMarksInput.value;
 
+        // Validation for newPassingMarks (if needed)
+        if (newPassingMarks === '' || isNaN(newPassingMarks)) {
+            alert('Please enter valid passing marks');
+            return;
+        }
 
+        // API to update passing marks
+        const updatePassingMarksResponse = await fetch('/updatePassingMarks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ passingMarks: newPassingMarks })
+        });
 
-
+        if (updatePassingMarksResponse.ok) {
+            alert('Passing marks updated successfully!');
+            modal.style.display = 'none'; // Close modal
+            document.getElementById('edit_passing_marks').value=newPassingMarks;
+        } else {
+            alert('Failed to update passing marks');
+        }
+    });
 
 
 
@@ -512,7 +598,19 @@ editQuesButton.addEventListener('click', async function () {
                     body: JSON.stringify(updateData)
                 });
 
-                if (updateResponse.ok) alert('Question updated successfully!');
+                
+                if (updateResponse.ok){ 
+                const responseData = await updateResponse.json();
+                alert('Question updated successfully!');
+                document.getElementById('edit_total_marks').value = responseData.totmks;
+                console.log(responseData);
+                if(responseData.message==="NotCool"){
+                    totalMarksSpan.textContent = responseData.totmks;
+                    currentPassingMarksSpan.textContent = responseData.passingMarks;
+                    modal.style.display = 'block';
+                }
+                
+            }
                 else alert('Failed to update question');
             });
             ButtonDiv.appendChild(saveButton);
@@ -947,46 +1045,62 @@ addQuestionButton.addEventListener('click', createNewQuestion);
     console.log("updated Date",date.toISOString().split('T')[0]);
     return date.toISOString().split('T')[0]; // Return 'YYYY-MM-DD' format
 }
-       function editExam(examID) {
-            const idData = { examID: examID };
-            fetch('/api/exams/myexam', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(idData),
-   })
-   .then(response => response.json())
-   .then(result => {
-       // Assuming the result is an array and you're interested in the first item
-       if (result.length === 0) {
-           throw new Error("Exam not found.");
-       }
-       
-       const exam = result[0]; // Access the first item directly
-       console.log("Result set",exam.Department);
-       document.getElementById('department').value = exam.Department || '';
-       // Populate modal with exam data directly from the response
-       document.getElementById('edit_name').value = exam.name || '';
-       console.log("Console Logging ::  " + exam.name);
-       document.getElementById('edit_app_start_date').value = exam.app_start_date ? addOneDay(exam.app_start_date.split('T')[0]) : '';
-       document.getElementById('edit_app_end_date').value = exam.app_end_date ? addOneDay(exam.app_end_date.split('T')[0]) : '';
-       document.getElementById('edit_exam_start_date').value = exam.exam_start_date ? addOneDay(exam.exam_start_date.split('T')[0]) : '';
-       console.log("Console Logging :: s " + exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '');
-       //document.getElementById('edit_exam_end_date').value = exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '';
-       console.log("Console Logging ::  " + exam.exam_start_date ? addOneDay(exam.exam_start_date.split('T')[0]) : '');
-       document.getElementById('edit_exam_start_time').value = exam.exam_start_time || '';
-       document.getElementById('edit_exam_end_time').value = exam.exam_end_time || '';
-       document.getElementById('edit_total_marks').value = exam.total_marks || '';
-       document.getElementById('edit_passing_marks').value = exam.passing_marks || '';
-       document.getElementById('edit_fees').value = exam.fees || '';
-       document.getElementById('edit_syllabus').value = exam.syllabus || '';
 
-       // Show the modal
-       document.getElementById('editModal').style.display = "block";
-   })
-   .catch(error => console.error('Error fetching exam details:', error));
+
+
+
+function editExam(examID) {
+    const idData = { examID: examID };
+    fetch('/api/exams/myexam', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(idData),
+    })
+    .then(response => response.json())
+    .then(result => {
+        // If success is false, show an alert with the message
+        if (!result.success) {
+            alert(result.message);
+            return; // Stop further execution
+        }
+        
+        // If exam is found, continue with the original functionality
+        if (result.length === 0) {
+            throw new Error("Exam not found.");
+        }
+        
+        const exam = result.data[0]; // Access the first item directly
+        console.log("Result set", exam.Department);
+        
+        // Populate the modal with exam data
+        document.getElementById('department').value = exam.Department || '';
+        document.getElementById('edit_name').value = exam.name || '';
+        console.log("Console Logging :: " + exam.name);
+        document.getElementById('edit_app_start_date').value = exam.app_start_date ? addOneDay(exam.app_start_date.split('T')[0]) : '';
+        document.getElementById('edit_app_end_date').value = exam.app_end_date ? addOneDay(exam.app_end_date.split('T')[0]) : '';
+        document.getElementById('edit_exam_start_date').value = exam.exam_start_date ? addOneDay(exam.exam_start_date.split('T')[0]) : '';
+        console.log("Console Logging :: s " + exam.exam_start_date ? exam.exam_start_date.split('T')[0] : '');
+        console.log("Console Logging :: " + exam.exam_start_date ? addOneDay(exam.exam_start_date.split('T')[0]) : '');
+        document.getElementById('edit_exam_start_time').value = exam.exam_start_time || '';
+        document.getElementById('edit_exam_end_time').value = exam.exam_end_time || '';
+        document.getElementById('edit_total_marks').value = exam.total_marks || '';
+        document.getElementById('edit_passing_marks').value = exam.passing_marks || '';
+        document.getElementById('edit_fees').value = exam.fees || '';
+        document.getElementById('edit_syllabus').value = exam.syllabus || '';
+
+        // Show the modal
+        document.getElementById('editModal').style.display = "block";
+    })
+    .catch(error => console.error('Error fetching exam details:', error));
 }
+
+
+
+
+
+
        document.getElementById('closeModal').onclick = function() {
            document.getElementById('editModal').style.display = "none";
        }
