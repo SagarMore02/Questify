@@ -11,8 +11,10 @@
         <form id="questionForm">
             <div class="question-box" id="current-question-box">
                 <h3>Question 1</h3>
-                <input type="text" id="question-text" placeholder="Enter your question" required>
-                <input type="number" id="question-marks" placeholder="Enter Question Marks" required>
+                <div class="question-row">
+                    <input type="text" id="question-text" placeholder="Enter your question" required>
+                    <input type="number" id="question-marks" placeholder="Marks" required>
+                </div>
                 <div class="options-container" id="options-container">
                     <div class="option">
                         <input type="radio" name="answer" value="option-1" required>
@@ -26,11 +28,10 @@
                 <div class="buttons">
                     <button type="button" id="addOption">+ Add Option</button>
                     <button type="button" id="removeOption">- Remove Option</button>
-                </div>
-                <div class="buttons">
                     <button type="submit" id="addQuestion">Add Question</button>
                 </div>
             </div>
+                      
         </form>
     
         <div id="submit-container" class="buttons">
