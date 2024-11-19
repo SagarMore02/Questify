@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* General Navbar Styles */
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .profile-section h4 {
+    margin: 0;
+}
+
+.navbar-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-links li {
+    display: inline-block;
+}
+
+.navbar-links a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    transition: background-color 0.3s;
+}
+
+.navbar-links a:hover {
+    background-color: #575757;
+}
+
+/* Optional: Make navbar responsive for smaller screens */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-links {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar-links li {
+        width: 100%;
+    }
+
+    .navbar-links a {
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+    }
+}
+
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/css/ApplicantDash.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            //start
+            fetch('/profile')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.username) {
+                        document.getElementById('username').textContent = data.username;
+                    } else {
+                        console.error('Failed to fetch username');
+                    }
+                })
+                .catch(error => console.error('Error fetching profile:', error));
+            //end
+            document.getElementById('Result').addEventListener('click', () => Screenchange('/getApplicantResult'));
+            document.getElementById('UpcomingExam').addEventListener('click', () => Screenchange('/UpcomingExam'));
+            document.getElementById('ApplicantDash').addEventListener('click', () => Screenchange('ApplicantDash.html'));
+            document.getElementById('ApplicantInfo').addEventListener('click', () => Screenchange('ApplicantInfo.html'));
+            document.getElementById('ApplicantExam').addEventListener('click', () => Screenchange('/api/appgetexam'));
+            document.getElementById('Logout').addEventListener('click', () => handleLogout());
+        });
+
+        function handleLogout() {
+            fetch('/logout')
+                .then(response => {
+                    if (response.ok) {
+                        // Reload the parent window to home.html
+                     window.top.location.replace('/home.html');
+                    } else {
+                        console.error('Logout failed');
+                    }
+                  })
+                .catch(error => console.error('Error:', error));
+            }
+        // Function to change the right frame's content
+        function Screenchange(content) {
+            // Alert to confirm function call (remove after debugging)
+            //alert("Changing frame content to: " + content);
+            // Change the right frame's source to the specified content
+            parent.frames['right'].location.href = content;
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="profile-section">
+            <h4>Hello  <span id="username"></span></h4>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="#" id="ApplicantDash">Dashboard</a></li>
+            <li><a href="#" id="ApplicantInfo">Profile</a></li>
+            <li><a href="#" id="ApplicantExam">Apply For Exam</a></li>
+            <!-- <li><a href="#" id="">Pay Fees</a></li> -->
+            <li><a href="#" id="Result">Result</a></li>
+            <li><a href="#" id="UpcomingExam">Upcoming Exam</a></li>
+            <li><a href="#" id="Logout">Logout</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

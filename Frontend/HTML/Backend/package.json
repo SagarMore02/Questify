@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "buffer-crc32": "^1.0.0",
+    "cookie": "^0.7.2",
+    "cookie-signature": "^1.2.1",
+    "debug": "^4.3.7",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "mysql2": "^3.11.0",
+    "nodemailer": "^6.9.16",
+    "otp-generator": "^4.0.1",
+    "uid2": "^1.0.0"
+  }
+}

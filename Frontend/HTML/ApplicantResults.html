@@ -5,20 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Applied Exams</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 18px;
-            text-align: left;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
+       table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    border-radius: 12px; /* Rounded corners for the table */
+    overflow: hidden; /* Ensure rounded corners are applied */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid rgba(106, 27, 154, 0.2); /* Subtle purple border */
+    color: #333; /* Dark text for contrast */
+}
+
+th {
+    background: linear-gradient(to right, #6a1b9a, #8e24aa); /* Gradient background for header */
+    color: #fff; /* White text for contrast */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* Add some spacing for elegance */
+}
+
+td {
+    background: #fff; /* White background for cells */
+}
+
+tr:nth-child(even) td {
+    background: rgba(146, 77, 219, 0.1); /* Subtle purple tint for even rows */
+}
+
+/* tr:hover td {
+    background: linear-gradient(to right, #8e24aa, #ab47bc); /* Highlighted gradient on hover 
+    color: #fff; /* White text on hover 
+    transition: background 0.3s ease, color 0.3s ease; /* Smooth hover transition 
+} */
+
     </style>
 </head>
 <body>
