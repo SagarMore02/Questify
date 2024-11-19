@@ -92,6 +92,13 @@
             // Get question and options data
             const questionText = document.getElementById('question-text').value;
             const questionMarks = document.getElementById('question-marks').value;
+            console.log("Is Nan: ",isNaN(questionMarks));
+            console.log("Is Greater: ",Number(questionMarks)<=0);
+            console.log("Question Marks:",questionMarks);
+            if(Number(questionMarks)<=0){
+                alert("Please Enter Valid Question Marks!!");
+                return;
+            }
             const options = [];
             let crc = 0;
     

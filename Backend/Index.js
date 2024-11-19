@@ -644,7 +644,8 @@ app.post('/updateExam', async (req, res) => {
       // Combine existing exam date and time for comparisons
       const existingExamStartDateTime = new Date(`${existingExamStartDate}`);
       const existingExamEndDateTime = new Date(`${existingExamEndDate}`);
-
+      const [hours, minutes] = existingExamStartTime.split(':').map(Number);
+      existingExamStartDateTime.setHours(hours,minutes,0,0);
       console.log("Current Date:", currentDateTime);
       console.log("Exam Start DateTime:", existingExamStartDateTime);
       console.log("Exam End DateTime:", existingExamEndDateTime);
@@ -669,7 +670,7 @@ app.post('/updateExam', async (req, res) => {
 
       // Check if exam start date is after exam end date
       if (newExamStartDateTime > newExamEndDateTime) {
-          return res.status(400).json({ success: false, message: "Exam start date cannot be after exam end date." });
+          return res.status(400).json({ success: false, message: "Exam start Time cannot be after exam end Time." });
       }
 
       // Prepare the SQL query for updating exam_master

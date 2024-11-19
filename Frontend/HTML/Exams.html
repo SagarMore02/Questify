@@ -258,13 +258,26 @@
 
         updateButton.addEventListener('click', async () => {
         const newPassingMarks = newPassingMarksInput.value;
-
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&");
+        console.log(totalMarksSpan.textContent);
+        console.log(newPassingMarks);
         // Validation for newPassingMarks (if needed)
         if (newPassingMarks === '' || isNaN(newPassingMarks)) {
             alert('Please enter valid passing marks');
             return;
         }
-
+        
+        if(Number(totalMarksSpan.textContent)<Number(newPassingMarks)){
+            console.log(totalMarksSpan.value);
+            console.log(newPassingMarks);
+            alert('Passing Marks cannot be greater than total marks!!');
+            return;
+        }
+        if(0>=Number(newPassingMarks)){
+            alert('Passing Marks cannot be Zero or Less than Zero!!');
+            //console.log(Number(document.getElementById('edit_total_marks').value),Number(document.getElementById('edit_passing_marks').value));
+            return;
+           }
         // API to update passing marks
         const updatePassingMarksResponse = await fetch('/updatePassingMarks', {
             method: 'POST',
@@ -323,6 +336,8 @@ editQuesButton.addEventListener('click', async function () {
         questions.forEach((question, index) => {
             const questionDiv = document.createElement('div');
             const ButtonDiv = document.createElement('div');
+            const form = document.createElement('form');
+            form.id = "Form-"+index;
             ButtonDiv.classList.add('my-class');
             questionDiv.classList.add('question-item');
 
@@ -333,6 +348,8 @@ editQuesButton.addEventListener('click', async function () {
 
             const questionText = document.createElement('input');
             questionText.type = 'text';
+            questionText.required=true;
+            form.appendChild(questionText);
             questionText.value = question.question;
             questionText.placeholder = 'Edit your question here';
             questionDiv.appendChild(questionText);
@@ -364,6 +381,8 @@ editQuesButton.addEventListener('click', async function () {
 
                     const optionInput = document.createElement('input');
                     optionInput.type = 'text';
+                    optionInput.required=true;
+                    form.appendChild(optionInput);
                     optionInput.value = option;
                     optionInput.placeholder = `Option ${i + 1}`;
 
@@ -428,6 +447,8 @@ editQuesButton.addEventListener('click', async function () {
 
                     const newOptionInput = document.createElement('input');
                     newOptionInput.type = 'text';
+                    newOptionInput.required=true;
+                    form.appendChild(newOptionInput);
                     newOptionInput.placeholder = `Option ${optionCount + 1}`;
 
                     const newOptionRadio = document.createElement('input');
@@ -446,7 +467,7 @@ editQuesButton.addEventListener('click', async function () {
                     newOptionDiv.appendChild(newOptionInput);
                     newOptionDiv.appendChild(newRemoveOptionButton);
                     questionDiv.appendChild(newOptionDiv);
-
+                    questionDiv.appendChild(form);
                     // Add the new option to the array
                     currentOptions.push(null); // Push a null value for the new option
                 } else {
@@ -457,6 +478,8 @@ editQuesButton.addEventListener('click', async function () {
 
             // Save changes button for each question
             const saveButton = document.createElement('button');
+            saveButton.type = 'submit';
+            form.appendChild(saveButton);
             saveButton.textContent = 'Save Changes';
             saveButton.addEventListener('click', async function () {
                 const updatedQuestion = questionText.value;
@@ -487,6 +510,10 @@ editQuesButton.addEventListener('click', async function () {
                     default: correctOptionKey = "UnSelected"; break;
                 }
                 console.log("Logging Selected Option::",updatedOptions);
+                if(Number(totalMarksInput.value)<=0){
+                    alert("Question Marks Cannot be negative or zero!!");
+                    return;
+                }
                 const updateData = {
                     questionId: question.id,
                     updatedQuestion: updatedQuestion,
@@ -536,6 +563,8 @@ function createNewQuestion() {
     // Add empty question text input
     const newQuestionText = document.createElement('input');
     newQuestionText.type = 'text';
+    newQuestionText.required=true;
+    form.appendChild(newQuestionText);
     newQuestionText.placeholder = 'Enter your question here';
     newQuestionDiv.appendChild(newQuestionText);
 
@@ -581,6 +610,7 @@ function createNewQuestion() {
 
         const optionInput = document.createElement('input');
         optionInput.type = 'text';
+        optionInput.required.true;
         optionInput.placeholder = `Option ${optionNumber}`;
 
         const optionRadio = document.createElement('input');
@@ -630,7 +660,7 @@ function reindexRadioButtons(container) {
 function saveQuestion(container, questionInput, marksInput) {
     const updatedQuestion = questionInput.value.trim();
     const totalMarks = marksInput.value;
-
+    console.log("************************",totalMarks);
     // Collect all option inputs
     const optionInputs = Array.from(container.querySelectorAll('input[type="text"]'));
     const options = optionInputs.map(input => input.value.trim()).filter(option => option !== '');
@@ -654,7 +684,7 @@ function saveQuestion(container, questionInput, marksInput) {
         return;
     }
 
-    if (!totalMarks || isNaN(totalMarks) || totalMarks <= 0) {
+    if (!Number(totalMarks) || isNaN(totalMarks) || Number(totalMarks) <= 0) {
         alert('Please enter valid total marks.');
         return;
     }
@@ -677,9 +707,19 @@ function saveQuestion(container, questionInput, marksInput) {
         },
         body: JSON.stringify(questionData)
     })
-        .then(response => {
+        .then(async response => {
             if (response.ok) {
-                alert('Question saved successfully!');
+                const responseData = await response.json();
+                //alert('Question updated successfully!');
+                document.getElementById('edit_total_marks').value = responseData.totmks;
+                console.log(responseData);
+                if(responseData.message==="NotCool"){
+                    totalMarksSpan.textContent = responseData.totmks;
+                    currentPassingMarksSpan.textContent = responseData.passingMarks;
+                    modal.style.display = 'block';
+
+                }
+                //alert('Question saved successfully!');
                 // Optionally clear or refresh the form
             } else {
                 alert('Failed to save the question.');
@@ -998,7 +1038,7 @@ function editExam(examID) {
         document.getElementById('edit_passing_marks').value = exam.passing_marks || '';
         document.getElementById('edit_fees').value = exam.fees || '';
         document.getElementById('edit_syllabus').value = exam.syllabus || '';
-
+        document.getElementById('edit_total_marks').readOnly=true;
         // Show the modal
         document.getElementById('editModal').style.display = "block";
     })
@@ -1044,7 +1084,35 @@ function editExam(examID) {
                syllabus: document.getElementById('edit_syllabus').value,
                dept:document.getElementById('department').value
            };
-
+           if(Number(document.getElementById('edit_total_marks').value)<=Number(document.getElementById('edit_passing_marks').value)){
+            alert('Passing Marks cannot be greater than total marks!!');
+            console.log(Number(document.getElementById('edit_total_marks').value),Number(document.getElementById('edit_passing_marks').value));
+            return;
+           }
+           if(0>=Number(document.getElementById('edit_passing_marks').value)){
+            alert('Passing Marks cannot be Zero or Less than Zero!!');
+            //console.log(Number(document.getElementById('edit_total_marks').value),Number(document.getElementById('edit_passing_marks').value));
+            return;
+           }
+           const exstDate = new Date(document.getElementById('edit_exam_start_date').value);
+           const appstDate = new Date(document.getElementById('edit_app_end_date').value);
+           const [hours, minutes] = document.getElementById('edit_exam_start_time').value.split(':').map(Number);
+           exstDate.setHours(hours, minutes, 0, 1);
+           appstDate.setHours(hours, minutes, 0, 0);
+           console.log("Cur DAte:",new Date());
+           console.log("Exst DAte",exstDate);
+           if(new Date()>exstDate){
+            alert('Exam Start Date Cannot be earlier from today!!');
+            return;
+           }
+           if(new Date()>appstDate){
+            alert('Application End Date Cannot be earlier from today!!');
+            return;
+           }
+           if(appstDate>exstDate){
+            alert('Application End Date Cannot be Later than exam start date!!');
+            return;
+           }
            fetch('/updateExam', {
     method: 'POST',
     headers: {
