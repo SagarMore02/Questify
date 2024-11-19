@@ -67,9 +67,9 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password:'root',
+  password:'root',
   //password:'Aditya@123',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
   //password:'101201',
@@ -437,7 +437,7 @@ app.get('/t', (req, res) => {
 
 //To Show all the examns
 app.get('/api/exams', async (req, res) => {
-  const sql = "SELECT * FROM exam_master where organizerID=?";
+  const sql = "SELECT * FROM exam_master where organizerID=? AND status='Pending' " ;
   const connection = await pool.getConnection();
   const [result] = await connection.execute(sql,[req.session.myid]);
   connection.release();
@@ -988,6 +988,7 @@ app.get('/organapplicant', async (req, res) => {
 });
 
 
+
 app.get('/applicant', async (req, res) => {
   console.log("Okayyy");
   try {
@@ -1027,6 +1028,7 @@ app.post('/orgstatus', async (req, res) => {
     }
   }
 });
+
 //safcihbwsaliuvbanziujfeiawe;gvnwioejfnaiuw;ejfvawio;egsvaowpesdjfaw;opackoefegvmeroboeb
 app.post('/status', async (req, res) => {
   const { id, status } = req.body;

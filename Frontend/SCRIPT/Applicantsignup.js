@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Extract form values into separate variables
         const firstName = document.querySelector('input[placeholder="Enter First Name"]').value;
         const lastName = document.getElementById('lastname').value;
-        const email = document.querySelector('input[placeholder="Enter your email"]').value;
-        const phoneNumber = document.querySelector('input[placeholder="Enter your number"]').value;
+        const email = document.querySelector('input[placeholder="Enter your email"]').value.trim();
+        const phoneNumber = document.querySelector('input[placeholder="Enter your number"]').value.trim();
         const username = document.querySelector('input[placeholder="Enter your username"]').value;
         const password = document.querySelector('input[placeholder="Enter your password"]').value;
         const confirmPassword = document.querySelector('input[placeholder="Confirm your password"]').value;
@@ -47,6 +47,26 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Passwords do not match.');
             console.log('Password mismatch detected.');
             return;
+        }
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Phone number validation regex (for 10-digit numbers, e.g., 1234567890)
+        var phoneNum = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/; 
+
+        if (!email) {
+            console.log("Email is required.");
+        } else if (!emailRegex.test(email)) {
+            console.log("Invalid email format.");
+        } else {
+            console.log("Email is valid.");
+        }
+        console.log("==========>", phoneNumber);
+        if (!phoneNumber) {
+            console.log("Phone number is required.");
+        } else if (!phoneNum.test(phoneNumber)) {
+            console.log("Invalid phone number. It must be a 10-digit number.");
+        } else {
+            console.log("Phone number is valid.");
         }
 
         // Combine variables into a single object
