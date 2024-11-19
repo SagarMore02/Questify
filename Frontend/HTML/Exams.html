@@ -677,13 +677,14 @@ editQuesButton.addEventListener('click', async function () {
                 
                 if (updateResponse.ok){ 
                 const responseData = await updateResponse.json();
-                alert('Question updated successfully!');
+                //alert('Question updated successfully!');
                 document.getElementById('edit_total_marks').value = responseData.totmks;
                 console.log(responseData);
                 if(responseData.message==="NotCool"){
                     totalMarksSpan.textContent = responseData.totmks;
                     currentPassingMarksSpan.textContent = responseData.passingMarks;
                     modal.style.display = 'block';
+                    
                 }
                 
             }
