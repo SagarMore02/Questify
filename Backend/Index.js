@@ -438,10 +438,10 @@ app.get('/t', (req, res) => {
 //To Show all the examns
 app.get('/api/exams', async (req, res) => {
   const pql = `Update exam_master set status='Completed' where exam_end_date<CURDATE();`; 
-  const sql = "SELECT * FROM exam_master where organizerID=?";
+  const sql = "SELECT * FROM exam_master where organizerID=? AND status='Pending' ";
   const connection = await pool.getConnection();
 
-  const [result1] = await connection.execute(pql,);
+  const [result1] = await connection.execute(pql);
   const [result] = await connection.execute(sql,[req.session.myid]);
   
   connection.release();
