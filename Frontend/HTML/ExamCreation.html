@@ -180,7 +180,15 @@
             syllabus      : syllabus,
             dept:dept
             };
-
+            const appendd = new Date(appEndDate);
+            const exstdar = new Date(examStartDate);
+            const [hours, minutes] = examStartTime.split(':').map(Number);
+            exstdar.setHours(hours,minutes,0,0);
+            appendd.setHours(hours,minutes,0,0);
+            if(appendd>exstdar){
+                alert("Application End date cannot be later than Exam date!!");
+                return;
+            }   
             try {
             console.log("Exam Creation");
             const response = await fetch('/addExam', {

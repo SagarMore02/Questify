@@ -509,6 +509,8 @@ editQuesButton.addEventListener('click', async function () {
         questions.forEach((question, index) => {
             const questionDiv = document.createElement('div');
             const ButtonDiv = document.createElement('div');
+            const form = document.createElement('form');
+            form.id = "Form-"+index;
             ButtonDiv.classList.add('my-class');
             questionDiv.classList.add('question-item');
 
@@ -519,6 +521,8 @@ editQuesButton.addEventListener('click', async function () {
 
             const questionText = document.createElement('input');
             questionText.type = 'text';
+            questionText.required=true;
+            form.appendChild(questionText);
             questionText.value = question.question;
             questionText.placeholder = 'Edit your question here';
             questionDiv.appendChild(questionText);
@@ -550,6 +554,8 @@ editQuesButton.addEventListener('click', async function () {
 
                     const optionInput = document.createElement('input');
                     optionInput.type = 'text';
+                    optionInput.required=true;
+                    form.appendChild(optionInput);
                     optionInput.value = option;
                     optionInput.placeholder = `Option ${i + 1}`;
 
@@ -614,6 +620,8 @@ editQuesButton.addEventListener('click', async function () {
 
                     const newOptionInput = document.createElement('input');
                     newOptionInput.type = 'text';
+                    newOptionInput.required=true;
+                    form.appendChild(newOptionInput);
                     newOptionInput.placeholder = `Option ${optionCount + 1}`;
 
                     const newOptionRadio = document.createElement('input');
@@ -632,7 +640,7 @@ editQuesButton.addEventListener('click', async function () {
                     newOptionDiv.appendChild(newOptionInput);
                     newOptionDiv.appendChild(newRemoveOptionButton);
                     questionDiv.appendChild(newOptionDiv);
-
+                    questionDiv.appendChild(form);
                     // Add the new option to the array
                     currentOptions.push(null); // Push a null value for the new option
                 } else {
@@ -643,6 +651,8 @@ editQuesButton.addEventListener('click', async function () {
 
             // Save changes button for each question
             const saveButton = document.createElement('button');
+            saveButton.type = 'submit';
+            form.appendChild(saveButton);
             saveButton.textContent = 'Save Changes';
             saveButton.addEventListener('click', async function () {
                 const updatedQuestion = questionText.value;
@@ -727,6 +737,8 @@ function createNewQuestion() {
     // Add empty question text input
     const newQuestionText = document.createElement('input');
     newQuestionText.type = 'text';
+    newQuestionText.required=true;
+    form.appendChild(newQuestionText);
     newQuestionText.placeholder = 'Enter your question here';
     newQuestionDiv.appendChild(newQuestionText);
 
@@ -772,6 +784,7 @@ function createNewQuestion() {
 
         const optionInput = document.createElement('input');
         optionInput.type = 'text';
+        optionInput.required.true;
         optionInput.placeholder = `Option ${optionNumber}`;
 
         const optionRadio = document.createElement('input');
@@ -1245,6 +1258,25 @@ function editExam(examID) {
            if(0>=Number(document.getElementById('edit_passing_marks').value)){
             alert('Passing Marks cannot be Zero or Less than Zero!!');
             //console.log(Number(document.getElementById('edit_total_marks').value),Number(document.getElementById('edit_passing_marks').value));
+            return;
+           }
+           const exstDate = new Date(document.getElementById('edit_exam_start_date').value);
+           const appstDate = new Date(document.getElementById('edit_app_end_date').value);
+           const [hours, minutes] = document.getElementById('edit_exam_start_time').value.split(':').map(Number);
+           exstDate.setHours(hours, minutes, 0, 1);
+           appstDate.setHours(hours, minutes, 0, 0);
+           console.log("Cur DAte:",new Date());
+           console.log("Exst DAte",exstDate);
+           if(new Date()>exstDate){
+            alert('Exam Start Date Cannot be earlier from today!!');
+            return;
+           }
+           if(new Date()>appstDate){
+            alert('Application End Date Cannot be earlier from today!!');
+            return;
+           }
+           if(appstDate>exstDate){
+            alert('Application End Date Cannot be Later than exam start date!!');
             return;
            }
            fetch('/updateExam', {
