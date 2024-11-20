@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9ff; /* Light purple background for the entire page */
+}
+
+.navbar {
+    background: linear-gradient(to right, #6a1b9a, #8e24aa); /* Purple gradient */
+    padding: 15px 20px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.navbar a {
+    color: #e1bee7; /* Soft lavender for links */
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #fff176; /* Soft yellow on hover */
+    transform: scale(1.1); /* Slight zoom effect */
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar .button {
+    background-color: #ab47bc; /* Vibrant purple for buttons */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar .button:hover {
+    background-color: #8e24aa; /* Slightly darker purple */
+    transform: translateY(-3px); /* Lift effect on hover */
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white; /* Table background white */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #e6e6fa; /* Light lavender */
+    color: #6a1b9a; /* Deep purple for text */
+}

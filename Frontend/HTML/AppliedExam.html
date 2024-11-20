@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam Details</title>
     <link rel="stylesheet" href="/css/AppliedExam.css">
-    
 </head>
 <body>
     <div class="container">
@@ -41,116 +40,150 @@
                 data = examData; // Assign fetched data to the data variable
                 const examList = document.getElementById('examList');
                 if (examData.length === 0) {
-                // If no exams are available, display a "No exam available" message
-                examList.innerHTML = '<h3>No exams available</h3>';
+                    // If no exams are available, display a "No exam available" message
+                    examList.innerHTML = '<h3>No exams available</h3>';
                 } else {
-                examData.forEach(exam => {
-                    const examCard = `
-                        <div class="exam-card">
-                            <h3 id="namee_${exam.examID}">Exam: ${exam.name}</h3>
-                            <div class="exam-details">
-                                <div><span>Exam ID:</span> ${exam.examID}</div>
-                                <div><span>Application Start Date:</span> ${formatDate(exam.app_start_date)}</div>
-                                <div><span>Application End Date:</span> ${formatDate(exam.app_end_date)}</div>
-                                <div><span>Exam Start Time:</span> ${formatTime(exam.exam_start_time)}</div>
-                                <div><span>Exam Start Date:</span> ${formatDate(exam.exam_start_date)}</div>
-                                <div><span>Exam End Date:</span> ${formatDate(exam.exam_end_date)}</div>
-                                <div><span>Exam End Time:</span> ${formatTime(exam.exam_end_time)}</div>
-                                <div><span>Total Marks:</span> ${exam.total_marks}</div>
-                                <div><span>Passing Marks:</span> ${exam.passing_marks}</div>
-                                <div><span>Fees:</span> ${exam.fees}</div>
-                                <div><span>Department:</span> ${exam.Department}</div>
-                                <div><span>Syllabus:</span> ${exam.syllabus}</div>
-                                <div>
-                                    <button class="take-test-btn" id="take_test_${exam.examID}" disabled>Take Test</button>
+                    examData.forEach(exam => {
+                        const examCard = `
+                            <div class="exam-card">
+                                <h3 id="namee_${exam.examID}">Exam: ${exam.name}</h3>
+                                <div class="exam-details">
+                                    <div><span>Exam ID:</span> ${exam.examID}</div>
+                                    <div><span>Application Start Date:</span> ${formatDate(exam.app_start_date)}</div>
+                                    <div><span>Application End Date:</span> ${formatDate(exam.app_end_date)}</div>
+                                    <div><span>Exam Start Time:</span> ${formatTime(exam.exam_start_time)}</div>
+                                    <div><span>Exam Start Date:</span> ${formatDate(exam.exam_start_date)}</div>
+                                    <div><span>Exam End Date:</span> ${formatDate(exam.exam_end_date)}</div>
+                                    <div><span>Exam End Time:</span> ${formatTime(exam.exam_end_time)}</div>
+                                    <div><span>Total Marks:</span> ${exam.total_marks}</div>
+                                    <div><span>Passing Marks:</span> ${exam.passing_marks}</div>
+                                    <div><span>Fees:</span> ${exam.fees}</div>
+                                    <div><span>Department:</span> ${exam.Department}</div>
+                                    <div><span>Syllabus:</span> ${exam.syllabus}</div>
+                                    <div>
+                                        <button class="take-test-btn" id="take_test_${exam.examID}" disabled>Take Test</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
-                    examList.insertAdjacentHTML('beforeend', examCard);
+                        `;
+                        examList.insertAdjacentHTML('beforeend', examCard);
 
-                    // Function to check if the "Take Test" button should be enabled
-                    const examStart = new Date(`${exam.exam_start_date}T${exam.exam_start_time}`);
-                    const examEnd = new Date(`${exam.exam_end_date}T${exam.exam_end_time}`);
-                    const currentTime = new Date();
+                        // Function to check if the "Take Test" button should be enabled
+                        const examStart = new Date(`${exam.exam_start_date}T${exam.exam_start_time}`);
+                        const examEnd = new Date(`${exam.exam_end_date}T${exam.exam_end_time}`);
+                        const currentTime = new Date();
 
-                    if (currentTime >= examStart && currentTime <= examEnd) {
-                        const takeTestBtn = document.getElementById(`take_test_${exam.examID}`);
-                        takeTestBtn.disabled = false;
+                        if (currentTime >= examStart && currentTime <= examEnd) {
+                            const takeTestBtn = document.getElementById(`take_test_${exam.examID}`);
+                            takeTestBtn.disabled = false;
 
-                        // Add event listener to the button to redirect to the test page
-                       
-                    }
-                });
-            }
+                            // Add event listener to the button to redirect to the test page
+                            takeTestBtn.addEventListener('click', () => {
+                                startTest(exam.examID);
+                            });
+                        }
+                    });
+                }
             })
             .catch(error => console.error('Error fetching exam data:', error));
 
         // Function to handle starting the test
         async function startTest(examID) {
-            console.log("Hitting");
+            console.log("Starting exam");
             try {
-        // Send a GET request to the '/start_exam' route with examID as a query parameter
-        const response = await fetch(`/start_exam?examID=${examID}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
+                // Send a GET request to the '/start_exam' route with examID as a query parameter
+                const response = await fetch(`/start_exam?examID=${examID}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
 
-        if (response.ok) {
-            alert("Starting");
-            // If the server responds with status 200 (OK), redirect the user to the exam page
-            window.location.href = `/start_exam?examID=${examID}`;
-        } else {
-            // If the application status is not active or an error occurred, show an error message
-            const data = await response.json();
-            alert(data.message || 'An error occurred while starting the exam.');
+                if (response.ok) {
+                    alert("Exam Started");
+                    // Open the exam page
+                    const examWindow = window.open(`/start_exam?examID=${examID}`, "_blank", "width=800,height=600");
+
+                    // Start monitoring tab switching for the new exam window
+                    monitorTabSwitches(examWindow, examID);
+
+                } else {
+                    // If the application status is not active or an error occurred, show an error message
+                    const data = await response.json();
+                    alert(data.message || 'An error occurred while starting the exam.');
+                }
+            } catch (error) {
+                console.error('Error starting exam:', error);
+                alert('Error connecting to the server.');
+            }
         }
-    } catch (error) {
-        console.error('Error starting exam:', error);
-        alert('Error connecting to the server.');
+
+        function monitorTabSwitches(examWindow, examID) {
+    let tabSwitchCount = 0;
+    const maxTabSwitches = 3;
+
+    function handleTabSwitchOrMinimize() {
+        tabSwitchCount++;
+        if (tabSwitchCount > maxTabSwitches) {
+            // Send a termination message to the exam window
+            examWindow.postMessage({
+                type: 'terminate', 
+                message: "You have exceeded the maximum allowed tab switches or minimized the exam."
+            }, '*');
+            examWindow.close();
+        } else {
+            // Send a warning message to the exam window
+            examWindow.postMessage({
+                type: 'warning', 
+                message: `Warning: You have switched tabs ${tabSwitchCount}/${maxTabSwitches} times.`
+            }, '*');
+        }
     }
+
+    // Listen for visibility changes (tab switching)
+    examWindow.document.addEventListener('visibilitychange', () => {
+        if (examWindow.document.hidden) handleTabSwitchOrMinimize();
+    });
+
+    // Listen for blur events (minimizing the window)
+    examWindow.addEventListener('blur', handleTabSwitchOrMinimize);
 }
-            // Redirect to the test page or trigger the test-taking process
-            // Redirect to the take test page, passing the exam ID
+
 
         // Optionally, you can periodically check the time to enable/disable the button in real-time
         setInterval(() => {
             const currentTime = new Date();
 
             data.forEach(exam => {
-                // Use the full exam_start_date and combine with exam_start_time
-                const examStartDate = exam.exam_start_date; // This already has the date and time in it
-                const examStartTime = exam.exam_start_time; // This should be in HH:mm format
-                
-                const examEndDate = exam.exam_end_date; // Same for the end date
-                const examEndTime = exam.exam_end_time; // Same for the end time
+                const examStartDate = exam.exam_start_date;
+                const examStartTime = exam.exam_start_time;
+                const examEndDate = exam.exam_end_date;
+                const examEndTime = exam.exam_end_time;
 
                 // Create Date objects in local time by combining date and time
-                const examStart = new Date(examStartDate); // Start date already has time
-                examStart.setHours(examStartTime.split(':')[0]); // Set hours
-                examStart.setMinutes(examStartTime.split(':')[1]); // Set minutes
+                const examStart = new Date(examStartDate);
+                examStart.setHours(examStartTime.split(':')[0]);
+                examStart.setMinutes(examStartTime.split(':')[1]);
 
-                const examEnd = new Date(examEndDate); // End date already has time
-                examEnd.setHours(examEndTime.split(':')[0]); // Set hours
-                examEnd.setMinutes(examEndTime.split(':')[1]); // Set minutes
+                const examEnd = new Date(examEndDate);
+                examEnd.setHours(examEndTime.split(':')[0]);
+                examEnd.setMinutes(examEndTime.split(':')[1]);
 
-                // Check if the current time is within the exam time
                 const takeTestBtn = document.getElementById(`take_test_${exam.examID}`);
 
                 // Enable or disable the test button based on the time comparison
                 if (currentTime >= examStart && currentTime <= examEnd) {
                     takeTestBtn.disabled = false; // Enable the button if within the time range
                     takeTestBtn.addEventListener('click', () => {
-                            console.log("In Action LIstener");
-                            startTest(exam.examID); // Call the function to start the test
-                        });
+                        console.log("Starting test via listener");
+                        startTest(exam.examID); // Call the function to start the test
+                    });
                 } else {
                     takeTestBtn.disabled = true; // Disable otherwise
                 }
             });
         }, 1000); // Check every second
+
     </script>
 </body>
 </html>
