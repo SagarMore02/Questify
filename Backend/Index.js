@@ -338,21 +338,23 @@ const resetTokens = {};
 
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-  console.log("Received forgot-password request for:", email);
+  req.session.forgottenusername=email;
+  console.log("Received forgot-password request for:", req.session.forgottenusername);
 
   const connection = await pool.getConnection();
 
   try {
-      const [user] = await connection.query('SELECT * FROM user_master WHERE email = ?', [email]);
+      const [user] = await connection.query('SELECT * FROM user_master WHERE username = ?', [email]);
       
-      if (!user) {
+      if (user.length<1) {
           return res.status(400).json({ message: 'User not found' });
       }
-
+      const [mymail] = await connection.query(`Select email from user_master where username=?`,[email]);
+      console.log(mymail[0].email);
       // Generate reset token and expiration
       const resetToken = crypto.randomBytes(32).toString('hex');
       const resetExpires = Date.now() + 3600000; // 1-hour expiration
-
+      res.json({ message: 'Token has been sent to your email' });
       resetTokens[otpKey] = {
         token: resetToken,
         expires: resetExpires
@@ -363,13 +365,13 @@ app.post('/forgot-password', async (req, res) => {
 
       const mailOptions = {
           from: transporter.user,
-          to: email,
+          to: mymail[0].email,
           subject: 'Password Reset',
           text: `Your password reset token is: ${resetToken}. It will expire in 1 hour.`
       };
 
       await transporter.sendMail(mailOptions);
-      res.json({ message: 'Password reset token sent to your email' });
+      
   } catch (error) {
       console.error('Error processing forgot-password request:', error);
       res.status(500).json({ message: 'Error sending email' });
@@ -377,12 +379,9 @@ app.post('/forgot-password', async (req, res) => {
 });
 
 app.post('/reset-password', async (req, res) => {
-  const { email, token, newPassword, confirmPassword } = req.body;
-
+  const { email, token, newPassword } = req.body;
+  console.log(req.body,req.session.forgottenusername);
   // Check if newPassword and confirmPassword match
-  if (newPassword !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match.' });
-  }
 
   let connection;
 
@@ -391,7 +390,7 @@ app.post('/reset-password', async (req, res) => {
     connection = await pool.getConnection();
 
     // Fetch user from the database based on the email
-    const [results] = await connection.execute('SELECT * FROM user_master WHERE email = ?', [email]);
+    const [results] = await connection.execute('SELECT * FROM user_master WHERE username = ?', [req.session.forgottenusername]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: 'User not found.' });
@@ -403,8 +402,8 @@ app.post('/reset-password', async (req, res) => {
       const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 salt rounds
 
       // Update the user's password in the database
-      await connection.execute('UPDATE user_master SET password = ? WHERE email = ?', 
-        [hashedPassword, email]
+      await connection.execute('UPDATE user_master SET password = ? WHERE username = ?', 
+        [hashedPassword, req.session.forgottenusername]
       );
 
       res.json({ message: 'Password updated successfully' });
