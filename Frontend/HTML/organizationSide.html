@@ -3,50 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/OrganizationNav.css">
     <title>Admin Dashboard</title>
     <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            height: 100vh;
-            margin: 0;
-        }
-        .sidebar {
-            min-width: 250px;
-            max-width: 250px;
-            background-color: #343a40;
-            color: white;
-            padding: 15px;
-            flex-shrink: 0;
-        }
-        .sidebar a {
-            color: white;
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
-        }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">   
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
+    <!-- Navbar -->
+    <div class="navbar">
         <h2>Organization Panel</h2>
-        <a href="#organizers" data-target="organizer-section">Organizers</a>
-        <a href="#" id="logout-link">Logout</a>
+        <div>
+            <a href="#organizers" data-target="organizer-section">Organizers</a>
+            <a href="#" id="logout-link">Logout</a>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -74,8 +43,8 @@
             // Show the organizer section by default
             document.querySelector('#organizer-section')?.classList.add('active');
 
-            // Handle sidebar link clicks
-            document.querySelectorAll('.sidebar a').forEach(link => {
+            // Handle navbar link clicks
+            document.querySelectorAll('.navbar a').forEach(link => {
                 link.addEventListener('click', function(event) {
                     event.preventDefault(); // Prevent default link behavior
 

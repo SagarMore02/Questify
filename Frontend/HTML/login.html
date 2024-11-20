@@ -11,6 +11,22 @@
     <script src="/js/Login.js" defer></script>
 </head>
 <body>
+    <div id="sagar-class" class="sagar-class" style="display: none;">
+        <div class="popup-content">
+            <span id="closePopup" class="close-btn">&times;</span>
+            <h2>Forgot Password</h2>
+            <form id="forgot-password-form">
+                <label for="email">Enter your Username</label><br><br>
+                <input type="text" id="email" name="email" required><br><br>
+                <button type="submit" id="submit">Submit</button>
+            </form>
+            <p id="message"></p>
+        </div>
+    </div>
+    
+
+
+    
     <div class="wrapper">
         <form id="loginForm" action="#">
             <h1>Login</h1>
@@ -28,7 +44,7 @@
             </div>
             <button type="submit" id="submit" class="btn">Login</button>
             <div class="register-link">
-                <a href="ForgetPass.html" class="text-link popuplink">Forget Password</a>
+                <a href="#" id="forgot-id" class="text-link popuplink">Forget Password</a>
             </div>
             <div>
                 <p style="text-align: center; color: #000000;">
