@@ -1,5 +1,5 @@
 // State to track the current question index and store the fetched questions
-
+console.log("Hello Worlds");
 let currentQuestionIndex = 0;
 let questions = [];
 let userAnswers = [];
@@ -297,9 +297,13 @@ function closeModal() {
 
 // Show the modal when the page gains focus
 window.addEventListener('focus', function() {
+    console.log("Inside this");
     showModal("You have returned to the exam tab. Please focus on completing the exam.");
 });
-
+window.addEventListener('blur', function() {
+    console.log("Inside blur");
+    showModal("You have returned to the exam tab. Please focus on completing the exam.");
+});
 
 
 
