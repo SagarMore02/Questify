@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS User_Master(
     usertype ENUM('Applicant','Organization','Organizer') NOT NULL,
     Department ENUM('Computer-Science','Computer-Applications','Data-Science','IMCA','N/A') DEFAULT 'N/A',
     mobile VARCHAR(15) NOT NULL,
-    email VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL UNIQUE,
     status ENUM('Pending','Active','Inactive') DEFAULT 'Pending',
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userID)

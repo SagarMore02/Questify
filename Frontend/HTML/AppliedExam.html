@@ -15,6 +15,16 @@
     </div>
 
     <script>
+        let bool;
+         window.addEventListener("blur", (event) => {
+           bool=true;
+        });
+        window.addEventListener("focus", (event) => {
+           if(bool){
+            window.location.reload();
+           }
+            bool=false;
+        });
         let data = []; // Declare data variable in a higher scope
 
         // Utility function to format date
@@ -102,10 +112,26 @@
                 if (response.ok) {
                     alert("Exam Started");
                     // Open the exam page
-                    const examWindow = window.open(`/start_exam?examID=${examID}`, "_blank", "width=800,height=600");
+                    // const examWindow = window.open(`/start_exam?examID=${examID}`, "_blank", "width=800,height=600");
+                    // Open the window with specified size
+                    const examWindow = window.open(`/start_exam?examID=${examID}`, "_blank", 'width=' + screen.width + ',height=' + screen.height + ',left=0,top=0');
+
+                    // Wait for the window to load, then attempt fullscreen
+                    examWindow.onload = function() {
+                        // Check for Fullscreen API compatibility and request fullscreen
+                        if (examWindow.document.documentElement.requestFullscreen) {
+                            examWindow.document.documentElement.requestFullscreen();
+                        } else if (examWindow.document.documentElement.mozRequestFullScreen) { // Firefox
+                            examWindow.document.documentElement.mozRequestFullScreen();
+                        } else if (examWindow.document.documentElement.webkitRequestFullscreen) { // Chrome, Safari
+                            examWindow.document.documentElement.webkitRequestFullscreen();
+                        } else if (examWindow.document.documentElement.msRequestFullscreen) { // IE/Edge
+                            examWindow.document.documentElement.msRequestFullscreen();
+                        }
+                    };
 
                     // Start monitoring tab switching for the new exam window
-                    monitorTabSwitches(examWindow, examID);
+                    //monitorTabSwitches(examWindow, examID);
 
                 } else {
                     // If the application status is not active or an error occurred, show an error message
@@ -118,36 +144,36 @@
             }
         }
 
-        function monitorTabSwitches(examWindow, examID) {
-    let tabSwitchCount = 0;
-    const maxTabSwitches = 3;
+//         function monitorTabSwitches(examWindow, examID) {
+//     let tabSwitchCount = 0;
+//     const maxTabSwitches = 3;
 
-    function handleTabSwitchOrMinimize() {
-        tabSwitchCount++;
-        if (tabSwitchCount > maxTabSwitches) {
-            // Send a termination message to the exam window
-            examWindow.postMessage({
-                type: 'terminate', 
-                message: "You have exceeded the maximum allowed tab switches or minimized the exam."
-            }, '*');
-            examWindow.close();
-        } else {
-            // Send a warning message to the exam window
-            examWindow.postMessage({
-                type: 'warning', 
-                message: `Warning: You have switched tabs ${tabSwitchCount}/${maxTabSwitches} times.`
-            }, '*');
-        }
-    }
+//     function handleTabSwitchOrMinimize() {
+//         tabSwitchCount++;
+//         if (tabSwitchCount > maxTabSwitches) {
+//             // Send a termination message to the exam window
+//             examWindow.postMessage({
+//                 type: 'terminate', 
+//                 message: "You have exceeded the maximum allowed tab switches or minimized the exam."
+//             }, '*');
+//             examWindow.close();
+//         } else {
+//             // Send a warning message to the exam window
+//             examWindow.postMessage({
+//                 type: 'warning', 
+//                 message: `Warning: You have switched tabs ${tabSwitchCount}/${maxTabSwitches} times.`
+//             }, '*');
+//         }
+//     }
 
-    // Listen for visibility changes (tab switching)
-    examWindow.document.addEventListener('visibilitychange', () => {
-        if (examWindow.document.hidden) handleTabSwitchOrMinimize();
-    });
+//     // Listen for visibility changes (tab switching)
+//     examWindow.document.addEventListener('visibilitychange', () => {
+//         if (examWindow.document.hidden) handleTabSwitchOrMinimize();
+//     });
 
-    // Listen for blur events (minimizing the window)
-    examWindow.addEventListener('blur', handleTabSwitchOrMinimize);
-}
+//     // Listen for blur events (minimizing the window)
+//     examWindow.addEventListener('blur', handleTabSwitchOrMinimize);
+// }
 
 
         // Optionally, you can periodically check the time to enable/disable the button in real-time

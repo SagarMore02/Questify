@@ -26,6 +26,7 @@
             document.getElementById('viewResult').addEventListener('click', () => Screenchange('ViewResult.html'));
             document.getElementById('upcomingExam').addEventListener('click', () => Screenchange('/api/exam'));
             document.getElementById('approveStudent').addEventListener('click', () => Screenchange('/ApproveStudent'));
+            document.getElementById('Profile').addEventListener('click', () => Screenchange('OrganizerProfile.html'));
             document.getElementById('Logout').addEventListener('click', () => handleLogout());
         });
 
@@ -81,6 +82,7 @@
         <nav>
             <ul>
                 <li><a href="#" id="dashboard">Dashboard</a></li>
+                <li><a href="#" id="Profile">Profile</a></li>
                 <li><a href="#" id="setTest">Set Test</a></li>
                 <li><a href="#" id="viewResult">View Result</a></li>
                 <li><a href="#" id="upcomingExam">Upcoming Exam</a></li>
