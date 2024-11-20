@@ -125,6 +125,7 @@ const transporter = nodemailer.createTransport({
 
 const otpStorage = {};
 const otpKey = Math.floor(1000 + Math.random() * 9000);
+const generateNumericOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 app.post('/register', async (req, res) => {
   console.log("Register Hit");
@@ -164,8 +165,8 @@ app.post('/register', async (req, res) => {
     }
 
     // Generate OTP
-    const otp = otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
-    
+    const otp = generateNumericOTP(); //otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
+    console.log(otp);
     otpStorage[otpKey] = {
       otp: otp,
       userDetails: { fname, lname, email, mobileno, username, hashedpassword: await bcrypt.hash(pass, 10), usertype, organId, location ,dept},
@@ -352,7 +353,7 @@ app.post('/forgot-password', async (req, res) => {
       const [mymail] = await connection.query(`Select email from user_master where username=?`,[email]);
       console.log(mymail[0].email);
       // Generate reset token and expiration
-      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetToken = generateNumericOTP(); //crypto.randomBytes(32).toString('hex');
       const resetExpires = Date.now() + 3600000; // 1-hour expiration
       res.json({ message: 'Token has been sent to your email' });
       resetTokens[otpKey] = {
