@@ -87,7 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(resetPopup);
 
-
+    document.getElementById('closeResetPopup').onclick = function (event){
+        resetPopup.style.display = "none";
+    }
     // Show the popup when "Forget Password" is clicked
     forgotLink.onclick = function (event) {
         event.preventDefault();
@@ -97,12 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide the popup when the close button is clicked
     closePopup.onclick = function () {
         popup.style.display = "none";
+        resetPopup.style.display = "none";
     };
 
     // Hide the popup when clicking outside the content area
     window.onclick = function (event) {
         if (event.target === popup) {
             popup.style.display = "none";
+            resetPopup.style.display = "none";
         }
     };
 
