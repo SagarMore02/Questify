@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="stylesheet" href="exam.css">
+   <link rel="stylesheet" href="/css/exam.css">
     <title>Quiz Page with Timer</title>
     
 
@@ -13,6 +13,13 @@
 <body>
     
     <div class="quiz-container">
+
+        <div id="focusModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <p>Welcome back! You are now on the test page.</p>
+                <button class="close-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
 
         <!-- Progress container on the left -->
         <div class="progress-container" id="progress-container"></div>
@@ -57,7 +64,7 @@
     
 
     <!-- Script for Quiz functionality -->
-    <script src="temp_exam.js">
+    <script src="/js/temp_exam.js">
       
 
     </script>

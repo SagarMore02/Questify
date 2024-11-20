@@ -1,247 +1,198 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
-
+/* General Styles */
 body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to left, #553ab6, #8e62db); /* Violet and purple gradient */
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
-    overflow: hidden;
+    color: #ffffff; /* White text */
 }
 
+/* Wrapper */
 .wrapper {
-    width: 420px;
-    background: rgb(245, 243, 243);
-    color: rgb(0, 0, 0);
-    border-radius: 20px;
-    padding: 30px 40px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(12, 3, 3, 0.18);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-
-.wrapper:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.57);
+    background: #ffffff; /* White container */
+    width: 350px;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    text-align: center;
 }
 
 .wrapper h1 {
-    font-size: 36px;
-    text-align: center;
+    font-size: 2rem;
+    color: #553ab6; /* Deep violet for heading */
     margin-bottom: 20px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #090101;
 }
 
-.wrapper .input-box {
+/* Input Boxes */
+.input-box {
     position: relative;
-    width: 100%;
-    height: 50px;
-    background: rgba(6, 0, 0, 0.2);
-    margin: 30px 0;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    transition: background 0.3s ease;
-}
-
-.input-box:hover {
-    background: #fff(255, 254, 254, 0.3);
+    margin-bottom: 20px;
 }
 
 .input-box input {
-    width: 80%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    color: rgb(0, 0, 0);
-    padding: 0 10px;
-    outline: none;
+    width: 83%;
+    padding: 12px 45px 12px 15px; /* Space for icons */
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9; /* Light background */
+    color: #553ab6;
+    transition: all 0.3s ease;
 }
 
-.input-box input::placeholder {
-    color: rgb(254, 254, 254);
+.input-box input:focus {
+    border-color: #8e62db; /* Purple border on focus */
+    outline: none;
+    box-shadow: 0 0 8px rgba(138, 77, 255, 0.3); /* Violet glow */
 }
 
 .input-box svg {
-    font-size: 20px;
-    color: black;
-    transition: color 0.3s ease;
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    fill: #8e62db; /* Icon color */
+    pointer-events: none; /* Ignore mouse events */
+    width: 20px;
+    height: 20px;
 }
 
-.input-box input:focus + svg {
-    color: #9f500b;
+/* Button */
+.btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #553ab6, #8e62db); /* Violet gradient */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.wrapper .remember-forgot {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14.5px;
-    margin: -15px 0 15px;
+.btn:hover {
+    background: linear-gradient(to right, #6a1bc0, #9a72e6); /* Slightly lighter gradient */
+    transform: scale(1.05); /* Subtle zoom */
 }
 
-.remember-forgot label input {
-    accent-color: #9f500b;
-    margin-right: 3px;
-}
-
-.remember-forgot a {
-    color: #fff;
+/* Links */
+.text-link {
+    color: #8e62db; /* Purple links */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.remember-forgot a:hover {
-    color: #9f500b;
-    text-decoration: underline;
+.text-link:hover {
+    color: #553ab6; /* Darker violet */
 }
 
-.wrapper .btn {
-    width: 100%;
-    height: 45px;
-    background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
-    border: none;
-    outline: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #ffffff;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.wrapper .btn:hover {
-    background:linear-gradient(to left, rgb(90, 13, 172), rgb(164, 128, 203));
-    ;
-    /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); */
-}
-
-.wrapper .register-link {
-    font-size: 14.5px;
-    text-align: center;
+/* Register Link */
+.register-link {
     margin-top: 20px;
 }
 
-.register-link p a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.register-link p a:hover {
-    color: #9f500b;
-    text-decoration: underline;
-}
-
-.logo {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 50px;
-    height: 50px;
-}
-
-.popup-container {
-    display: none;
+/* Modal Background */
+#sagar-class {
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.popup {
-    background-color: #ffffff;
-    width: 300px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: popupFadeIn 0.3s ease-out;
+/* Popup Content */
+.popup-content {
+    position: fixed; /* Ensures it stays in the viewport */
+    top: 50%; /* Vertically centers it */
+    left: 50%; /* Horizontally centers it */
+    transform: translate(-50%, -50%); /* Adjusts for proper centering */
+    background: white; /* White background for the popup */
+    color: #6a1b9a; /* Deep purple text color */
+    padding: 36px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    width: 391px;
+    z-index: 1000; /* Ensures it appears on top of other elements */
+    text-align: center;
+}
+.popup-content h2 {
+    font-size: 1.5rem;
+    color:#7c3aed;; /* Light lavender */
+    margin-bottom: 20px;
 }
 
-@keyframes popupFadeIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -60%);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
+.popup-content label {
+    display: block;
+    font-size: 0.9rem;
+    color:#7c3aed;; /* Subtle lavender */
+    margin-bottom: 5px;
+    text-align: left;
 }
 
-.close {
-    float: right;
+.popup-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    margin-left: -10px;
+    border: 1px solid#323232;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #ffffff; /* White input fields */
+    color: #6a1b9a; /* Deep purple text */
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.popup-content input:focus {
+    border-color: #8e24aa; /* Deep purple on focus */
+    box-shadow: 0 0 8px rgba(138, 43, 226, 0.3); /* Soft purple glow */
+    outline: none;
+}
+
+.popup-content button {
+    background: linear-gradient(to right, #553ab6, #8e62db); /* Violet gradient */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
     cursor: pointer;
-    color: #333;
-    font-size: 18px;
-    transition: color 0.3s ease;
-}
-
-.close:hover {
-    color: #2128f5;
-}
-.popuplink {
-    color:#000000!important; cursor:pointer; font-size:13px!important; font-weight:500;
-}
-    .popuplink:hover {
-        text-decoration:underline;
-    }
-/* Flip container */
-.flip-container {
-    perspective: 1000px;
-}
-
-/* Flip effect */
-.flip-container, .flipper {
+    transition: background-color 0.3s ease, transform 0.3s ease;
     width: 100%;
-    height: 100%;
 }
 
-.flipper {
-    transition: 0.6s;
-    transform-style: preserve-3d;
-    position: relative;
+.popup-content button:hover {
+    background: linear-gradient(to right, #6a1bc0, #9a72e6); /* Slightly lighter gradient */
+    transform: scale(1.05); /* Slight zoom effect */
 }
 
-.front, .back {
-    backface-visibility: hidden;
+/* Close Button */
+.close-btn {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    color: rgb(246, 133, 133);
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.front {
-    z-index: 2;
-    transform: rotateY(0deg);
+.close-btn:hover {
+    color: rgb(248, 74, 74); /* Light red on hover */
+    transform: rotate(90deg);
 }
 
-.back {
-    transform: rotateY(180deg);
-}
-
-/* Flip the card */
-.flip-container.hover .flipper {
-    transform: rotateY(180deg);
+/* Reset Message */
+#reset-message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #f3e5f5; /* Subtle lavender */
 }

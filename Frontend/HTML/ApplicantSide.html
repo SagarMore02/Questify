@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="/css/ApplicantDash.css">
+    <link rel="stylesheet" href="/css/ApplicantNavbar.css">
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             //start
@@ -49,23 +49,19 @@
     </script>
 </head>
 <body>
-    <div class="sidebar">
+    <nav class="navbar">
         <div class="profile-section">
-            <img src="/img/Logo-Des.png" alt="College Logo" class="logo">
-            <h4>Hello, <span id="username"></span></h4>
+            <h4>Hello <span id="username"></span></h4>
         </div>
-        <hr style="border: 1px solid grey;">
-        <nav>
-            <ul>
-                <li><a href="#" id="ApplicantDash">Dashboard</a></li>
-                <li><a href="#" id="ApplicantInfo">Profile</a></li>
-                <li><a href="#" id="ApplicantExam">Apply For Exam</a></li>
-                <!-- <li><a href="#" id="">Pay Fees</a></li> -->
-                <li><a href="#" id="Result">Result</a></li>
-                <li><a href="#" id="UpcomingExam">Upcoming Exam</a></li>
-                <li><a href="#" id="Logout">Logout</a></li>
-            </ul>
-        </nav>
-    </div>
+        <ul class="navbar-links">
+            <li><a href="#" id="ApplicantDash">Dashboard</a></li>
+            <li><a href="#" id="ApplicantInfo">Profile</a></li>
+            <li><a href="#" id="ApplicantExam">Apply For Exam</a></li>
+            <!-- <li><a href="#" id="">Pay Fees</a></li> -->
+            <li><a href="#" id="Result">Result</a></li>
+            <li><a href="#" id="UpcomingExam">Upcoming Exam</a></li>
+            <li><a href="#" id="Logout">Logout</a></li>
+        </ul>
+    </nav>
 </body>
 </html>

@@ -84,7 +84,28 @@
                 const mobileno = document.getElementById("mobileno").value;
                 const username = document.getElementById("username").value;
                 const pass = document.getElementById("pass").value;
-                const usertype = document.getElementById("usertype").value;          
+                const usertype = document.getElementById("usertype").value;
+                   
+                
+                if (!validateEmail(email)) {
+                alert("Please enter a valid email.");
+                return;
+                }
+
+                if (!validatePhone(mobileno)) {
+                    alert("Please enter a valid 10-digit mobile number.");
+                    return;
+                }
+
+                if (!validatePassword(pass)) {
+                    alert("Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
+                    return;
+                }
+
+                if (pass !== pass1) {
+                    alert("Passwords do not match.");
+                    return;
+                }
                 
 
                 // Create an object from the variables
@@ -93,7 +114,7 @@
                 // Convert the object to a JSON string
                 const jsonString = JSON.stringify(person);
 
-                fetch('http://localhost:3000/your-endpoint', {
+                fetch('http://localhost:3000/register', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json'
@@ -107,10 +128,25 @@
                 .catch(error => {
                 console.error('Error sending data:', error);
               });
-
-                    
-
             }
+            
+            function validateEmail(email) {
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailPattern.test(email);
+            }
+
+            function validatePhone(mobileno) {
+                const phonePattern = /^[0-9]{10}$/;
+                return phonePattern.test(mobileno);
+            }
+
+            function validatePassword(password) {
+                // Minimum eight characters, at least one uppercase letter, one lowercase letter, one number, and one special character
+                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                
+                return passwordPattern.test(password);
+            }
+
         </script>
         <!-- <script src="..//SCRIPT/signup.js"></script> -->
     </div>

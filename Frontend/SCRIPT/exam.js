@@ -37,6 +37,7 @@ async function fetchQuestions() {
         console.log(data);
         examId = data.examId;
         questions = data.questions;
+        console.log("===TEtetetetete=======>", questions)
 
         // Initialize userAnswers array with null values
         userAnswers = new Array(questions.length).fill(null);
@@ -79,7 +80,7 @@ function generateProgressButtons() {
 
 // Function to highlight the active button
 function updateActiveButton() {
-    const buttons = progressContainer.querySelectorAll('.progress-btn'); // Select all buttons within the progress container
+    const buttons = progressContainer.querySelectorAll('.progress-container'); // Select all buttons within the progress container
     buttons.forEach((button, index) => {
         button.classList.remove('active'); // Remove active class from all buttons
         if (index === currentQuestionIndex) {
@@ -130,11 +131,11 @@ function startTimerWithEndTime(examEndTime) {
         }
     }, 1000); // Update every second
 }
-
+let sc=0;
 // Function to submit the exam automatically when time is up
-function submitExam() {
-    console.log("Calling Submit");
-    fetch('/submitTest', {
+async function submitExam() {
+    console.log("Calling Submit ",sc++);
+    await fetch('/submitTest', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -152,13 +153,16 @@ function submitExam() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error submitting attempt. Please try again.');
+        //alert('Error submitting attempt. Please try again.');
+        //alert('Error:', error);
     });
 
-    alert("Exam Submitted. Time's up!****");
+    //alert("Exam Submitted. Time's up!****");
     saveAnswer();
     document.getElementById("quiz").style.display = "none"; // Hide the quiz
     document.getElementById("result").style.display = "block"; // Show the result page
+    window.opener.location.reload();
+    window.close();
 }
 
 // Function to display a question and its options
@@ -169,10 +173,13 @@ function displayQuestion(index) {
 
     // Clear previous options
     optionsContainer.innerHTML = '';
-
+    console.log("************************************* ");
     // Generate options
     currentQuestion.options.forEach((option, i) => {
-        const optionLabel = document.createElement("label");
+        console.log("Logging I",i);
+        console.log("Logging option",option);
+        if (option === null || option === "NULL") return;
+        const optionLabel = document.createElement("label");    
         const optionInput = document.createElement("input");
         optionInput.type = "radio";
         optionInput.name = "option";
@@ -220,36 +227,6 @@ function updateProgress() {
         }
     });
 }
-
-function submitExam() {
-    console.log("Calling Submit");
-    fetch('/submitTest', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        //body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error submitting attempt. Please try again.');
-    });
-
-    alert("Exam Submitted. Time's up!****");
-    //saveAnswer();
-    document.getElementById("quiz").style.display = "none"; // Hide the quiz
-    document.getElementById("result").style.display = "block"; // Show the result page
-}
-
 
 function saveAnswer() {
     const selectedOption = document.querySelector('input[name="option"]:checked');
@@ -328,5 +305,26 @@ submitButton.addEventListener("click", (e) => {
 document.getElementById("home-button").addEventListener("click", function() {
     window.location.href = "applicantDash.html"; // Change "index.html" to your actual home page URL
   });
+window.addEventListener("beforeunload", async (event) => {
+    // Your function or logic here
+    console.log("Tab or window is being closed!");
+    if(submitprocess) await submitExam();
+    submitprocess=false;
+    //navigator.sendBeacon("/applicantDash", JSON.stringify({ message: "User left the page silently." }));
+});
+
+let count=0;
+let submitprocess=true;
+window.addEventListener("blur", (event) => {
+           count++;
+});
+window.addEventListener("focus", async(event) => {
+    if(count==4){
+        await submitExam();
+        submitprocess=false;
+        window.close();
+    }
+});
+
 
 fetchQuestions(); // Initial fetch

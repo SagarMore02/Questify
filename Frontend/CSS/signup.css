@@ -97,6 +97,10 @@ transition: all 0.3s ease;
     height: 35px;
     width: 170px;
 }
+#department{
+    height: 35px;
+    width: 170px;
+}
 #dot-1:checked ~ .category label .one,
 #dot-2:checked ~ .category label .two,
 #dot-3:checked ~ .category label .three{
@@ -110,7 +114,7 @@ form .button{
 height: 45px;
 margin: 35px 0
 }
-form .button input{
+form .button button{
 height: 100%;
 width: 100%;
 border-radius: 5px;
@@ -124,7 +128,7 @@ transition: all 0.3s ease;
 /* background: linear-gradient(135deg, #71b7e6, #9b59b6); */
 background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
 }
-form .button input:hover{
+form .button button:hover{
 /* transform: scale(0.99); */
 /* background: linear-gradient(-135deg, #71b7e6, #9b59b6); */
 background:linear-gradient(to left, rgb(90, 13, 172), rgb(164, 128, 203));
@@ -171,3 +175,46 @@ flex-direction: column;
 }
 }
 /* changes are done */
+
+#confirmationModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensures modal appears in front of other elements */
+}
+
+/* Modal Content Box */
+#confirmationModal .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+/* Modal Buttons */
+#confirmButton, #cancelButton {
+    padding: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+#confirmButton {
+    background-color: green;
+}
+
+#cancelButton {
+    background-color: red;
+}
+#otpInput{
+    height: 35px;
+}

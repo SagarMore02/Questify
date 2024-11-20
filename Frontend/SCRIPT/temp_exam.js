@@ -1,4 +1,5 @@
 // State to track the current question index and store the fetched questions
+console.log("Hello Worlds");
 let currentQuestionIndex = 0;
 let questions = [];
 let userAnswers = [];
@@ -116,6 +117,8 @@ function submitExam() {
 
     alert("Exam Submitted. Time's up!");
     saveAnswer();
+    window.close();
+    
     document.getElementById("quiz").style.display = "none"; // Hide the quiz
     document.getElementById("result").style.display = "block"; // Show the result page
 }
@@ -244,6 +247,65 @@ submitButton.addEventListener("click", (e) => {
     e.preventDefault();
     submitExam();
 });
+
+
+// Listen for messages from the parent window
+window.addEventListener('message', function(event) {
+    // Ensure the message comes from the expected origin (security check)
+    if (event.origin !== window.location.origin) {
+        console.log("Received message from an unknown origin");
+        return;
+    }
+
+    const { type, message } = event.data;
+
+    // Display the warning if the message type is 'warning'
+    if (type === 'warning') {
+        const warningBanner = document.getElementById('warning-banner');
+        if (warningBanner) {
+            warningBanner.textContent = message;
+            warningBanner.style.display = 'block'; // Show the warning
+        }
+
+        // Show the modal as part of the warning
+        showModal(message);
+    }
+
+    // Terminate the exam if the message type is 'terminate'
+    if (type === 'terminate') {
+        alert(message); // Show the termination message
+        submitExam(); // Submit the exam automatically
+    }
+});
+
+// Function to show the modal with a message
+function showModal(message) {
+    const modal = document.getElementById('focusModal');
+    const modalMessage = document.getElementById('modalMessage');
+    modal.style.display = "block"; // Display the modal
+
+    if (modalMessage) {
+        modalMessage.textContent = message; // Set the message inside the modal
+    }
+}
+
+// Close the modal when the OK button is clicked
+function closeModal() {
+    const modal = document.getElementById('focusModal');
+    modal.style.display = "none";
+}
+
+// Show the modal when the page gains focus
+window.addEventListener('focus', function() {
+    console.log("Inside this");
+    showModal("You have returned to the exam tab. Please focus on completing the exam.");
+});
+window.addEventListener('blur', function() {
+    console.log("Inside blur");
+    showModal("You have returned to the exam tab. Please focus on completing the exam.");
+});
+
+
 
 // Fetch questions when the page loads
 window.onload = fetchQuestions;

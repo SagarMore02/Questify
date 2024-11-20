@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+    <style>
+        /* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff; /* Default text color */
+    padding: 20px; /* Prevent content from touching screen edges */
+    text-align: center;
+}
+
+/* Align Heading at the Top of the Form */
+form {
+    position: relative; /* To position the heading inside */
+    background: #fff;
+    padding: 50px 20px 30px; /* Add extra padding at the top for the heading */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h2 {
+    position: absolute;
+    top: 200px; /* Pull above the form */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #0c0b0c;
+    padding: 0 10px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Label Styling */
+label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    color: #6a1b9a;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+/* Input Fields */
+input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: #6a1b9a;
+    box-shadow: 0 0 8px rgba(106, 27, 154, 0.3);
+}
+
+/* Button Styling */
+button {
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #8e24aa, #6a1b9a);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #6a1b9a, #8e24aa);
+    transform: scale(1.02);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Error/Success Message Styling */
+#message {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: #d32f2f; /* Default red for errors */
+}
+
+#message.success {
+    color: #388e3c; /* Green for success messages */
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+    form {
+        padding: 20px 15px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px 0;
+    }
+}
+    </style>
+</head>
+<body>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    
+});
+
+    </script>
+</body>
+</html>

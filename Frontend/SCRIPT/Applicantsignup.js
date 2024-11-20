@@ -14,22 +14,32 @@ document.addEventListener('DOMContentLoaded', () => {
         // Extract form values into separate variables
         const firstName = document.querySelector('input[placeholder="Enter First Name"]').value;
         const lastName = document.getElementById('lastname').value;
-        const email = document.querySelector('input[placeholder="Enter your email"]').value;
-        const phoneNumber = document.querySelector('input[placeholder="Enter your number"]').value;
+        const email = document.querySelector('input[placeholder="Enter your email"]').value.trim();
+        const phoneNumber = document.querySelector('input[placeholder="Enter your number"]').value.trim();
         const username = document.querySelector('input[placeholder="Enter your username"]').value;
         const password = document.querySelector('input[placeholder="Enter your password"]').value;
         const confirmPassword = document.querySelector('input[placeholder="Confirm your password"]').value;
         const userType = submitButton.value; // Get the value of the submit button
-        
-        let organId = "-1"; // Use `let` to allow reassignment
-        let location="Pune"
-        if (userType === "Organizer") {
-         const dropdown = document.getElementById('organization-dropdown');
-        organId = dropdown.value;
-        console.log(organId);
-        }
-        if(userType==="Organization"){
-            location=document.querySelector('input[placeholder="Enter Location"]').value;
+
+        let dept = '';
+        let organId = '-1'; // Default value
+        let location = 'Pune';
+
+        if (userType === 'Organizer') {
+            const dropdown = document.getElementById('organization-dropdown');
+            organId = dropdown.value;
+            console.log(organId);
+        } else if (userType === 'Organization') {
+            location = document.querySelector('input[placeholder="Enter Location"]').value;
+        } else {
+            const departmentField = document.getElementById('department');
+            if (departmentField) {
+                dept = departmentField.value || '';
+                if (dept === 'N/A') {
+                    alert('Please select a valid department.');
+                    return; // Prevent form submission
+                }
+            }
         }
 
         // Validate passwords match
@@ -37,6 +47,26 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Passwords do not match.');
             console.log('Password mismatch detected.');
             return;
+        }
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Phone number validation regex (for 10-digit numbers, e.g., 1234567890)
+        var phoneNum = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/; 
+
+        if (!email) {
+            console.log("Email is required.");
+        } else if (!emailRegex.test(email)) {
+            console.log("Invalid email format.");
+        } else {
+            console.log("Email is valid.");
+        }
+        console.log("==========>", phoneNumber);
+        if (!phoneNumber) {
+            console.log("Phone number is required.");
+        } else if (!phoneNum.test(phoneNumber)) {
+            console.log("Invalid phone number. It must be a 10-digit number.");
+        } else {
+            console.log("Phone number is valid.");
         }
 
         // Combine variables into a single object
@@ -50,11 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmPassword: confirmPassword,
             usertype: userType,
             organId: organId,
-            location: location
+            location: location,
+            dept: dept
         };
-        console.log("Form Data",formData.organId);
+
+        console.log('Form Data:', formData);
+
+        // Show the modal immediately
+        showModal();
+
         try {
-            console.log("Trryingg");
+            console.log('Submitting form...');
             const response = await fetch('/register', {
                 method: 'POST',
                 headers: {
@@ -66,15 +102,69 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Registration successful!');
-                // Redirect or clear the form as needed
-                window.top.location.href = data.redirectURL;
+                console.log('Registration successful');
             } else {
                 alert('Registration failed: ' + data.message);
+                hideModal(); // Hide modal if registration fails
             }
         } catch (error) {
             console.error('Error:', error);
             alert('Error submitting the form.');
+            hideModal(); // Hide modal if an error occurs
         }
     });
 });
+
+function showModal() {
+    const modal = document.getElementById('confirmationModal');
+    const modalText = document.getElementById('modalText');
+    modalText.textContent = `For 2-factor authentication`;
+
+    modal.style.display = 'flex';
+
+    document.getElementById('confirmButton').onclick = () => {
+        //modal.style.display = 'none';
+        //window.location.href = '/verify-otp.html'; // Correct usage of window.location.href
+    };
+
+    document.getElementById('cancelButton').onclick = () => {
+        modal.style.display = 'none';
+        //window.location.reload(); // Reload the page
+    };
+}
+
+function hideModal() {
+    const modal = document.getElementById('confirmationModal');
+    modal.style.display = 'none';
+}
+
+
+
+document.getElementById("otpForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+  
+    const otp = document.getElementById("otpInput").value;
+    const email = localStorage.getItem("email"); // Assuming email is stored in localStorage
+  
+    try {
+      const response = await fetch('/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert("OTP verified successfully. Registration complete!");
+        window.location.href = "/login.html"; // Redirect to login or any other page
+      } else {
+        alert(data.message || "OTP verification failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  });
+  

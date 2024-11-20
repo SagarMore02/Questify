@@ -3,65 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/OraganizationDash.css">
     <title>Organizers List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h2 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 18px;
-            text-align: left;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        tr.active-row {
-            background-color: #e0f7fa; /* Light sky blue for active rows */
-        }
-        tr.inactive-row {
-            background-color: #f8d7da; /* Light red for inactive rows */
-        }
-        select.status-select {
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 120px;
-        }
-        .status-select.active {
-            background-color: #e0f7fa;
-        }
-        .status-select.inactive {
-            background-color: #f8d7da;
-        }
-        .update-status-btn {
-            padding: 8px 12px;
-            background-color: skyblue; /* Skyblue button */
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .update-status-btn:hover {
-            background-color: #00bfff; /* Darker skyblue on hover */
-        }
-    </style>
 </head>
 <body>
+    <div id="confirmationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
+            <p id="modalText">Are you sure you want to change the status?</p>
+            <button id="confirmButton">OK</button>
+            <button id="cancelButton">Cancel</button>
+        </div>
+    </div>
 
     <h2>Organizers List</h2>
 
@@ -126,7 +78,7 @@
                                 <option value="Inactive" ${org.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
                             </select>
                         </td>
-                        <td><button class="update-status-btn" data-id="${org.organizerID}">Update Status</button></td>
+                        <td><button class="update-status-btn" data-id="${org.organizerID}" data-name="${org.organizerName}">Update Status</button></td>
                     </tr>
                 `;
                 tableBody.innerHTML += row; // Append the row to the table body
@@ -136,6 +88,7 @@
             document.querySelectorAll('.update-status-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
                     const select = document.querySelector(`.status-select[data-id="${id}"]`);
                     const status = select ? select.value : '';
                     
@@ -143,12 +96,29 @@
                     console.log('Selected Status:', status);
                     
                     if (status) {
-                        updateStatus(id, status); // Call the update function
+                        showModal(name, status, id);
                     } else {
                         console.error('Status is undefined or empty');
                     }
                 });
             });
+        }
+
+        function showModal(name, status, id) {
+            const modal = document.getElementById('confirmationModal');
+            const modalText = document.getElementById('modalText');
+            modalText.textContent = `Are you sure you want to change the status of "${name}" to "${status}"?`;
+            
+            modal.style.display = 'flex';
+
+            document.getElementById('confirmButton').onclick = () => {
+                modal.style.display = 'none';
+                updateStatus(id, status);
+            };
+
+            document.getElementById('cancelButton').onclick = () => {
+                modal.style.display = 'none';
+            };
         }
 
         // Function to post the updated status to the backend

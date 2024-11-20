@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verify OTP</title>
+<link rel="stylesheet" href="/css/verifyotp.css">
+<script src="/js/verify-otp.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  /* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff; /* Default text color */
+}
+
+/* Container for OTP Box */
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Form Box Styling */
+.content {
+    background-color: #ffffff;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Title Styling */
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #151416;
+    margin-bottom: 20px;
+}
+
+/* Input Group Styling */
+.input-box {
+    margin-bottom: 20px;
+    text-align: left;
+    width: 100%;
+}
+
+.details {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #6a1b9a;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #6a1b9a;
+    box-shadow: 0 0 8px rgba(106, 27, 154, 0.3);
+}
+
+/* Button Styling */
+.button input {
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #8e24aa, #6a1b9a);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.button input:hover {
+    background: linear-gradient(90deg, #6a1b9a, #8e24aa);
+    transform: scale(1.02);
+}
+
+.button input:active {
+    transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+    .content {
+        padding: 20px 15px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    input[type="text"] {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .button input {
+        font-size: 14px;
+        padding: 10px 0;
+    }
+}
+
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Verify OTP</div>
+    <div class="content">
+      <form id="otpForm">
+        <div class="input-box">
+          <span class="details">Enter OTP</span>
+          <input type="text" id="otpInput" placeholder="Enter OTP" required>
+        </div>
+        <div class="button">
+          <input type="submit" value="Verify OTP">
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

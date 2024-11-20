@@ -1,0 +1,129 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+    background-color: #f9f9ff; /* Light purple background for contrast */
+    color: #333;
+}
+
+h2 {
+    color: #4b0082; /* Deep purple for headings */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 18px;
+    text-align: left;
+    background-color: white; /* Keep table background white */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #e6e6fa; /* Light lavender for headers */
+    color: #4b0082; /* Deep purple text */
+}
+
+tr:hover {
+    background-color: #f3e5f5; /* Light purple hover effect */
+    transition: background-color 0.3s ease;
+}
+
+tr.active-row {
+    background-color: #e1bee7; /* Soft purple for active rows */
+}
+
+tr.inactive-row {
+    background-color: #f8bbd0; /* Soft pink for inactive rows */
+}
+
+select.status-select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 140px;
+    color: #4b0082; /* Deep purple text */
+    background-color: #f9f9ff; /* Light purple background */
+}
+
+.status-select.active {
+    background-color: #e1bee7; /* Highlight active with purple */
+}
+
+.status-select.inactive {
+    background-color: #f8bbd0; /* Highlight inactive with pink */
+}
+
+.update-status-btn {
+    padding: 10px 15px;
+    background-color: #9370db; /* Medium purple button */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.update-status-btn:hover {
+    background-color: #7b68ee; /* Slightly darker purple on hover */
+}
+
+#confirmationModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(75, 0, 130, 0.4); /* Semi-transparent deep purple background */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensures modal appears in front of other elements */
+}
+
+/* Modal Content Box */
+#confirmationModal .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal Buttons */
+#confirmButton, #cancelButton {
+    padding: 12px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 10px;
+    font-weight: bold;
+}
+
+#confirmButton {
+    background-color: #6a5acd; /* Slate blue for confirm */
+    transition: background-color 0.3s ease;
+}
+
+#confirmButton:hover {
+    background-color: #483d8b; /* Dark slate blue on hover */
+}
+
+#cancelButton {
+    background-color: #d32f2f; /* Red for cancel */
+    transition: background-color 0.3s ease;
+}
+
+#cancelButton:hover {
+    background-color: #b71c1c; /* Darker red on hover */
+}

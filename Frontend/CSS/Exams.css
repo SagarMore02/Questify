@@ -1,0 +1,480 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.exam-card {
+    background-color: #fff;
+    padding: 20px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exam-card h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.exam-details {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.exam-details div {
+    flex: 1 1 200px;
+    margin-bottom: 10px;
+}
+
+.exam-details div span {
+    font-weight: bold;
+    display: block;
+    color: #666;
+}
+
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+select {
+    padding: 5px;
+    font-size: 1em;
+    border-radius: 4px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 600px;
+    border-radius: 8px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Additional styles for input fields and labels */
+.user-details {
+    display: flex;                 /* Enable flexbox */
+    flex-wrap: wrap;              /* Allow items to wrap to the next line */
+    gap: 10px;
+}
+
+.input-box {
+    flex: 1 0 calc(50% - 10px);   /* Allow items to take 50% of the width minus gap */
+    padding: 20px;                /* Add padding */
+    border: 1px solid #ccc;       /* Optional: Add a border */
+    text-align: center;            /* Center text inside the divs */
+    box-sizing: border-box;
+}
+
+.input-box span {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.input-box input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 40%;
+}
+
+#edit_submit {
+    margin-left: 7%;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+#edit_ques {
+    margin-left: 7%;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+#Addques {
+    margin-left: 7%;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+#edit_submit:hover {
+    background-color: #218838;
+}
+
+/* Modal Title Style */
+.modal .title {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #333;
+}
+.questions-list-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.question-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    /* border-bottom: 1px solid #ccc; */
+}
+.my-class{
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.modal-unique {
+display: none;
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content-unique {
+background-color: #fff;
+margin: 15% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 40%;
+text-align: center;
+}
+
+.close-unique {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+
+.modal-buttons-unique button {
+margin: 10px;
+}
+/* Modal container styles */
+#confirmationModal {
+display: none; /* Hidden by default */
+position: fixed;
+top: 50%; /* Center vertically */
+left: 50%; /* Center horizontally */
+transform: translate(-50%, -50%); /* Adjust for true centering */
+background-color: white;
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+z-index: 1000; /* Ensure it appears above other elements */
+width: 300px;
+max-width: 80%;
+text-align: center;
+font-family: Arial, sans-serif;
+color: #333;
+}
+
+/* Modal text styles */
+#modalText {
+margin-bottom: 20px;
+font-size: 16px;
+}
+
+/* Button styles */
+#confirmationModal button {
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+font-size: 14px;
+cursor: pointer;
+margin: 5px;
+}
+
+/* Confirm button styles */
+#confirmButton {
+background-color: #28a745; /* Green */
+color: white;
+}
+
+#confirmButton:hover {
+background-color: #218838;
+}
+
+/* Cancel button styles */
+#cancelButton {
+background-color: #dc3545; /* Red */
+color: white;
+}
+
+#cancelButton:hover {
+background-color: #c82333;
+}
+
+/* Overlay background to dim the rest of the page */
+#modalOverlay {
+display: none; /* Hidden by default */
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
+z-index: 999; /* Below the modal but above other content */
+}
+
+body {
+font-family: Arial, sans-serif;
+margin: 0;
+padding: 0;
+background-color: #f9f9f9; /* Light neutral background */
+color: #333; /* Default dark text for readability */
+}
+
+.container {
+width: 80%;
+margin: 0 auto;
+padding: 20px;
+}
+
+.exam-card {
+background-color: #fff; /* White background for cards */
+padding: 10px;
+margin: 15px 0;
+border: 1px solid #ddd;
+border-radius: 10px; /* Rounded corners for a modern look */
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+transition: transform 0.3s ease, box-shadow 0.3s ease; /* Interactive effect */
+}
+
+/* .exam-card:hover {
+transform: translateY(-5px);  Slight lift effect on hover 
+box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover 
+} */
+
+.exam-card h3 {
+margin: 0;
+font-size: 1.4em;
+color: #5503ac; /* Deep violet for headings */
+}
+
+.exam-details {
+display: flex;
+flex-wrap: wrap;
+margin-top: 10px;
+gap: 20px; /* Spaced-out elements */
+}
+
+.exam-details div {
+flex: 1 1 200px;
+margin-bottom: 10px;
+padding: 10px;
+border-radius: 8px;
+/* background: linear-gradient(to right, #f3e5f5, #e1bee7); Light violet gradient */
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exam-details div span {
+font-weight: bold;
+display: block;
+color: #6a1b9a; /* Medium violet for labels */
+}
+
+.edit-btn {
+background-color: #6a1b9a; /* Violet background */
+color: white;
+padding: 12px 25px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+margin-top: 15px;
+transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+}
+
+.edit-btn:hover {
+background-color: #8e24aa; /* Lighter violet on hover */
+transform: translateY(-3px); /* Slight lift effect */
+}
+
+select {
+padding: 8px;
+font-size: 1em;
+border-radius: 4px;
+border: 1px solid #ddd;
+}
+
+/* Modal Styles */
+.modal {
+display: none; /* Hidden by default */
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+padding-top: 60px;
+}
+
+.modal-content {
+background-color: #fff;
+margin: 5% auto;
+padding: 30px;
+border-radius: 12px;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+width: 80%;
+max-width: 600px;
+}
+
+.close {
+color: #6a1b9a; /* Purple color for close button */
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+color: #8e24aa; /* Lighter purple on hover */
+}
+
+.modal .title {
+font-size: 1.5em;
+margin-bottom: 15px;
+color: #5503ac; /* Deep violet for modal title */
+}
+
+.user-details {
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+}
+
+.input-box {
+flex: 1 0 calc(50% - 20px);
+padding: 20px;
+border: 1px solid #ccc;
+text-align: center;
+box-sizing: border-box;
+border-radius: 8px;
+background-color: #f3e5f5; /* Light violet background */
+}
+
+.input-box span {
+display: block;
+margin-bottom: 8px;
+font-weight: bold;
+color: #6a1b9a;
+}
+
+.input-box input {
+padding: 12px;
+border: 1px solid #ddd;
+border-radius: 4px;
+width: 80%;
+}
+
+#edit_submit,
+#edit_ques,
+#Addques {
+background-color: #6a1b9a; /* Violet button background */
+color: white;
+padding: 12px 25px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-size: 1.1em;
+transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#edit_submit:hover,
+#edit_ques:hover,
+#Addques:hover {
+background-color: #8e24aa; /* Lighter purple on hover */
+transform: translateY(-3px); /* Lift effect */
+}
+
+.questions-list-container {
+margin-top: 20px;
+padding: 10px;
+background-color: #f9f9f9;
+border-radius: 8px;
+}
+
+.question-item {
+margin-bottom: 15px;
+padding: 10px;
+border-bottom: 1px solid #ddd;
+}
+
+.my-class {
+margin-bottom: 15px;
+padding: 10px;
+border-bottom: 1px solid #ddd;
+}

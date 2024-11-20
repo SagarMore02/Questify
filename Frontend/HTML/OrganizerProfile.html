@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Profile</title>
+    <link rel="stylesheet" href="/css/ApplicantInfo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <h3>Organizer Details</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>First Name</td>
+                    <td><p id="firstname"></p></td>
+                </tr>
+                <tr>
+                    <td>Last Name</td>
+                    <td><p id="lastname"></p></td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><p id="email"></p></td>
+                </tr>
+                <tr>
+                    <td>Phone Number</td>
+                    <td><p id="phone"></p></td>
+                </tr>
+                <tr>
+                    <td>Username</td>
+                    <td><p id="username"></p></td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="changepass">Change Password</button>
+        <div id="forgot-popup" class="popup">
+            <div class="popup-content">
+                <span id="closeForgotPopup" class="close-btn">&times;</span>
+                <h2>Forgot Password</h2>
+                <form id="forgot-password-form">
+                    <label for="username">Enter your Username</label><br>
+                    <input type="text" id="username-input" name="username" required><br><br>
+                    <button type="submit" id="forgot-submit">Submit</button>
+                </form>
+                <p id="forgot-message"></p>
+            </div>
+        </div>
+    
+        <!-- Reset Password Popup -->
+        <div id="reset-popup" class="popup">
+            <div class="popup-content">
+                <span id="closeResetPopup" class="close-btn">&times;</span>
+                <h2>Reset Password</h2>
+                <form id="reset-password-form">
+                    <label for="otp">OTP Received in Mail</label><br>
+                    <input type="text" id="otp" name="otp" required><br><br>
+                    <label for="new-password">New Password</label><br>
+                    <input type="password" id="new-password" name="new-password" required><br><br>
+                    <label for="confirm-password">Confirm Password</label><br>
+                    <input type="password" id="confirm-password" name="confirm-password" required><br><br>
+                    <button type="submit" id="reset-submit">Reset Password</button>
+                </form>
+                <p id="reset-message"></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            //start
+            fetch('/profile')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.username) {
+                        console.log(data.username);
+                        document.getElementById('username').textContent = data.username;
+                        document.getElementById('firstname').textContent = data.firstname;
+                        document.getElementById('lastname').textContent = data.lastname;
+                        document.getElementById('email').textContent = data.email;
+                        document.getElementById('phone').textContent = data.mobile;
+                    } else {
+                        console.error('Failed to fetch username');
+                    }
+                })
+                .catch(error => console.error('Error fetching profile:', error));
+            //end
+            const forgotPopup = document.getElementById("forgot-popup");
+            const resetPopup = document.getElementById("reset-popup");
+
+            const changePassButton = document.getElementById("changepass");
+            const closeForgotPopup = document.getElementById("closeForgotPopup");
+            const closeResetPopup = document.getElementById("closeResetPopup");
+
+            changePassButton.onclick = () => {
+                resetPopup.style.display = "flex";
+                first();
+
+            };
+            closeForgotPopup.onclick = () => (forgotPopup.style.display = "none");
+            closeResetPopup.onclick = () => (resetPopup.style.display = "none");
+
+            // Handle Forgot Password Form Submission
+            async function first(){
+                event.preventDefault();
+                const email = document.getElementById('username').textContent;
+
+                try {
+                    const response = await fetch("/forgot-password", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email }),
+                    });
+
+                    const result = await response.json();
+                    document.getElementById("forgot-message").textContent = result.message;
+
+                    if (response.ok) {
+                        forgotPopup.style.display = "none";
+                        resetPopup.style.display = "flex";
+                    }
+                } catch (error) {
+                    document.getElementById("forgot-message").textContent = `Error: ${error.message}`;
+                }
+            };
+
+            // Handle Reset Password Form Submission
+            document.getElementById("reset-password-form").addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const token = document.getElementById("otp").value;
+                const newPassword = document.getElementById("new-password").value;
+                const confirmPassword = document.getElementById("confirm-password").value;
+
+                if (newPassword !== confirmPassword) {
+                    document.getElementById("reset-message").textContent = "Passwords do not match.";
+                    return;
+                }
+
+                try {
+                    const response = await fetch("/reset-password", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ token, newPassword }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        document.getElementById("reset-message").textContent = result.message;
+                        alert(result.message);
+                        document.getElementById("reset-popup").style.display='none';
+                        //setTimeout(() => (window.location.href = "/login.html"), 1500);
+                    } else {
+                        document.getElementById("reset-message").textContent = `Error: ${result.message}`;
+                    }
+                } catch (error) {
+                    document.getElementById("reset-message").textContent = `Error: ${error.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

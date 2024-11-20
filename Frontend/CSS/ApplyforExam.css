@@ -1,0 +1,133 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #5503ac, #924ddb); /* Purple gradient background */
+    color: #fff; /* White text for consistency */
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.exam-card {
+    background: #ffffff; /* White card background */
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+    color: #333; /* Dark text for readability */
+}
+
+.exam-card h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #5503ac; /* Deep purple for headings */
+}
+
+.exam-details {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    gap: 15px;
+}
+
+.exam-details div {
+    flex: 1 1 200px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    color: #333; /* Dark text for contrast */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exam-details div span {
+    font-weight: bold;
+    display: block;
+    color: #6a1b9a; /* Medium purple for labels */
+}
+
+.apply-btn {
+    background: linear-gradient(to right, #6a1b9a, #8e24aa); /* Gradient button */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Button shadow */
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+.apply-btn:hover {
+    background: linear-gradient(to right, #8e24aa, #ab47bc); /* Lighter gradient on hover */
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+    background: linear-gradient(to right, #ffffff, #f3e5f5); /* Soft white to lavender gradient */
+    margin: auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    width: 50%;
+    max-width: 500px; /* Ensure responsive behavior */
+}
+
+.close {
+    color: #6a1b9a; /* Purple close button */
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal form {
+    display: flex;
+    color: black;
+    flex-direction: column;
+    gap: 15px; /* Add space between inputs */
+}
+
+.modal form input, .modal form select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth focus effect */
+}
+
+.modal form input:focus, .modal form select:focus {
+    border-color: #6a1b9a; /* Highlighted border */
+    box-shadow: 0 0 5px rgba(106, 27, 154, 0.5); /* Glow effect */
+    outline: none;
+}
+
+.modal form button {
+    padding: 12px;
+    background: linear-gradient(to right, #6a1b9a, #8e24aa); /* Button gradient */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
