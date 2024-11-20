@@ -20,7 +20,7 @@ INSERT INTO Table_Registry (table_name, table_number) VALUES ('SuperUser', 1);
 -- User_Master table
 CREATE TABLE IF NOT EXISTS User_Master(
     userID INT NOT NULL UNIQUE AUTO_INCREMENT,
-    username VARCHAR(20) NOT NULL,
+    username VARCHAR(20) NOT NULL UNIQUE,
     password VARCHAR(300) NOT NULL,
     firstname VARCHAR(10) NOT NULL,
     lastname VARCHAR(10),
