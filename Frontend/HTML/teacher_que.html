@@ -51,6 +51,10 @@
         let optionCount = 2; // Start with two options by default
         const maxOptions = 6; // Maximum number of options allowed
         const minOptions = 2; // Minimum number of options allowed
+        let myflag=true;
+
+
+        
     
         // Function to add a new option
         document.getElementById('addOption').addEventListener('click', () => {
@@ -88,7 +92,8 @@
                 this.reportValidity();
                 return;
             }
-    
+
+            
             // Get question and options data
             const questionText = document.getElementById('question-text').value;
             const questionMarks = document.getElementById('question-marks').value;
@@ -157,6 +162,7 @@
                         </div>
                     `;
                     if (data.triggerSetTest) {
+                        myflag=false;
                     document.getElementById('setTest').click(); // Automatically click "Set Test"
                 }
                 } else {
@@ -170,13 +176,99 @@
     
         // Simulate setting the test
         document.getElementById('setTest').addEventListener('click', async function() {
+
+            if (!document.getElementById('questionForm').checkValidity()) {
+                document.getElementById('questionForm').reportValidity();
+                return;
+            }
+            
+            if(myflag)
+            {
+            const questionText = document.getElementById('question-text').value;
+            const questionMarks = document.getElementById('question-marks').value;
+            console.log("Is Nan: ",isNaN(questionMarks));
+            console.log("Is Greater: ",Number(questionMarks)<=0);
+            console.log("Question Marks:",questionMarks);
+            if(Number(questionMarks)<=0){
+                alert("Please Enter Valid Question Marks!!");
+                return;
+            }
+            const options = [];
+            let crc = 0;
+    
+            for (let i = 1; i <= optionCount; i++) {
+                const optionText = document.getElementById(`option-${i}`).value;
+                const isCorrect = document.querySelector(`input[name="answer"]:checked`)?.value === `option-${i}`;
+                options.push({ text: optionText, isCorrect: isCorrect });
+                if (isCorrect) {
+                    crc = i;
+                }
+            }
+    
+            let correctOption = '';
+            switch (crc) {
+                case 1: correctOption = 'optionA'; break;
+                case 2: correctOption = 'optionB'; break;
+                case 3: correctOption = 'optionC'; break;
+                case 4: correctOption = 'optionD'; break;
+                case 5: correctOption = 'optionE'; break;
+                case 6: correctOption = 'optionF'; break;
+                default: correctOption = 'UnSelected'; break;
+            }
+    
+            const questionData = {
+                questionNumber: questionCount,
+                question: questionText,
+                question_marks: questionMarks,
+                options: options.map((opt) => opt.text),
+                correctOpt: correctOption
+            };
+    
+            try {
+                const response = await fetch('/addQuestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionData)
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    console.log(`Question ${questionData.questionNumber} Added`);
+                    document.getElementById("questionForm").reset();
+                    optionCount = 2; // Reset to the default number of options
+                    questionCount++;
+                    document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
+                    // Reset options container
+                    document.getElementById('options-container').innerHTML = `
+                        <div class="option">
+                            <input type="radio" name="answer" value="option-1" required>
+                            <input type="text" id="option-1" placeholder="Option 1" required>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="answer" value="option-2">
+                            <input type="text" id="option-2" placeholder="Option 2" required>
+                        </div>
+                    `;
+                    if (data.triggerSetTest) {
+                    //document.getElementById('setTest').click(); // Automatically click "Set Test"
+                }
+                } else {
+                    
+                }
+            } catch (error) {
+                
+            }
+        }
+        myflag=true;
+            
             const response = await fetch('/CheckTest', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             });
     
             if (response.ok) {
-                alert("Test has been successfully set.");
+                //alert("Test has been successfully set.");
                 window.location.href = '/generattest';
             } else {
                 const errorData = await response.json();

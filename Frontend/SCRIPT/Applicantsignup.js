@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!email) {
             console.log("Email is required.");
         } else if (!emailRegex.test(email)) {
-            console.log("Invalid email format.");
+            alert("Invalid email format.");
+            return;
         } else {
             console.log("Email is valid.");
         }
@@ -64,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!phoneNumber) {
             console.log("Phone number is required.");
         } else if (!phoneNum.test(phoneNumber)) {
-            console.log("Invalid phone number. It must be a 10-digit number.");
+            alert("Invalid phone number. It must be a 10-digit number.");
+            return;
         } else {
             console.log("Phone number is valid.");
         }
@@ -104,7 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 console.log('Registration successful');
             } else {
-                alert('Registration failed: ' + data.message);
+                alert(data.message);
+                document.getElementById('cancelButton').click();
                 hideModal(); // Hide modal if registration fails
             }
         } catch (error) {
@@ -119,16 +122,19 @@ function showModal() {
     const modal = document.getElementById('confirmationModal');
     const modalText = document.getElementById('modalText');
     modalText.textContent = `For 2-factor authentication`;
+    document.getElementById('otpInput').innerHTML=" ";
 
     modal.style.display = 'flex';
 
     document.getElementById('confirmButton').onclick = () => {
         //modal.style.display = 'none';
         //window.location.href = '/verify-otp.html'; // Correct usage of window.location.href
+        //document.getElementById('otpInput').innerHTML=" ";
     };
 
     document.getElementById('cancelButton').onclick = () => {
         modal.style.display = 'none';
+        document.getElementById('otpInput').innerHTML=" ";
         //window.location.reload(); // Reload the page
     };
 }
@@ -158,13 +164,16 @@ document.getElementById("otpForm").addEventListener("submit", async function (ev
   
       if (response.ok) {
         alert("OTP verified successfully. Registration complete!");
+        
         window.location.href = "/login.html"; // Redirect to login or any other page
       } else {
         alert(data.message || "OTP verification failed. Please try again.");
+        document.getElementById('cancelButton').click();
+        hideModal();
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      alert("error");
     }
   });
   

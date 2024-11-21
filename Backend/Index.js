@@ -67,10 +67,10 @@ app.use(session({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  //password:'root',
+  password:'root',
   //password:'Aditya@123',
   //password: 'sagar@123',
-  password: 'sagar@123',
+  //password: 'sagar@123',
   //password: 'sagar@123',
   //password:'pr@n@v06',
   //password:'root',
@@ -327,8 +327,19 @@ app.post('/verify-otp', async (req, res) => {
 
     res.status(200).json({ message: 'Registration successful!' });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Error completing registration.');
+    if (error.code === 'ER_DUP_ENTRY') {
+      if (error.sqlMessage.includes('email')) {
+          res.status(400).send({ success: false, message: 'Email already registered. Please try logging with registered username...' });
+      } else if (error.sqlMessage.includes('username')) {
+          res.status(400).send({ success: false, message: 'Username already taken.' });
+      } else {
+          res.status(400).send({ success: false, message: 'Duplicate entry.' });
+      }
+  } else {
+      res.status(500).send({ success: false, message: 'Internal server error.' });
+  }
+
+    
   } finally {
     if (connection) connection.release();
   }
