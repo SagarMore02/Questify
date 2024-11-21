@@ -248,7 +248,9 @@
             window.onclick = function (event) {
                 if (event.target === modal) {
                     modal.style.display = 'none';
+                    window.location.reload();
                 }
+                
             };
 
             closeModal.addEventListener('click', () => {
@@ -870,6 +872,13 @@ function saveQuestion(container, questionInput, marksInput) {
     })
         .then(async response => {
             if (response.ok) {
+                let questionItem = document.querySelector('.question-item');
+                // questionItem.forEach(item => {
+                //     item.remove();
+                // });
+                    if (questionItem) {
+                        questionItem.remove();
+                    }
                 const responseData = await response.json();
                 //alert('Question updated successfully!');
                 document.getElementById('edit_total_marks').value = responseData.totmks;
@@ -878,6 +887,8 @@ function saveQuestion(container, questionInput, marksInput) {
                     totalMarksSpan.textContent = responseData.totmks;
                     currentPassingMarksSpan.textContent = responseData.passingMarks;
                     modal.style.display = 'block';
+
+                }else{
 
                 }
                 //alert('Question saved successfully!');
@@ -1219,7 +1230,9 @@ function editExam(examID) {
        window.onclick = function(event) {
            if (event.target === document.getElementById('editModal')) {
                document.getElementById('editModal').style.display = "none";
-           }
+               window.location.reload();
+            }
+           
        }
 
        // Handle the form submission to save changes
@@ -1310,7 +1323,7 @@ function editExam(examID) {
 .then(data => {
     // Show success message
     alert(data.message || 'Exam updated successfully!');
-    location.reload(); // Reload the page
+    window.location.reload(); // Reload the page
 })
 .catch(error => {
     // Handle any errors
