@@ -122,6 +122,21 @@
             const syllabus = formData.get('syllabus');
             const dept = formData.get('department');
 
+            if(Number(totalMarks)<=0){
+                alert("Total marks cannot be negative or zero");
+                return;
+            }
+
+            if(Number(passingMarks)<=0){
+                alert("Passing Marks cannot be negative or zero");
+                return;
+            }
+
+            if(Number(fees)<=0){
+                alert("Fees cannot be negative or zero");
+                return;
+            }
+            
             if (!isDateTimeValid(appStartDate,"24:00")) {
                     alert("The input Application date and time are Invalid.");
                     return;
@@ -202,7 +217,7 @@
             const data = await response.json();
 
             if (response.ok) {
-                alert('Registration successful!');
+                //alert('Registration successful!');
                 // Redirect or clear the form as needed
                 window.location.href = data.redirectURL;
             } else {
@@ -216,7 +231,7 @@
 
             // Reset form after submission
             //this.reset();
-            alert('Exam created successfully!');
+            //alert('Exam created successfully!');
         });
     </script>
 </body>

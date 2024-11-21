@@ -248,7 +248,9 @@
             window.onclick = function (event) {
                 if (event.target === modal) {
                     modal.style.display = 'none';
+                    window.location.reload();
                 }
+                
             };
 
             closeModal.addEventListener('click', () => {
@@ -317,6 +319,8 @@
 
 editQuesButton.addEventListener('click', async function () {
     const examId = 1;
+    
+
     try {
         // Fetch questions from the backend
         const response = await fetch(`http://localhost:3000/get-my-questions`, {
@@ -483,7 +487,11 @@ editQuesButton.addEventListener('click', async function () {
             saveButton.textContent = 'Save Changes';
             saveButton.addEventListener('click', async function () {
                 const updatedQuestion = questionText.value;
-
+                const trimmedText=updatedQuestion.trim();
+                if(trimmedText.length <= 0) {
+                    alert('Question Text cannot be empty');
+                    return;
+                }
                 // Gather up to 6 options, filling null for missing options
                 const optionInputs = Array.from(questionDiv.querySelectorAll('input[type="text"]'));
                 const updatedOptions = Array(7).fill(null).map((_, i) => optionInputs[i] ? optionInputs[i].value || null : null);
@@ -497,8 +505,11 @@ editQuesButton.addEventListener('click', async function () {
                     return;
                 }
                 console.log("Selected Radio Value",selectedRadio.value);
-                const correctOptionText = updatedOptions[correctOptionIndex];
-
+                const correctOptionText = updatedOptions[correctOptionIndex+1];
+                if(correctOptionText==null){
+                    alert("Selected Answer Cannot be empty!!");
+                    return;
+                }
                 let correctOptionKey = "";
                 switch (selectedRadio.value) {
                     case "option-0": correctOptionKey = "optionA"; break;
@@ -514,6 +525,13 @@ editQuesButton.addEventListener('click', async function () {
                     alert("Question Marks Cannot be negative or zero!!");
                     return;
                 }
+                let nonNullOptions = updatedOptions.filter(option => option !== null && option.trim() !== "");
+                if (nonNullOptions.length >= 3) {
+                        console.log("At least 3 options are selected.");
+                    } else {
+                        alert("Please Enter data for atleast 2 Options!!");
+                        return;
+                    }
                 const updateData = {
                     questionId: question.id,
                     updatedQuestion: updatedQuestion,
@@ -556,15 +574,111 @@ editQuesButton.addEventListener('click', async function () {
  
 
 //******************************************************************************************************************************************************************************************************************
+// function createNewQuestion() {
+//     const newQuestionDiv = document.createElement('div');
+//     const form = document.createElement('form');
+//     newQuestionDiv.classList.add('question-item');
+
+//     // Add empty question text input
+//     const newQuestionText = document.createElement('input');
+//     newQuestionText.type = 'text';
+//     newQuestionText.required=true;
+//     form.appendChild(newQuestionText);
+//     newQuestionText.placeholder = 'Enter your question here';
+//     newQuestionDiv.appendChild(newQuestionText);
+
+//     // Add total marks input field
+//     const totalMarksInput = document.createElement('input');
+//     totalMarksInput.type = 'number';
+//     totalMarksInput.placeholder = 'Enter total marks';
+//     newQuestionDiv.appendChild(totalMarksInput);
+
+//     let chaclickcount = 2; // Initially 2 options
+
+//     // Create the first two default options
+//     for (let i = 0; i < 2; i++) {
+//         addOptionField(newQuestionDiv, i + 1);
+//     }
+
+//     // Add "Add Option" button
+//     const addOptionButton = document.createElement('button');
+//     addOptionButton.textContent = 'Add Option';
+//     addOptionButton.addEventListener('click', () => {
+//         if (chaclickcount < 6) {
+//             chaclickcount++;
+//             addOptionField(newQuestionDiv, chaclickcount);
+//         } else {
+//             alert("You cannot add more than 6 options.");
+//         }
+//     });
+//     newQuestionDiv.appendChild(addOptionButton);
+
+//     // Add "Save Question" button
+//     const saveButton = document.createElement('button');
+//     saveButton.textContent = 'Save Question';
+//     saveButton.addEventListener('click', () => {
+//         console.log("NQT: ",newQuestionText.value);
+//         let questionText = newQuestionText.innerHTML;  // Assuming the input field's ID is 'question_text'
+//             // Trim leading and trailing spaces
+//             let trimmedText = questionText.trim();
+
+//             // Print the length of the trimmed text
+//             console.log('Length of trimmed text:', trimmedText.length);
+
+//             // Check if the length is less than or equal to 0
+//             if (trimmedText.length <= 0) {
+//                 alert('Question Text cannot be empty');
+//                 return;
+//             }
+
+//         saveQuestion(newQuestionDiv, newQuestionText, totalMarksInput);
+//     });
+//     newQuestionDiv.appendChild(saveButton);
+
+//     questionsListContainer.appendChild(newQuestionDiv);
+
+//     // Helper function to add an option field
+//     function addOptionField(container, optionNumber) {
+//         const optionDiv = document.createElement('div');
+
+//         const optionInput = document.createElement('input');
+//         optionInput.type = 'text';
+//         optionInput.required.true;
+//         optionInput.placeholder = `Option ${optionNumber}`;
+
+//         const optionRadio = document.createElement('input');
+//         optionRadio.type = 'radio';
+//         optionRadio.name = 'new-correct-option';
+//         optionRadio.value = `option-${optionNumber - 1}`; // Index starts from 0
+
+//         const removeOptionButton = document.createElement('button');
+//         removeOptionButton.textContent = 'Remove Option';
+//         removeOptionButton.addEventListener('click', () => {
+//             if (chaclickcount > 2) {
+//                 chaclickcount--;
+//                 optionDiv.remove();
+//                 reindexRadioButtons(container);
+//             } else {
+//                 alert("You must have at least 2 options.");
+//             }
+//         });
+
+//         optionDiv.appendChild(optionRadio);
+//         optionDiv.appendChild(optionInput);
+//         optionDiv.appendChild(removeOptionButton);
+//         container.appendChild(optionDiv);
+//     }
+// }
+
 function createNewQuestion() {
     const newQuestionDiv = document.createElement('div');
+    const form = document.createElement('form');
     newQuestionDiv.classList.add('question-item');
 
     // Add empty question text input
     const newQuestionText = document.createElement('input');
     newQuestionText.type = 'text';
-    newQuestionText.required=true;
-    form.appendChild(newQuestionText);
+    newQuestionText.required = true;
     newQuestionText.placeholder = 'Enter your question here';
     newQuestionDiv.appendChild(newQuestionText);
 
@@ -572,6 +686,7 @@ function createNewQuestion() {
     const totalMarksInput = document.createElement('input');
     totalMarksInput.type = 'number';
     totalMarksInput.placeholder = 'Enter total marks';
+    totalMarksInput.required = true;
     newQuestionDiv.appendChild(totalMarksInput);
 
     let chaclickcount = 2; // Initially 2 options
@@ -584,7 +699,8 @@ function createNewQuestion() {
     // Add "Add Option" button
     const addOptionButton = document.createElement('button');
     addOptionButton.textContent = 'Add Option';
-    addOptionButton.addEventListener('click', () => {
+    addOptionButton.addEventListener('click', (e) => {
+        e.preventDefault();
         if (chaclickcount < 6) {
             chaclickcount++;
             addOptionField(newQuestionDiv, chaclickcount);
@@ -597,7 +713,42 @@ function createNewQuestion() {
     // Add "Save Question" button
     const saveButton = document.createElement('button');
     saveButton.textContent = 'Save Question';
-    saveButton.addEventListener('click', () => {
+    saveButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Validate question text
+        const questionText = newQuestionText.value.trim();
+        if (questionText.length === 0) {
+            alert('Question text cannot be empty.');
+            return;
+        }
+
+        // Validate total marks
+        const totalMarks = parseInt(totalMarksInput.value, 10);
+        if (isNaN(totalMarks) || totalMarks <= 0) {
+            alert('Total marks must be greater than 0.');
+            return;
+        }
+
+        // Validate options
+        const options = newQuestionDiv.querySelectorAll('input[type="text"]');
+        let optionValues = Array.from(options)
+            .filter((opt) => opt.placeholder.startsWith('Option'))
+            .map((opt) => opt.value.trim());
+        
+        if (optionValues.some((val) => val.length === 0)) {
+            alert('All option fields must be filled.');
+            return;
+        }
+
+        // Validate at least one correct option is selected
+        const correctOptionSelected = newQuestionDiv.querySelector('input[type="radio"]:checked');
+        if (!correctOptionSelected) {
+            alert('You must select a correct answer.');
+            return;
+        }
+
+        // If all validations pass, save the question
         saveQuestion(newQuestionDiv, newQuestionText, totalMarksInput);
     });
     newQuestionDiv.appendChild(saveButton);
@@ -610,7 +761,7 @@ function createNewQuestion() {
 
         const optionInput = document.createElement('input');
         optionInput.type = 'text';
-        optionInput.required.true;
+        optionInput.required = true;
         optionInput.placeholder = `Option ${optionNumber}`;
 
         const optionRadio = document.createElement('input');
@@ -620,7 +771,8 @@ function createNewQuestion() {
 
         const removeOptionButton = document.createElement('button');
         removeOptionButton.textContent = 'Remove Option';
-        removeOptionButton.addEventListener('click', () => {
+        removeOptionButton.addEventListener('click', (e) => {
+            e.preventDefault();
             if (chaclickcount > 2) {
                 chaclickcount--;
                 optionDiv.remove();
@@ -635,7 +787,16 @@ function createNewQuestion() {
         optionDiv.appendChild(removeOptionButton);
         container.appendChild(optionDiv);
     }
+
+    // Helper function to reindex radio button names
+    function reindexRadioButtons(container) {
+        const radios = container.querySelectorAll('input[type="radio"]');
+        radios.forEach((radio, index) => {
+            radio.value = `option-${index}`;
+        });
+    }
 }
+
 function reindexRadioButtons(container) {
     const optionDivs = Array.from(container.querySelectorAll('div')); // All option containers
     optionDivs.forEach((optionDiv, index) => {
@@ -658,6 +819,8 @@ function reindexRadioButtons(container) {
 
 
 function saveQuestion(container, questionInput, marksInput) {
+
+    
     const updatedQuestion = questionInput.value.trim();
     const totalMarks = marksInput.value;
     console.log("************************",totalMarks);
@@ -709,6 +872,13 @@ function saveQuestion(container, questionInput, marksInput) {
     })
         .then(async response => {
             if (response.ok) {
+                let questionItem = document.querySelector('.question-item');
+                // questionItem.forEach(item => {
+                //     item.remove();
+                // });
+                    if (questionItem) {
+                        questionItem.remove();
+                    }
                 const responseData = await response.json();
                 //alert('Question updated successfully!');
                 document.getElementById('edit_total_marks').value = responseData.totmks;
@@ -717,6 +887,8 @@ function saveQuestion(container, questionInput, marksInput) {
                     totalMarksSpan.textContent = responseData.totmks;
                     currentPassingMarksSpan.textContent = responseData.passingMarks;
                     modal.style.display = 'block';
+
+                }else{
 
                 }
                 //alert('Question saved successfully!');
@@ -1058,13 +1230,15 @@ function editExam(examID) {
        window.onclick = function(event) {
            if (event.target === document.getElementById('editModal')) {
                document.getElementById('editModal').style.display = "none";
-           }
+               window.location.reload();
+            }
+           
        }
 
        // Handle the form submission to save changes
        document.getElementById('edit-exam-form').onsubmit = function(event) {
            event.preventDefault(); // Prevent default form submission
-
+        
            const examID = document.querySelector('.edit-btn[data-exam-id]').getAttribute('data-exam-id'); // Get the exam ID from the button
            console.log("EXAM ID SUBMITTED:",examID);
            const examEndTime = document.getElementById('edit_exam_end_time').value;
@@ -1098,19 +1272,34 @@ function editExam(examID) {
            const appstDate = new Date(document.getElementById('edit_app_end_date').value);
            const [hours, minutes] = document.getElementById('edit_exam_start_time').value.split(':').map(Number);
            exstDate.setHours(hours, minutes, 0, 1);
-           appstDate.setHours(hours, minutes, 0, 0);
+           const now = new Date();
+            const currentHours = now.getHours();
+            const currentMinutes = now.getMinutes()+1;
+
+            // Set the current hours and minutes to appstDate
+            appstDate.setHours(currentHours, currentMinutes, 0, 0);
            console.log("Cur DAte:",new Date());
            console.log("Exst DAte",exstDate);
-           if(new Date()>exstDate){
+           const view = new Date();
+           if(view>exstDate){
             alert('Exam Start Date Cannot be earlier from today!!');
             return;
            }
-           if(new Date()>appstDate){
+
+           if(view>appstDate){
+            console.log("View: ",view);
+            console.log("appstDAte: ",appstDate);
+            console.log(view>appstDate);
             alert('Application End Date Cannot be earlier from today!!');
             return;
            }
+           appstDate.setHours(hours, minutes, 0, 0);
            if(appstDate>exstDate){
             alert('Application End Date Cannot be Later than exam start date!!');
+            return;
+           }
+           if(Number(document.getElementById('edit_fees').value)<0){
+            alert('Fees Cannot be negative!!');
             return;
            }
            fetch('/updateExam', {
@@ -1134,7 +1323,7 @@ function editExam(examID) {
 .then(data => {
     // Show success message
     alert(data.message || 'Exam updated successfully!');
-    location.reload(); // Reload the page
+    window.location.reload(); // Reload the page
 })
 .catch(error => {
     // Handle any errors
