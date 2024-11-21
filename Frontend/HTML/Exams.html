@@ -483,7 +483,11 @@ editQuesButton.addEventListener('click', async function () {
             saveButton.textContent = 'Save Changes';
             saveButton.addEventListener('click', async function () {
                 const updatedQuestion = questionText.value;
-
+                const trimmedText=updatedQuestion.trim();
+                if(trimmedText.length <= 0) {
+                    alert('Question Text cannot be empty');
+                    return;
+                }
                 // Gather up to 6 options, filling null for missing options
                 const optionInputs = Array.from(questionDiv.querySelectorAll('input[type="text"]'));
                 const updatedOptions = Array(7).fill(null).map((_, i) => optionInputs[i] ? optionInputs[i].value || null : null);
@@ -497,8 +501,11 @@ editQuesButton.addEventListener('click', async function () {
                     return;
                 }
                 console.log("Selected Radio Value",selectedRadio.value);
-                const correctOptionText = updatedOptions[correctOptionIndex];
-
+                const correctOptionText = updatedOptions[correctOptionIndex+1];
+                if(correctOptionText==null){
+                    alert("Selected Answer Cannot be empty!!");
+                    return;
+                }
                 let correctOptionKey = "";
                 switch (selectedRadio.value) {
                     case "option-0": correctOptionKey = "optionA"; break;
@@ -514,6 +521,13 @@ editQuesButton.addEventListener('click', async function () {
                     alert("Question Marks Cannot be negative or zero!!");
                     return;
                 }
+                let nonNullOptions = updatedOptions.filter(option => option !== null && option.trim() !== "");
+                if (nonNullOptions.length >= 3) {
+                        console.log("At least 3 options are selected.");
+                    } else {
+                        alert("Please Enter data for atleast 2 Options!!");
+                        return;
+                    }
                 const updateData = {
                     questionId: question.id,
                     updatedQuestion: updatedQuestion,
@@ -598,6 +612,19 @@ function createNewQuestion() {
     const saveButton = document.createElement('button');
     saveButton.textContent = 'Save Question';
     saveButton.addEventListener('click', () => {
+        console.log("NQT: ",newQuestionText.value);
+        let questionText = newQuestionText.innerHTML;  // Assuming the input field's ID is 'question_text'
+            // Trim leading and trailing spaces
+            let trimmedText = questionText.trim();
+
+            // Print the length of the trimmed text
+            console.log('Length of trimmed text:', trimmedText.length);
+
+            // Check if the length is less than or equal to 0
+            if (trimmedText.length <= 0) {
+                alert('Question Text cannot be empty');
+            }
+
         saveQuestion(newQuestionDiv, newQuestionText, totalMarksInput);
     });
     newQuestionDiv.appendChild(saveButton);
@@ -658,6 +685,8 @@ function reindexRadioButtons(container) {
 
 
 function saveQuestion(container, questionInput, marksInput) {
+
+    
     const updatedQuestion = questionInput.value.trim();
     const totalMarks = marksInput.value;
     console.log("************************",totalMarks);
@@ -1064,7 +1093,7 @@ function editExam(examID) {
        // Handle the form submission to save changes
        document.getElementById('edit-exam-form').onsubmit = function(event) {
            event.preventDefault(); // Prevent default form submission
-
+        
            const examID = document.querySelector('.edit-btn[data-exam-id]').getAttribute('data-exam-id'); // Get the exam ID from the button
            console.log("EXAM ID SUBMITTED:",examID);
            const examEndTime = document.getElementById('edit_exam_end_time').value;
@@ -1098,19 +1127,34 @@ function editExam(examID) {
            const appstDate = new Date(document.getElementById('edit_app_end_date').value);
            const [hours, minutes] = document.getElementById('edit_exam_start_time').value.split(':').map(Number);
            exstDate.setHours(hours, minutes, 0, 1);
-           appstDate.setHours(hours, minutes, 0, 0);
+           const now = new Date();
+            const currentHours = now.getHours();
+            const currentMinutes = now.getMinutes()+1;
+
+            // Set the current hours and minutes to appstDate
+            appstDate.setHours(currentHours, currentMinutes, 0, 0);
            console.log("Cur DAte:",new Date());
            console.log("Exst DAte",exstDate);
-           if(new Date()>exstDate){
+           const view = new Date();
+           if(view>exstDate){
             alert('Exam Start Date Cannot be earlier from today!!');
             return;
            }
-           if(new Date()>appstDate){
+
+           if(view>appstDate){
+            console.log("View: ",view);
+            console.log("appstDAte: ",appstDate);
+            console.log(view>appstDate);
             alert('Application End Date Cannot be earlier from today!!');
             return;
            }
+           appstDate.setHours(hours, minutes, 0, 0);
            if(appstDate>exstDate){
             alert('Application End Date Cannot be Later than exam start date!!');
+            return;
+           }
+           if(Number(document.getElementById('edit_fees').value)<0){
+            alert('Fees Cannot be negative!!');
             return;
            }
            fetch('/updateExam', {
