@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="../CSS/login.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="/js/Login.js" defer></script>
+</head>
+<body>
+    <div id="sagar-class" class="sagar-class" style="display: none;">
+        <div class="popup-content">
+            <span id="closePopup" class="close-btn">&times;</span>
+            <h2>Forgot Password</h2>
+            <form id="forgot-password-form">
+                <label for="email">Enter your Username</label><br>
+                <input type="text" id="email" name="email" required><br><br>
+                <button type="submit" id="submit1">Submit</button>
+            </form>
+            <p id="message"></p>
+        </div>
+    </div>
+    
+    <div class="wrapper">
+        <form id="loginForm" action="#">
+            <h1>Login</h1>
+            <div class="input-box">
+                <input type="text" id="Username" placeholder="Username" required>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z"/>
+                </svg>
+            </div>
+            <div class="input-box">
+                <input type="password" id="Password" placeholder="Password" required>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M20 12c0-1.103-.897-2-2-2h-1V7c0-2.757-2.243-5-5-5S7 4.243 7 7v3H6c-1.103 0-2 .897-2 2v8c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-8zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
+                </svg>
+            </div>
+            <button type="submit" id="submit" class="btn">Login</button>
+            <div class="register-link">
+                <a href="#" id="forgot-id" class="text-link popuplink">Forget Password</a>
+            </div>
+            <div>
+                <p style="text-align: center; color: #000000;">
+                    If you are visiting for the first time, 
+                    <a id="myanchor" class="text-link popuplink">Click Here</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

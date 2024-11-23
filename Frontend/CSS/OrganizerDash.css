@@ -1,0 +1,129 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(to left, rgba(85, 3, 172, 0.9), rgba(146, 77, 219, 0.9));
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    color: #fff;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to left, rgba(62, 4, 125, 0.9), rgba(108, 67, 151, 0.9));
+    padding: 15px 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    border-radius: 0 0 20px 20px;
+}
+
+.navbar .profile-section {
+    font-size: 18px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar ul li {
+    display: inline;
+}
+
+.navbar ul a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.navbar ul a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.main-content {
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    margin: 70px auto;
+    max-width: 1200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background-size: cover;
+    background-blend-mode: overlay;
+}
+
+.header h1 {
+    margin-top: 0;
+    color: #fff;
+    font-size: 32px;
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.card, .important-notice {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-size: cover;
+    background-blend-mode: lighten;
+}
+
+.card:hover, .important-notice:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card h3 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.card p {
+    font-size: 24px;
+    color: #4b0082;
+    margin: 10px 0 0;
+}
+
+.important-notice h2 {
+    background-color: rgba(85, 3, 172, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 1;
+}
+
+.important-notice ul {
+    list-style-type: none;
+    padding: 10px;
+}
+
+.important-notice ul li {
+    margin: 10px 0;
+}
+
+.important-notice ul li a {
+    color: rgb(85, 3, 172);
+    text-decoration: none;
+}
+
+.important-notice ul li a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/ApproveStudent.css">
+</head>
+<body>
+    <!-- Modal for Confirmation -->
+    <div id="confirmationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
+            <p id="modalText">Are you sure you want to change the status?</p>
+            <button id="confirmButton">OK</button>
+            <button id="cancelButton">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <h1>Dashboard</h1>
+            <p>Welcome to the applicant panel. Here you can view and manage applicants.</p>
+            
+            <!-- Applicants Table -->
+            <div id="applicant-section" class="section active">
+                <h2>Applicants</h2>
+                <table class="table table-striped" id="applicant-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Applicant Name</th>
+                            <th>Last Name</th>
+                            <th>Exam Name</th>
+                            <th>Adhaar Card</th>
+                            <th>Fees Status</th>
+                            <th>Attendance</th>
+                            <th>Application Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- JavaScript to Fetch and Display Data -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function fetchData(endpoint, tableId) {
+                fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector(`#${tableId} tbody`);
+                    if (tableBody) {
+                        tableBody.innerHTML = ''; // Clear any existing rows
+
+                        data.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.id || ''}</td>
+                                <td>${item.applicantf_name || ''}</td>
+                                <td>${item.applicantl_name || ''}</td>
+                                <td>${item.name || ''}</td>
+                                <td>${item.adhaarcard || ''}</td>
+                                <td>${item.feestatus || ''}</td>
+                                <td>${item.attendance || ''}</td>
+                                <td>
+                                    <select class="form-control status-select" meta-name="${item.PersonalID}" id="status-${item.PersonalID}" data-id="${item.PersonalID}">
+                                        <option value="" ${!item.appstatus ? 'selected' : ''} hidden>${item.appstatus}</option>
+                                        <option value="Active" ${item.appstatus === 'Active' ? 'selected' : ''}>Active</option>
+                                        <option value="Inactive" ${item.appstatus === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                    </select>
+                                </td>
+                                <td><button class="btn btn-primary update-status-btn" meta-name="${item.PersonalID}" data-id="${item.id}" data-name="${item.applicantf_name} ${item.applicantl_name}" data-exam="${item.name}">Update Status</button></td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Attach click event listeners to buttons
+                        document.querySelectorAll('.update-status-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const ename = this.getAttribute('meta-name');
+                                const id = this.getAttribute('data-id');
+                                const name = this.getAttribute('data-name');
+                                const exam = this.getAttribute('data-exam');
+                                const select = document.getElementById(`status-${ename}`); // Make sure you're selecting by the correct ID
+                                const status = select ? select.value : ''; 
+                                //const status = select.value;
+                                console.log("status:",status);
+                                if (status) {
+                                    showModal(id, status, ename, name, exam);
+                                } else {
+                                    console.error('Status is undefined or empty');
+                                }
+                            });
+                        });
+                    } else {
+                        console.error(`Table body with id ${tableId} not found.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+            }
+
+            // Function to show the modal
+            function showModal(id, status, ename, name, exam) {
+                const modal = document.getElementById('confirmationModal');
+                const modalText = document.getElementById('modalText');
+                modalText.textContent = `Are you sure you want to change the status of "${name}" for the exam "${exam}" to "${status}"?`;
+                
+                modal.style.display = 'flex';
+
+                document.getElementById('confirmButton').onclick = () => {
+                    modal.style.display = 'none';
+                    updateStatus(id, status, ename);
+                };
+
+                document.getElementById('cancelButton').onclick = () => {
+                    modal.style.display = 'none';
+                    window.location.reload();
+                };
+            }
+
+            function updateStatus(id, status, ename) {
+                fetch('/orgstatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, status, ename })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    fetchData('/organapplicant', 'applicant-table');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating status.');
+                });
+            }
+
+            fetchData('/organapplicant', 'applicant-table');
+        });
+    </script>
+</body>
+</html>

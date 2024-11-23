@@ -1,0 +1,170 @@
+/* General styling for the quiz container */
+.quiz-container {
+    display: flex; /* Use flexbox for layout */
+    height: 100vh; /* Full viewport height */
+}
+
+/* Progress container on the left */
+.progress-container {
+    width: 15%; /* Occupy 33% of the screen */
+    padding: 10px;
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Create columns that fit the size */
+    gap: 10px; /* Space between grid items */
+    background-color: #f4f4f4; /* Background color */
+    border-right: 1px solid #ccc; /* Right border */
+    height: auto; /* Auto height for responsiveness */
+    overflow-y: auto; /* Scroll if content overflows */
+}
+
+/* Individual progress circles (question numbers) */
+.progress-circle {
+    width: 50px; /* Diameter of circle */
+    height: 50px;
+    border-radius: 50%; /* Circular shape */
+    background-color: #e0e0e0; /* Default background color */
+    text-align: center; /* Center text */
+    line-height: 50px; /* Center text vertically */
+    font-weight: bold; /* Bold text */
+    color: #333; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+/* Filled state for answered questions */
+.progress-circle.filled {
+    background-color: #4caf50; /* Green background for answered questions */
+    color: white; /* White text */
+}
+
+/* Timer container */
+.timer-container {
+    display: flex; /* Align timer elements */
+    align-items: center;
+    margin-bottom: 20px; /* Space below timer */
+}
+
+/* Timer bar style */
+.timer-bar {
+    width: 100%; /* Full width for the timer bar */
+    height: 10px; /* Height of the timer bar */
+    background-color: #e0e0e0; /* Background color */
+    margin-right: 10px; /* Space between bar and time left */
+    border-radius: 5px;
+    transform-origin: left; /* Make sure scaling happens from the right */
+    transform: scaleX(1); /* Initial scale */
+    transition: transform 0.5s; /* Rounded corners */
+}
+
+/* Quiz content on the right */
+#quiz {
+    width: 67%; /* Occupy remaining space (67%) */
+    padding: 20px; /* Padding for quiz content */
+}
+
+/* Question container */
+.question-container {
+    padding: 20px; /* Space inside question box */
+    border: 1px solid #ccc; /* Border around question box */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #ffffff; /* White background for question */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-bottom: 20px; /* Space below the question */
+}
+
+/* Option styling */
+.option {
+    margin: 10px 0; /* Vertical spacing between options */
+    font-size: 16px; /* Font size for options */
+}
+
+/* Styling for radio buttons */
+input[type="radio"] {
+    margin-right: 10px; /* Space between radio button and label */
+}
+
+/* Button container styling */
+.btn-container {
+    display: flex; /* Align buttons horizontally */
+    justify-content: space-between; /* Space between buttons */
+    margin-top: 10px; /* Space above button container */
+}
+
+/* General button styling */
+.btn {
+    padding: 10px 15px; /* Padding inside buttons */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #007bff; /* Primary button color */
+    color: white; /* White text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for background color and scale */
+}
+
+/* Button hover effect */
+.btn:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly scale up on hover */
+}
+
+/* Submit button disabled state */
+.btn:disabled {
+    background-color: #cccccc; /* Grey background when disabled */
+    cursor: not-allowed; /* Not allowed cursor */
+}
+
+/* Result container styling */
+.result-container {
+    display: none; /* Hide by default */
+    padding: 20px; /* Padding inside result box */
+    border: 1px solid #ccc; /* Border around result box */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #ffffff; /* White background for result */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Individual progress buttons */
+.progress-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    text-align: center;
+    line-height: 50px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Filled state for answered questions */
+.progress-btn.completed {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* Active button styling */
+.progress-btn.active {
+    border: 2px solid #007bff;
+    color: #007bff;
+}
+
+/* Warning Banner Styles */
+.warning-banner {
+    background-color: yellow;
+    color: black;
+    font-size: 16px;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    display: none; /* Hidden by default */
+}
+
+.warning-banner.visible {
+    display: block; /* Show when the class is added */
+}
+

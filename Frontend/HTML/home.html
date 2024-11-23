@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questify</title>
+    <style>
+        body {
+            background: linear-gradient(to left, rgb(85, 3, 172), rgb(146, 77, 219));
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbs {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 50px;
+        }
+
+        h2 {
+            color: white;
+            font-size: 2em;
+            margin: 0;
+            display: inline;
+        }
+
+        .navbs ul {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .navbs ul li {
+            margin-left: 20px;
+        }
+
+        .navbs ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .navbs ul li a:hover {
+            color: lightgray;
+        }
+
+        /* Marquee styling */
+        .marquee-container {
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        marquee {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .myddiv {
+            display: flex;
+            padding: 50px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .img {
+            width: 40%;
+            margin-right: 20px;
+        }
+
+        .row {
+            max-width: 50%;
+        }
+
+        .row h1 {
+            font-size: 2.5em;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .row p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+        
+        span {
+            color: rgb(252, 251, 251);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbs">
+        <h2>Questify➤</h2>
+        <div class="marquee-container">
+            <marquee id="examMarquee" direction="left" scrollamount="5"></marquee>
+        </div>
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="home2.html">Sign up</a></li>
+        </ul>
+    </div>
+    <div class="myddiv">
+        <img src="/img/man.png" alt="man-image" class="img">
+        <div class="row">
+            <h1>Streamline Testing,<span> Empower Learning.</span></h1>
+            <p>Simplifying assessments for teachers, empowering students with seamless test experiences.<br> Create, manage, and grade with ease - anytime, anywhere.</p>
+        </div>
+    </div>
+
+    <script>
+        async function fetchExams() {
+            try {
+                const response = await fetch('/getAllExams');
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                const exams = await response.json();
+                const marquee = document.getElementById('examMarquee');
+
+                if (exams.length > 0) {
+                    // Populate the marquee text with exam details
+                    marquee.innerHTML = exams.map(exam => 
+                        `Exam: ${exam.name} | Date: ${new Date(exam.exam_start_date).toLocaleDateString()} | Total Marks: ${exam.total_marks}`
+                    ).join(' ✦ ');
+                } else {
+                    marquee.innerHTML = "No exams available at the moment.";
+                }
+            } catch (error) {
+                console.error('Error fetching exams:', error);
+                document.getElementById('examMarquee').innerText = "Error loading exams.";
+            }
+        }
+
+        // Fetch exams when the page loads
+        window.onload = fetchExams;
+    </script>
+</body>
+</html>

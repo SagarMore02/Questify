@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher's Exam Creation</title>
+    <link rel="stylesheet" href="/css/teacher_que.css">
+</head>
+<body>
+    <div class="container">
+        <form id="questionForm">
+            <div class="question-box" id="current-question-box">
+                <h3>Question 1</h3>
+                <div class="question-row">
+                    <input type="text" id="question-text" placeholder="Enter your question" required>
+                    <input type="number" id="question-marks" placeholder="Marks" required>
+                </div>
+                <div class="options-container" id="options-container">
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-1" required>
+                        <input type="text" id="option-1" placeholder="Option 1" required>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="answer" value="option-2">
+                        <input type="text" id="option-2" placeholder="Option 2" required>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button type="button" id="addOption">+ Add Option</button>
+                    <button type="button" id="removeOption">- Remove Option</button>
+                    <button type="submit" id="addQuestion">Add Question</button>
+                </div>
+            </div>
+                      
+        </form>
+    
+        <div id="submit-container" class="buttons">
+            <button id="setTest">Set Test</button>
+        </div>
+    
+        <div id="exam-preview" class="exam-preview hidden">
+            <h2>Exam Preview</h2>
+            <h3 id="preview-exam-name"></h3>
+            <div id="exam-questions"></div>
+            <div id="exam-time-display"></div>
+        </div>
+    </div>
+    
+    <script>
+        let questionCount = 1;
+        let optionCount = 2; // Start with two options by default
+        const maxOptions = 6; // Maximum number of options allowed
+        const minOptions = 2; // Minimum number of options allowed
+        let myflag=true;
+
+
+        
+    
+        // Function to add a new option
+        document.getElementById('addOption').addEventListener('click', () => {
+            if (optionCount < maxOptions) {
+                optionCount++;
+                const optionContainer = document.createElement('div');
+                optionContainer.classList.add('option');
+                optionContainer.innerHTML = `
+                    <input type="radio" name="answer" value="option-${optionCount}">
+                    <input type="text" id="option-${optionCount}" placeholder="Option ${optionCount}" required>
+                `;
+                document.getElementById('options-container').appendChild(optionContainer);
+            } else {
+                alert('Maximum of 6 options allowed.');
+            }
+        });
+    
+        // Function to remove the last option
+        document.getElementById('removeOption').addEventListener('click', () => {
+            if (optionCount > minOptions) {
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.removeChild(optionsContainer.lastElementChild);
+                optionCount--;
+            } else {
+                alert('Minimum of 2 options required.');
+            }
+        });
+    
+        // Handle form submission to add question
+        document.getElementById('questionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent form from submitting normally
+    
+            // Check if form is valid
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                return;
+            }
+
+            
+            // Get question and options data
+            const questionText = document.getElementById('question-text').value;
+            const questionMarks = document.getElementById('question-marks').value;
+            console.log("Is Nan: ",isNaN(questionMarks));
+            console.log("Is Greater: ",Number(questionMarks)<=0);
+            console.log("Question Marks:",questionMarks);
+            if(Number(questionMarks)<=0){
+                alert("Please Enter Valid Question Marks!!");
+                return;
+            }
+            const options = [];
+            let crc = 0;
+    
+            for (let i = 1; i <= optionCount; i++) {
+                const optionText = document.getElementById(`option-${i}`).value;
+                const isCorrect = document.querySelector(`input[name="answer"]:checked`)?.value === `option-${i}`;
+                options.push({ text: optionText, isCorrect: isCorrect });
+                if (isCorrect) {
+                    crc = i;
+                }
+            }
+    
+            let correctOption = '';
+            switch (crc) {
+                case 1: correctOption = 'optionA'; break;
+                case 2: correctOption = 'optionB'; break;
+                case 3: correctOption = 'optionC'; break;
+                case 4: correctOption = 'optionD'; break;
+                case 5: correctOption = 'optionE'; break;
+                case 6: correctOption = 'optionF'; break;
+                default: correctOption = 'UnSelected'; break;
+            }
+    
+            const questionData = {
+                questionNumber: questionCount,
+                question: questionText,
+                question_marks: questionMarks,
+                options: options.map((opt) => opt.text),
+                correctOpt: correctOption
+            };
+    
+            try {
+                const response = await fetch('/addQuestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionData)
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    console.log(`Question ${questionData.questionNumber} Added`);
+                    this.reset();
+                    optionCount = 2; // Reset to the default number of options
+                    questionCount++;
+                    document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
+                    // Reset options container
+                    document.getElementById('options-container').innerHTML = `
+                        <div class="option">
+                            <input type="radio" name="answer" value="option-1" required>
+                            <input type="text" id="option-1" placeholder="Option 1" required>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="answer" value="option-2">
+                            <input type="text" id="option-2" placeholder="Option 2" required>
+                        </div>
+                    `;
+                    if (data.triggerSetTest) {
+                        myflag=false;
+                    document.getElementById('setTest').click(); // Automatically click "Set Test"
+                }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting the form.');
+            }
+        });
+    
+        // Simulate setting the test
+        document.getElementById('setTest').addEventListener('click', async function() {
+
+            if (!document.getElementById('questionForm').checkValidity()) {
+                document.getElementById('questionForm').reportValidity();
+                return;
+            }
+            
+            if(myflag)
+            {
+            const questionText = document.getElementById('question-text').value;
+            const questionMarks = document.getElementById('question-marks').value;
+            console.log("Is Nan: ",isNaN(questionMarks));
+            console.log("Is Greater: ",Number(questionMarks)<=0);
+            console.log("Question Marks:",questionMarks);
+            if(Number(questionMarks)<=0){
+                alert("Please Enter Valid Question Marks!!");
+                return;
+            }
+            const options = [];
+            let crc = 0;
+    
+            for (let i = 1; i <= optionCount; i++) {
+                const optionText = document.getElementById(`option-${i}`).value;
+                const isCorrect = document.querySelector(`input[name="answer"]:checked`)?.value === `option-${i}`;
+                options.push({ text: optionText, isCorrect: isCorrect });
+                if (isCorrect) {
+                    crc = i;
+                }
+            }
+    
+            let correctOption = '';
+            switch (crc) {
+                case 1: correctOption = 'optionA'; break;
+                case 2: correctOption = 'optionB'; break;
+                case 3: correctOption = 'optionC'; break;
+                case 4: correctOption = 'optionD'; break;
+                case 5: correctOption = 'optionE'; break;
+                case 6: correctOption = 'optionF'; break;
+                default: correctOption = 'UnSelected'; break;
+            }
+    
+            const questionData = {
+                questionNumber: questionCount,
+                question: questionText,
+                question_marks: questionMarks,
+                options: options.map((opt) => opt.text),
+                correctOpt: correctOption
+            };
+    
+            try {
+                const response = await fetch('/addQuestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionData)
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    console.log(`Question ${questionData.questionNumber} Added`);
+                    document.getElementById("questionForm").reset();
+                    optionCount = 2; // Reset to the default number of options
+                    questionCount++;
+                    document.querySelector('#current-question-box h3').innerText = `Question ${questionCount}`;
+                    // Reset options container
+                    document.getElementById('options-container').innerHTML = `
+                        <div class="option">
+                            <input type="radio" name="answer" value="option-1" required>
+                            <input type="text" id="option-1" placeholder="Option 1" required>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="answer" value="option-2">
+                            <input type="text" id="option-2" placeholder="Option 2" required>
+                        </div>
+                    `;
+                    if (data.triggerSetTest) {
+                    //document.getElementById('setTest').click(); // Automatically click "Set Test"
+                }
+                } else {
+                    
+                }
+            } catch (error) {
+                
+            }
+        }
+        myflag=true;
+            
+            const response = await fetch('/CheckTest', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+    
+            if (response.ok) {
+                //alert("Test has been successfully set.");
+                window.location.href = '/generattest';
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message);
+            }
+        });
+    </script>
+</body>
+</html>    

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title> Sign up Page </title>
+<link rel="stylesheet" href="/css/signup.css">
+<script src="/js/Applicantsignup.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    #cancelButton {
+    padding: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+#confirmButton {
+    background-color: green;
+}
+
+#cancelButton {
+    background-color: red;
+}
+    </style>
+</head>
+    <body>
+        <div id="confirmationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+            <div style="background: white; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
+                <p id="modalText">Are you sure you want to change the status?</p>
+                <br>
+                <form id="otpForm">
+                    <div class="input-box">
+                      <span class="details">Enter OTP FROM EMAIL</span>
+                      <input type="text" id="otpInput" placeholder="Enter OTP" required>
+                    </div>
+                    <div class="button">
+                      <input type="submit" id="confirmButton" value="Verify OTP">
+                      <input type="button" id="cancelButton" value="Cancel"></button>
+                    </div>
+                  </form>
+                
+            </div>
+        </div>
+    <div class="container">
+    <div class="title"> Organization Registration</div>
+    <div class="content">
+    <form id="registrationForm" action="#">
+    <div class="user-details">
+<div class="input-box">
+    <span class="details">Organization Name</span>
+    <input type="text" placeholder="Enter First Name" required>
+</div>
+ <div class="input-box">
+    <span class="details">Organization Head Name</span>
+    <input id="lastname" type="text" placeholder="Enter Name" required>
+</div>
+
+<div class="input-box">
+    <span class="details">Organization Email</span>
+    <input type="email" placeholder="Enter your email" required>
+</div>
+<div class="input-box">
+    <span class="details">Contact Number</span>
+    <input type="tel" placeholder="Enter your number" required>
+</div>
+<div class="input-box">
+    <span class="details">Location</span>
+    <input type="text" placeholder="Enter Location" required>
+</div>
+<div class="input-box">
+    <span class="details">Username</span>
+    <input type="text" placeholder="Enter your username" required>
+    </div>
+<div class="input-box">
+    <span class="details">Password</span>
+    <input type="password" placeholder="Enter your password" required>
+</div>
+<div class="input-box">
+<span class="details">Confirm Password</span>
+<input type="password" placeholder="Confirm your password" required>
+</div>
+</div>
+<div class="button">
+
+<button type="submit" id="submit" value="Organization">Sign up</button>
+<div class="register-link">
+    <p>Already have an account? <a href="/login.html">Login</a></p>
+</div>
+</div>
+</form>
+</div>
+</div>
+</body>
+</html>
+<!-- changes -->

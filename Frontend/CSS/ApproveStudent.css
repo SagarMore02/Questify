@@ -1,0 +1,141 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(to left,rgba(200, 182, 255, 1), rgba(231, 198, 255, 1));
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    color: #000000;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 30px; /* Increased padding for a more spacious feel */
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+    backdrop-filter: blur(8px); /* Blurred background */
+    border-radius: 20px; /* Rounded corners */
+    margin: 70px auto; /* Centered with top margin */
+    max-width: 1200px; /* Limit width for better layout */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+    background-size: cover; /* Cover for background */
+    background-blend-mode: overlay; /* Blending effect */
+    position: relative; /* To position loading spinner */
+}
+
+.loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+}
+
+h1 {
+    color: #000000; /* White color for headings */
+    margin-bottom: 10px;
+    font-size: 32px; /* Increased font size */
+    text-align: center; /* Center alignment */
+}
+
+h2 {
+    color: #000000; /* White color for subheadings */
+    margin-bottom: 15px;
+    text-align: center; /* Center alignment */
+}
+
+p {
+    color: #000000; /* White color for paragraphs */
+    margin-bottom: 20px;
+    text-align: center; /* Center alignment */
+}
+
+table {
+    border-collapse: collapse; /* Merge borders */
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Space above table */
+}
+
+th {
+    background-color: rgba(62, 4, 125, 0.9); /* Dark background for table headers */
+    color: rgb(255, 252, 252); /* White text in headers */
+    padding: 10px; /* Padding for table headers */
+    text-align: left; /* Left-align text in headers */
+    border: 1px solid #dee2e6; /* Border for headers */
+}
+
+td {
+    padding: 10px; /* Padding for table cells */
+    border: 1px solid #dee2e6; /* Border for cells */
+    transition: background-color 0.3s ease; /* Smooth background change */
+}
+
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Light gray on hover */
+}
+
+.update-status-btn {
+    background-color: rgba(85, 3, 172, 0.8); /* Button color */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 8px 12px; /* Padding for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s; /* Smooth background change and scale */
+}
+
+.update-status-btn:hover {
+    background-color: rgba(62, 4, 125, 0.9); /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight upward movement on hover */
+}
+
+.update-status-btn:active {
+    transform: translateY(0); /* Return to original position when active */
+}
+
+.highlight {
+    background-color: rgba(85, 3, 172, 0.2) !important; /* Light gray highlight */
+    transition: background-color 0.3s ease; /* Smooth highlight transition */
+}
+/* Modal Background Overlay */
+#confirmationModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensures modal appears in front of other elements */
+}
+
+/* Modal Content Box */
+#confirmationModal .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+/* Modal Buttons */
+#confirmButton, #cancelButton {
+    padding: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+#confirmButton {
+    background-color: green;
+}
+
+#cancelButton {
+    background-color: red;
+}
+

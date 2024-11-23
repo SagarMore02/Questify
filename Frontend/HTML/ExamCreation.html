@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Exam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/ExamCreation.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title">Create Exam</div>
+        <div class="content">
+            <form id="exam-form">
+                <div class="user-details">
+                    <div class="input-box">
+                        <span class="details">Exam Title</span>
+                        <input type="text" id="name" name="name" maxlength="15" placeholder="Enter Exam Name" required>
+                    </div>
+                    
+                    <br>
+                    <div class="input-box">
+                        <span class="details">Application Start Date</span>
+                        <input type="date" id="app_start_date" name="app_start_date" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Application End Date</span>
+                        <input type="date" id="app_end_date" name="app_end_date" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Exam Start Date</span>
+                        <input type="date" id="exam_start_date" name="exam_start_date" required>
+                    </div>
+                    <!-- <div class="input-box">
+                        <span class="details">Exam End Date</span>
+                        <input type="date" id="exam_end_date" name="exam_end_date" required>
+                    </div> -->
+                    <div class="input-box">
+                        <span class="details">Exam Start Time</span>
+                        <input type="time" id="exam_start_time" name="exam_start_time" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Exam End Time</span>
+                        <input type="time" id="exam_end_time" name="exam_end_time" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Total Marks</span>
+                        <input type="number" id="total_marks" name="total_marks" placeholder="Enter Total Marks" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Passing Marks</span>
+                        <input type="number" id="passing_marks" name="passing_marks" placeholder="Enter Passing Marks" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Fees</span>
+                        <input type="number" id="fees" name="fees" placeholder="Enter Fees" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Syllabus</span>
+                        <input type="text" id="syllabus" name="syllabus" maxlength="100" placeholder="Enter Syllabus" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Department</span>
+                        <select id="department" name="department" required>
+                            <option value="N/A" selected>N/A</option>
+                            <option value="Computer-Science">Computer Science</option>
+                            <option value="Computer-Applications">Computer Applications</option>
+                            <option value="Data-Science">Data Science</option>
+                            <option value="IMCA">IMCA</option>
+                        </select>
+                    </div>
+                </div>
+                <input id="submit" type="submit" value="Create Exam">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function isDateTimeValid(inputDate, inputTime) {
+                    const now = new Date();
+
+                    // Parse input date and time
+                    const [year, month, day] = inputDate.split('-').map(Number);
+                    const [hours, minutes] = inputTime.split(':').map(Number);
+
+                    const inputDateTime = new Date(year, month - 1, day, hours, minutes);
+
+                    // Check if the date is earlier than today
+                    const inputDateOnly = new Date(year, month - 1, day);
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                    if (inputDateOnly < today) {
+                        // If the date is earlier than today, check the time
+                        return false; // Automatically invalid if date is earlier
+                    }
+
+                    if (inputDateOnly.getTime() === today.getTime()) {
+                        // If the date is today, check the time
+                        if (hours < now.getHours() || (hours === now.getHours() && minutes < now.getMinutes())) {
+                            return false; // Invalid if time is earlier
+                        }
+                    }
+
+                    return true; // Valid if the date is not earlier or the time is not earlier
+                }
+
+        document.getElementById('exam-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            
+            // Gather form data
+            const formData = new FormData(this);
+
+            const examTitle = formData.get('name');
+            const appStartDate = formData.get('app_start_date');
+            const appEndDate = formData.get('app_end_date');
+            const examStartDate = formData.get('exam_start_date');
+            const examEndDate = formData.get('exam_start_date');
+            const examStartTime = formData.get('exam_start_time');
+            const examEndTime = formData.get('exam_end_time');
+            const totalMarks = formData.get('total_marks');
+            const passingMarks = formData.get('passing_marks');
+            const fees = formData.get('fees');
+            const syllabus = formData.get('syllabus');
+            const dept = formData.get('department');
+
+            if(Number(totalMarks)<=0){
+                alert("Total marks cannot be negative or zero");
+                return;
+            }
+
+            if(Number(passingMarks)<=0){
+                alert("Passing Marks cannot be negative or zero");
+                return;
+            }
+
+            if(Number(fees)<=0){
+                alert("Fees cannot be negative or zero");
+                return;
+            }
+            
+            if (!isDateTimeValid(appStartDate,"24:00")) {
+                    alert("The input Application date and time are Invalid.");
+                    return;
+            }
+            if(!isDateTimeValid(examStartDate,examStartTime)){
+                alert("The input Exam date and time are Invalid.");
+                return;
+            }
+
+            if (dept === "N/A") {
+           alert("Please select a valid department.");
+            return;  // Prevent form submission
+        }
+
+            if(parseInt(passingMarks)>parseInt(totalMarks)){
+                alert('Passing Marks Cannot be Greater than Total Marks');
+                document.getElementById('passing_marks').value='';
+                return;
+            }
+            if(examStartDate>examEndDate){
+                alert('Exam Start Date Cannot be Later than Exam End Date');
+                document.getElementById('exam_end_date').value='';
+                return;
+            }
+            if(examStartTime>examEndTime){
+                if(examStartDate<examEndDate){
+                
+            }else{
+                alert('Exam Start Time Cannot be Later than End Time');
+                document.getElementById('exam_end_time').value='';
+                return;
+            }
+            }
+            if(appStartDate>appEndDate){
+                alert('Application Start Date Cannot be Later than End Date');
+                document.getElementById('app_end_date').value='';
+                return;
+            }
+            if(appStartDate>examStartDate){
+                alert('Application Start Date Cannot be Later than Exam Start Date');
+                document.getElementById('app_start_date').value='';
+                return;
+            }
+
+            const myformData = {
+            examTitle     : examTitle,
+            appStartDate  : appStartDate,
+            appEndDate    : appEndDate,
+            examStartDate : examStartDate,
+            examEndDate   : examEndDate,
+            examStartTime : examStartTime,
+            examEndTime   : examEndTime,
+            totalMarks    : totalMarks,
+            passingMarks  : passingMarks,
+            fees          : fees,
+            syllabus      : syllabus,
+            dept:dept
+            };
+            const appendd = new Date(appEndDate);
+            const exstdar = new Date(examStartDate);
+            const [hours, minutes] = examStartTime.split(':').map(Number);
+            exstdar.setHours(hours,minutes,0,0);
+            appendd.setHours(hours,minutes,0,0);
+            if(appendd>exstdar){
+                alert("Application End date cannot be later than Exam date!!");
+                return;
+            }   
+            try {
+            console.log("Exam Creation");
+            const response = await fetch('/addExam', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(myformData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                //alert('Registration successful!');
+                // Redirect or clear the form as needed
+                window.location.href = data.redirectURL;
+            } else {
+                alert('Registration failed: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error submitting the form.');
+        }
+
+
+            // Reset form after submission
+            //this.reset();
+            //alert('Exam created successfully!');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applied Exams</title>
+    <style>
+       table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    border-radius: 12px; /* Rounded corners for the table */
+    overflow: hidden; /* Ensure rounded corners are applied */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid rgba(106, 27, 154, 0.2); /* Subtle purple border */
+    color: #333; /* Dark text for contrast */
+}
+
+th {
+    background: linear-gradient(to right, #6a1b9a, #8e24aa); /* Gradient background for header */
+    color: #fff; /* White text for contrast */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* Add some spacing for elegance */
+}
+
+td {
+    background: #fff; /* White background for cells */
+}
+
+tr:nth-child(even) td {
+    background: rgba(146, 77, 219, 0.1); /* Subtle purple tint for even rows */
+}
+
+/* tr:hover td {
+    background: linear-gradient(to right, #8e24aa, #ab47bc); /* Highlighted gradient on hover 
+    color: #fff; /* White text on hover 
+    transition: background 0.3s ease, color 0.3s ease; /* Smooth hover transition 
+} */
+
+    </style>
+</head>
+<body>
+
+    <h2>List of Exams You've Applied For</h2>
+
+    <table id="exams-table">
+        <thead>
+            <tr>
+                <th>Exam ID</th>
+                <!-- <th>Applicant Name</th> -->
+                <th>Exam Name</th>
+                <th>Marks Obtained</th>
+                <th>Passing Marks</th>
+                <th>Total Marks</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        // Function to fetch and display the applied exams
+        function loadExams() {
+            fetch(`/ApplicantResult`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('exams-table').querySelector('tbody');
+                    tableBody.innerHTML = ''; // Clear existing table rows
+                    
+                    // Populate the table with exam data
+                    data.forEach(exam => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${exam.examID || 'N/A'}</td> <!-- Display 'N/A' if applicationID is missing -->
+                            <!--<td>${exam.examID || 'N/A'}</td>  Display 'N/A' if applicant name is missing -->
+                            <td>${exam.exam_name || 'N/A'}</td> <!-- Display 'N/A' if exam name is missing -->
+                            <td>${exam.marks_obtained || 0}</td> <!-- Display 0 if marks_obtained is missing -->
+                            <td>${exam.passing_marks || 0}</td>
+                            <td>${exam.total_marks || 0}</td> <!-- Display 0 if total_marks is missing -->
+                            <td>${exam.status || 'N/A'}</td> <!-- Display 'N/A' if status is missing -->
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching applied exams:', error);
+                    // Optionally, you can display an error message to the user
+                    alert('Failed to load exams. Please try again later.');
+                });
+        }
+
+        // Call the function to load the exams when the page loads
+        window.onload = loadExams;
+    </script>
+
+</body>
+</html>

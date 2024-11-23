@@ -1,0 +1,251 @@
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #ffffff, #d0c7e2); /* Light gradient from white to purple */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    overflow-y: auto;
+    max-height: 90vh;
+    border: 2px solid #6a1b9a; /* Purple border */
+}
+
+.section {
+    margin-bottom: 25px;
+}
+
+.section h2 {
+    margin: 0 0 15px;
+    color: #6a1b9a; /* Purple title color */
+    font-size: 26px;
+    text-align: center;
+}
+
+.section label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 18px;
+    color: #6a1b9a; /* Purple color for labels */
+}
+
+.section input[type="number"],
+.section input[type="text"] {
+    width: 100%;
+    padding: 18px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 18px;
+    box-sizing: border-box;
+    margin-bottom: 18px;
+    background-color: #f8f8f8; /* Light background for input fields */
+}
+
+.section input[type="number"]:focus,
+.section input[type="text"]:focus {
+    border-color: #6a1b9a; /* Highlight border on focus */
+    outline: none;
+    background-color: #fafafa; /* Lighten background on focus */
+}
+
+.section button {
+    background-color: #6a1b9a;
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section button:hover {
+    background-color: #4e1481; /* Darker purple on hover */
+    transform: scale(1.05);
+}
+
+.question-box {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+    padding: 18px;  
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f7f7f7;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.question-box .question-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.question-box .question-row input[type="text"] {
+    flex: 3; /* Question text field takes up more space */
+    padding: 15px; /* Add padding for a more spacious feel */
+    min-width: 300px;
+    margin-right: 40px; /* Reduce gap between the text and number fields */
+}
+
+.question-box .question-row input[type="number"] {
+    flex: 0; /* Question marks field takes up less space */
+    padding: 15px; /* Add padding for a more spacious feel */
+    min-width: 150px;
+    margin-right: 15; /* Ensure no extra spacing on the right of the number field */
+}
+
+
+.question-box h3 {
+    margin-top: 0;
+    color: #6a1b9a; /* Purple question heading */
+    font-size: 22px;
+    text-align: center;
+}
+
+.options-container {
+    margin-bottom: 20px;
+}
+
+.options-container .option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.options-container input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #6a1b9a; /* Change radio button color to purple */
+}
+
+.options-container input[type="text"] {
+    font-size: 16px;
+    background-color: rgb(248, 248, 248);
+    flex: 1 1 0%; /* Reduce the flex-grow value to make the box smaller */
+    padding: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(221, 221, 221);
+    border-radius: 6px;
+    max-width: 200px; /* Limit the maximum width */
+}
+
+.options-container input[type="text"]:focus {
+    border-color: #6a1b9a;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.buttons button {
+    background-color: #28a745;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.buttons button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+#submit-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#submit-container button {
+    background-color: #6a1b9a;
+    color: #fff;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#submit-container button:hover {
+    background-color: #4e1481;
+    transform: scale(1.05);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Exam Preview Styles */
+.exam-preview {
+    margin-top: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.exam-preview h2 {
+    color: #6a1b9a;
+    font-size: 24px;
+    text-align: center;
+}
+
+.exam-preview h3 {
+    color: #333;
+    font-size: 20px;
+    text-align: center;
+}
+
+.exam-preview div {
+    margin-bottom: 15px;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .section h2 {
+        font-size: 22px;
+    }
+
+    .section button,
+    .question-box button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .buttons button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .exam-preview {
+        padding: 10px;
+    }
+}

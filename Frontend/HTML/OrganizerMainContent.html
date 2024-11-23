@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard - Main Content</title>
+    <link rel="stylesheet" href="/CSS/OrganizerDash.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard</h1>
+        </div>
+        <div class="content">
+            <div class="card">
+                <h3>Total Students</h3>
+                <p id="total-students">Loading...</p>
+            </div>
+            <div class="card">
+                <h3>Students Applied For Your Exams</h3>
+                <p id="students-applied">Loading...</p>
+            </div>
+            <div class="card">
+                <h3>Upcoming Exams</h3>
+                <p id="upcoming-exams">Loading...</p>
+            </div>
+            <div class="card">
+                <h3>Pending Approvals</h3>
+                <p id="pending-approvals">Loading...</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Function to fetch data from the API
+        async function fetchData() {
+            try {
+                // Example API endpoint
+                const response = await fetch('/api/dashboard-data'); // Replace with your actual API endpoint
+                const data = await response.json();
+
+                // Check if the data is returned and update the DOM elements
+                if (data) {
+                    document.getElementById('total-students').textContent = data.totalStudents || 'N/A';
+                    document.getElementById('students-applied').textContent = data.studentsApplied || 'N/A';
+                    document.getElementById('upcoming-exams').textContent = data.upcomingExams || 'N/A';
+                    document.getElementById('pending-approvals').textContent = data.pendingApprovals || 'N/A';
+                } else {
+                    console.error('Data not available');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Call fetchData when the page loads
+        window.onload = fetchData;
+    </script>
+</body>
+</html>

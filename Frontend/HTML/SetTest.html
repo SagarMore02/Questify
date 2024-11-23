@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Test</title>
+    <link rel="stylesheet" href="/css/test.css">
+</head>
+<body>
+    <div class="set-test-container">
+        <h2>Set Test</h2>
+        <form id="setTestForm">
+            <div class="input-box">
+                <label for="testName">Test Name</label>
+                <input type="text" id="testName" name="testName" placeholder="Enter test name" required>
+            </div>
+            <div class="input-box">
+                <label for="testDate">Test Date</label>
+                <input type="date" id="testDate" name="testDate" required>
+            </div>
+
+            <div class="input-box">
+                <label for="testTime">Test Time</label>
+                <input type="time" id="testTime" name="testTime" required>
+            </div>
+            <div class="input-box">
+                <label for="duration">Duration (minutes)</label>
+                <input type="number" id="duration" name="duration" placeholder="Enter duration" required>
+            </div>
+           
+            <div class="input-box">
+                <label for="passingScore">Passing Score (%)</label>
+                <input type="number" id="passingScore" name="passingScore" placeholder="Enter passing score" required>
+            </div>
+          
+            <div class="input-box">
+                <button type="submit">Create Test</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="..//SCRIPT/test.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="/css/exam.css">
+    <title>Quiz Page with Timer</title>
+    
+
+</head>
+
+<body>
+    
+    <div class="quiz-container">
+
+        <div id="focusModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <p>Welcome back! You are now on the test page.</p>
+                <button class="close-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+
+        <!-- Progress container on the left -->
+        <div class="progress-container" id="progress-container"></div>
+    
+        <!-- Quiz content on the right -->
+        <div id="quiz">
+            <div class="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+                <div class="time-left" id="time-left">1:00</div>
+            </div>
+    
+            <form id="quiz-form">
+                <div class="question-container">
+                    <div class="question-id" id="question-id" hidden>
+                        <!-- Question ID will be inserted here -->
+                    </div>
+
+                    <div class="question" id="question-text">
+                        
+                    </div>
+                    <div class="options" id="options">
+                        <!-- Options will be dynamically inserted here -->
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button id="prev-button" class="btn btn-prev" disabled>Previous</button>
+                    <button id="save-button" class="btn btn-save">Save Answer</button>
+                    <button id="submit-button" type="submit" class="btn btn-submit" type="submit">Submit</button>
+                    <button id="next-button" class="btn btn-next">Next</button>
+                </div>
+            </form>
+        </div>
+    
+        <!-- Result content -->
+        <div id="result" class="result-container">
+            <h2>Exam Submitted Successfully!</h2>
+            <p id="result-message">Thank you for completing the quiz. Your responses have been recorded.</p>
+            <button id="home-button">Go to Home</button>
+        </div>
+    </div>
+    
+    
+
+    <!-- Script for Quiz functionality -->
+    <script src="/js/temp_exam.js">
+      
+
+    </script>
+
+</body>
+
+</html>

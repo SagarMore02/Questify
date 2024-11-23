@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign up Page</title>
+    <link rel="stylesheet" href="/css/signup.css">
+    <script src="/js/Applicantsignup.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div id="confirmationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
+            <p id="modalText">Are you sure you want to change the status?</p>
+            <br>
+            <form id="otpForm">
+                <div class="input-box">
+                  <span class="details">Enter OTP</span>
+                  <input type="text" id="otpInput" placeholder="Enter OTP" required>
+                </div>
+                <div class="button">
+                  <input type="submit" id="confirmButton" value="Verify OTP">
+                  <input type="button" id="cancelButton" value="Cancel"></button>
+                </div>
+              </form>
+            
+        </div>
+    </div>
+    <div class="container">
+        <div class="title">Applicant Registration</div>
+        <div class="content">
+            <form id="registrationForm">
+                <div class="user-details">
+                    <div class="input-box">
+                        <span class="details">First Name</span>
+                        <input type="text" placeholder="Enter First Name" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Last Name</span>
+                        <input id="lastname" type="text" placeholder="Enter Last Name" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Email</span>
+                        <input type="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Phone Number</span>
+                        <input type="tel" placeholder="Enter your number" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Username</span>
+                        <input type="text" placeholder="Enter your username" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Password</span>
+                        <input type="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Confirm Password</span>
+                        <input type="password" placeholder="Confirm your password" required>
+                    </div>
+                    <div class="input-box">
+                        <span class="details">Department</span>
+                        <select id="department" name="department" required>
+                            <option value="N/A" selected>N/A</option>
+                            <option value="Computer-Science">Computer Science</option>
+                            <option value="Computer-Applications">Computer Applications</option>
+                            <option value="Data-Science">Data Science</option>
+                            <option value="IMCA">IMCA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="button">
+                    <button type="submit" id="submit" value="Applicant">Sign up</button>
+                    <div class="register-link">Applicant
+                        <p>Already have an account? <a href="/login.html">Login</a></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

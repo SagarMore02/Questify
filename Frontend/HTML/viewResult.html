@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/ViewResult.css">
+    <title>Student Exam Results</title>
+</head>
+<body>
+
+    <h2>Student Exam Results</h2>
+
+    <!-- Dropdown to select examID -->
+    <label for="examID">Select Exam:</label>
+    <select id="examID">
+        <option value="">Loading exams...</option>
+    </select>
+
+    <!-- Button to trigger result fetching -->
+    <button id="fetchResultBtn">Fetch Result</button>
+
+    <!-- Table to display exam results -->
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>StudentID</th>
+                <th>ExamID</th>
+                <th>Score</th>
+                <th>Total Marks</th>
+                <th>Passing Marks</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="4">No results yet</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Function to fetch the list of exam IDs and populate the dropdown
+        async function fetchExams() {
+            try {
+                const response = await fetch('/getExamIds');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const exams = await response.json();
+
+                // Populate the dropdown with examIDs
+                const examSelect = document.getElementById('examID');
+                examSelect.innerHTML = '';  // Clear the default option
+                exams.forEach(exam => {
+                    const option = document.createElement('option');
+                    option.value = exam.examID;
+                    option.text = `Exam ${exam.examID}`;
+                    examSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching exam IDs:', error);
+                document.getElementById('examID').innerHTML = '<option>Error loading exams</option>';
+            }
+        }
+
+        // Function to fetch the result based on the selected examID
+        async function fetchResult() {
+            const examID = document.getElementById('examID').value;
+            console.log("Exam iddddd....", examID)
+            if (!examID) {
+                alert('Please select an exam');
+                return;
+            }
+
+            try {
+                const response = await fetch('/check-result', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        examid: examID  // Use the selected examID from the dropdown
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log("datatattatat", data);
+                updateTable(data);
+            } catch (error) {
+                console.error('Error fetching the results:', error);
+                const tableBody = document.querySelector('#resultTable tbody');
+                tableBody.innerHTML = `<tr><td colspan="4">Failed to load results</td></tr>`;
+            }
+        }
+
+        // Function to update the result table
+        function updateTable(data) {
+            const tableBody = document.querySelector('#resultTable tbody');
+            tableBody.innerHTML = '';  // Clear the existing table rows
+
+            let rows = ''; // Initialize an empty string to store all rows
+
+            data.forEach(item => {
+            const row = `
+            <tr>
+                <td>${item.applicationID}</td> <!-- Assuming your API returns studentID -->
+                <td>${item.examid}</td>
+                <td>${item.totalScore}</td>
+                <td>${item.passingMarks}</td> <!-- Adjusted from totalMarks to total_marks -->
+                <td>${item.totalMarks}</td>
+                <td>${item.status}</td>
+            </tr>
+        `;
+        rows += row; // Append each row to the rows string
+    });
+
+    tableBody.innerHTML = rows;
+}
+
+        // Fetch exams when the page loads
+        window.onload = fetchExams();
+
+        // Attach the fetchResult function to the button click event
+        document.getElementById('fetchResultBtn').addEventListener('click', fetchResult);
+    </script>
+
+</body>
+</html>

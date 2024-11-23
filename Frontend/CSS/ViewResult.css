@@ -1,0 +1,185 @@
+/* General Body Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(to left, rgba(200, 182, 255, 1), rgba(231, 198, 255, 1));
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    color: #000000;
+}
+
+/* Main Content Container */
+.main-container {
+    flex-grow: 1;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    margin: 70px auto;
+    max-width: 1200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background-size: cover;
+    background-blend-mode: overlay;
+    position: relative;
+}
+
+/* Heading Styles */
+h2 {
+    font-size: 30px;
+    margin-bottom: 15px;
+    color: #000000; /* Purple color for title */
+}
+
+/* Form Elements */
+label {
+    font-size: 18px;
+    margin-right: 10px;
+    color: #000000;
+}
+
+select, button {
+    font-size: 15px;
+    padding: 6px 10px;;
+    border-radius: 5px;
+    border: 2px solid #7c3aed;
+    margin: 10px 0;
+    background-color: #6a1b9a;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Button Hover and Active Effects */
+select:hover, button:hover {
+    background-color:#ba51fa;  
+    color: #fff;
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+th {
+    background-color: rgba(62, 4, 125, 0.9);
+    color: white;
+    padding: 15px;
+    border:1px solid #ddd ;
+    text-align: left;
+    border-top: 1px solid #ddd;
+    border-bottom: 2px solid #ddd;
+}
+
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light gray background for even rows */
+}
+
+tr:hover {
+    background-color: rgba(234, 243, 255, 1); /* Light blue highlight on hover */
+}
+
+/* Empty Table Row Message */
+tbody tr td {
+    text-align: center;
+    color: #999;
+}
+
+tbody tr td[colspan="6"] {
+    color: #4e73df; /* Purple color for the "No results yet" message */
+}
+
+/* Result Column Styling */
+td:last-child {
+    font-weight: bold;
+    color: #6a1b9a; /* Dark purple for result column */
+}
+
+/* Modal Styles */
+#confirmationModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#confirmationModal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#confirmButton, #cancelButton {
+    padding: 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#confirmButton {
+    background-color: green;
+}
+
+#cancelButton {
+    background-color: red;
+}
+
+#confirmButton:hover {
+    background-color: #3e8e41; /* Darker green on hover */
+}
+
+#cancelButton:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .main-container {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+
+    select, button {
+        width: 100%;
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}

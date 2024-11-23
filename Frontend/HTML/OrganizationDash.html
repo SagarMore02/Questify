@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/OraganizationDash.css">
+    <title>Organizers List</title>
+</head>
+<body>
+    <div id="confirmationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
+            <p id="modalText">Are you sure you want to change the status?</p>
+            <button id="confirmButton">OK</button>
+            <button id="cancelButton">Cancel</button>
+        </div>
+    </div>
+
+    <h2>Organizers List</h2>
+
+    <table id="organizerTable">
+        <thead>
+            <tr>
+                <th>Organizer ID</th>
+                <th>Organizer Name</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="6">Loading organizers...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch organizers from the backend
+        async function fetchOrganizers() {
+            try {
+                const response = await fetch('/getOrganizer');
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const organizers = await response.json();
+                updateTable(organizers);
+            } catch (error) {
+                console.error('Error fetching organizers:', error);
+                const tableBody = document.querySelector('#organizerTable tbody');
+                tableBody.innerHTML = `<tr><td colspan="6">Failed to load organizers</td></tr>`;
+            }
+        }
+
+        // Function to populate table with organizers and add status dropdown + button
+        function updateTable(organizers) {
+            const tableBody = document.querySelector('#organizerTable tbody');
+            tableBody.innerHTML = '';  // Clear the existing table rows
+
+            if (organizers.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6">No organizers found</td></tr>`;
+                return;
+            }
+
+            // Populate the table with organizer data and status dropdown
+            organizers.forEach(org => {
+                const row = `
+                    <tr>
+                        <td>${org.organizerID}</td>
+                        <td>${org.organizerName}</td>
+                        <td>${org.organizerEmail}</td>
+                        <td>${org.organizerPhone}</td>
+                        <td>
+                            <select class="status-select" data-id="${org.organizerID}">
+                                <option value="Active" ${org.status === 'Active' ? 'selected' : ''}>Active</option>
+                                <option value="Inactive" ${org.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                            </select>
+                        </td>
+                        <td><button class="update-status-btn" data-id="${org.organizerID}" data-name="${org.organizerName}">Update Status</button></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row; // Append the row to the table body
+            });
+
+            // Attach click event listeners to buttons
+            document.querySelectorAll('.update-status-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const select = document.querySelector(`.status-select[data-id="${id}"]`);
+                    const status = select ? select.value : '';
+                    
+                    console.log('Selected ID:', id);
+                    console.log('Selected Status:', status);
+                    
+                    if (status) {
+                        showModal(name, status, id);
+                    } else {
+                        console.error('Status is undefined or empty');
+                    }
+                });
+            });
+        }
+
+        function showModal(name, status, id) {
+            const modal = document.getElementById('confirmationModal');
+            const modalText = document.getElementById('modalText');
+            modalText.textContent = `Are you sure you want to change the status of "${name}" to "${status}"?`;
+            
+            modal.style.display = 'flex';
+
+            document.getElementById('confirmButton').onclick = () => {
+                modal.style.display = 'none';
+                updateStatus(id, status);
+            };
+
+            document.getElementById('cancelButton').onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        // Function to post the updated status to the backend
+        function updateStatus(id, status) {
+            fetch('/status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response from server:', data);
+                fetchOrganizers();  // Reload data after update
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating status.');
+            });
+        }
+
+        // Fetch organizers when the page loads
+        window.onload = fetchOrganizers;
+    </script>
+
+</body>
+</html>
